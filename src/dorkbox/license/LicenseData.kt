@@ -172,6 +172,10 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
          * Sorts and remove dupes for the list of licenses.
          */
         private fun sortAndClean(licenses: MutableList<LicenseData>) {
+            if (licenses.isEmpty()) {
+                return
+            }
+
             // The FIRST one is always FIRST! (the rest are alphabetical)
             val firstLicense = licenses[0]
 
