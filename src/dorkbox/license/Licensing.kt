@@ -17,7 +17,6 @@ package dorkbox.license
 
 import org.gradle.api.Action
 import org.gradle.api.Project
-import java.io.File
 
 open class Licensing(project: Project) {
     private val projectName = project.name
@@ -26,7 +25,6 @@ open class Licensing(project: Project) {
 
     companion object {
         internal const val NAME = "licensing"
-        var outputDir = File(Project.DEFAULT_BUILD_DIR_NAME, "licensing")
     }
 
     /**
@@ -45,13 +43,5 @@ open class Licensing(project: Project) {
         val licenseAction = LicenseData(name, license)
         licenseData.execute(licenseAction)
         licenses.add(licenseAction)
-    }
-
-
-    /**
-     * used to get the output dir for including as a resource
-     */
-    fun getOutputDir(): String {
-        return outputDir.toString()
     }
 }
