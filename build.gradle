@@ -45,7 +45,7 @@ project.ext.name = 'Gradle Licensing Plugin'
 project.ext.id = 'Licensing'
 project.ext.website = 'https://dorkbox.com/'
 project.ext.url = 'https://git.dorkbox.com/dorkbox/Licensing'
-project.ext.tags = ['licensing', 'legal', 'NOTICE', 'LICENSE', 'DEPENDENCIES']
+project.ext.tags = ['licensing', 'legal', 'notice', 'license', 'dependencies']
 
 
 
