@@ -1,0 +1,150 @@
+/*
+ * Copyright 2018 dorkbox, llc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.10"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'maven'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+
+    id "org.jetbrains.kotlin.jvm" version "1.2.50"
+}
+
+apply plugin: "com.gradle.plugin-publish"
+
+
+
+project.description = 'License definitions and legal management plugin for the Gradle build system'
+project.group = 'com.dorkbox'
+project.version = '1.0.0'
+
+project.ext.name = 'Gradle Licensing Plugin'
+project.ext.id = 'Licensing'
+project.ext.website = 'https://dorkbox.com/'
+project.ext.url = 'https://git.dorkbox.com/dorkbox/Licensing'
+project.ext.tags = ['licensing', 'legal', 'NOTICE', 'LICENSE', 'DEPENDENCIES']
+
+
+
+sourceSets {
+    main {
+        java {
+            setSrcDirs Collections.singletonList('src')
+        }
+
+        resources {
+            setSrcDirs Collections.singletonList('resources')
+
+            srcDirs '.'
+            include 'LICENSE*'
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+
+dependencies {
+    compileOnly 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.50'
+}
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.incremental = true
+}
+
+gradlePlugin {
+    plugins {
+        LicensingPlugin {
+            id = "${project.group}.${project.ext.id}"
+            implementationClass = 'dorkbox.license.LicensePlugin'
+        }
+    }
+}
+
+// We don't publish to maven central, but only to local maven for testing
+publishing {
+    publications {
+        pluginPublication(MavenPublication) {
+            from components.java
+
+            groupId project.group
+            artifactId project.ext.id
+            version project.version
+
+            pom {
+                url = project.ext.url
+                description = project.description
+
+                issueManagement {
+                    url = 'https://git.dorkbox.com/dorkbox/Licensing/issues'
+                    system = 'Gitea Issues'
+                }
+
+                organization {
+                    name = 'Dorkbox, LLC'
+                    url = 'https://dorkbox.com'
+                }
+
+                developers {
+                    developer {
+                        name = 'dorkbox, llc'
+                        email = 'email@dorkbox.com'
+                    }
+                }
+
+                // this plugin automates including the "license" section in the POM
+                // with license only specific information (name/url). Everything else
+                // must be explicitly added the POM
+                licenses {
+                    license {
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0'
+                    }
+                }
+            }
+        }
+    }
+}
+
+pluginBundle {
+    website = project.ext.website
+    vcsUrl = project.ext.url
+
+    plugins {
+        LicensingPlugin {
+            id = "${project.group}.${project.ext.id}"
+            displayName = project.ext.name
+            description = project.description
+            tags = project.ext.tags
+            version = project.version
+        }
+    }
+}
