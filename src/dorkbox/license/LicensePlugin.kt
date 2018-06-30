@@ -15,11 +15,12 @@
  */
 package dorkbox.license
 
-import dorkbox.license.Licensing.Companion.outputDir
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 import java.io.File
 
 /**
@@ -28,37 +29,68 @@ import java.io.File
 class LicensePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        outputDir = File(project.buildDir, "licensing")
+        val outputDir = File(project.buildDir, "licensing")
 
         // Create the Plugin extension object (for users to configure our execution).
         val extension = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
 
         project.afterEvaluate {
-            extension.licenses.forEach {
-                when {
-                    it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferedName}' license")
-                    it.copyrights.isEmpty() -> throw GradleException("The copyright date must be specified for the '${it.license.preferedName}' license")
-                    it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferedName}' license")
+            val licensing = extension.licenses
+            if (licensing.isNotEmpty()) {
+                extension.licenses.forEach {
+                    when {
+                        it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferedName}' license")
+                        it.copyrights.isEmpty() -> throw GradleException("The copyright date must be specified for the '${it.license.preferedName}' license")
+                        it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferedName}' license")
+                    }
                 }
-            }
 
-            val hasClean = project.gradle.startParameter.taskNames.filter { it.toLowerCase().contains("clean") }
-            if (hasClean.isNotEmpty()) {
-                val task = project.tasks.last { it.name == hasClean.last() }
+                // add the license information to maven POM, if applicable
+                val publishingExt = project.extensions.getByType(PublishingExtension::class.java)
+                publishingExt.publications.forEach {
+                    if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
+                        it as MavenPublication
 
-                task.doLast {
+                        // add the license information. ONLY THE FIRST ONE!
+                        val liceseData = extension.licenses.first()
+                        val license = liceseData.license
+                        it.pom.licenses { licSpec ->
+                            licSpec.license { newLic ->
+                                newLic.name.set(license.preferedName)
+                                newLic.url.set(license.preferedUrl)
+
+                                // only include license "notes" if we are a custom license **which is the license itself**
+                                if (license == License.CUSTOM) {
+                                    val notes = liceseData.notes.asSequence().joinToString("")
+                                    newLic.comments.set(notes)
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        println("Licensing only supports maven pom license injection for now")
+                    }
+                }
+
+
+                val hasClean = project.gradle.startParameter.taskNames.filter { it.toLowerCase().contains("clean") }
+                if (hasClean.isNotEmpty()) {
+                    val task = project.tasks.last { it.name == hasClean.last() }
+
+                    task.doLast {
+                        buildLicenseFiles(outputDir, extension.licenses)
+                        buildLicenseFiles(project.rootDir, extension.licenses)
+                    }
+                }
+                else {
                     buildLicenseFiles(outputDir, extension.licenses)
                     buildLicenseFiles(project.rootDir, extension.licenses)
                 }
-            }
-            else {
-                buildLicenseFiles(outputDir, extension.licenses)
-                buildLicenseFiles(project.rootDir, extension.licenses)
-            }
 
-            // make sure that our output dir is included when building
-            val javaSourceSet = it.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.findByName("main")
-            javaSourceSet!!.resources.srcDirs(outputDir)
+                // make sure that our output dir is included when building
+                val javaSourceSet = it.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.findByName("main")
+                javaSourceSet!!.resources.srcDirs(outputDir)
+            }
         }
     }
 
