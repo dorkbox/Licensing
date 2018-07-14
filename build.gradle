@@ -30,7 +30,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
 
-    id "org.jetbrains.kotlin.jvm" version "1.2.50"
+    id "org.jetbrains.kotlin.jvm" version "1.2.51"
 }
 
 apply plugin: "com.gradle.plugin-publish"
