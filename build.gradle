@@ -60,7 +60,6 @@ project.version = '1.1.0'
 
 project.ext.name = 'Gradle Licensing Plugin'
 project.ext.id = 'Licensing'
-project.ext.website = 'https://dorkbox.com/'
 project.ext.url = 'https://git.dorkbox.com/dorkbox/Licensing'
 project.ext.tags = ['licensing', 'legal', 'notice', 'license', 'dependencies']
 
@@ -86,7 +85,7 @@ repositories {
 
 
 dependencies {
-    compileOnly 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.50'
+    compileOnly 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.51'
 }
 
 
@@ -108,7 +107,7 @@ gradlePlugin {
 }
 
 pluginBundle {
-    website = project.ext.website
+    website = project.ext.url
     vcsUrl = project.ext.url
 
     plugins {
