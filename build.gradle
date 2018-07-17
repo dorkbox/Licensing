@@ -26,28 +26,28 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'maven'
     id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'signing'
 
     id "org.jetbrains.kotlin.jvm" version "1.2.51"
+
+    // release the plugin on sonatype
+    id 'io.codearte.nexus-staging' version '0.11.0'
 }
 
 apply plugin: "com.gradle.plugin-publish"
 
 
-
 project.description = 'License definitions and legal management plugin for the Gradle build system'
 project.group = 'com.dorkbox'
-project.version = '1.0.0'
+project.version = '1.1.0'
 
 project.ext.name = 'Gradle Licensing Plugin'
 project.ext.id = 'Licensing'
 project.ext.website = 'https://dorkbox.com/'
 project.ext.url = 'https://git.dorkbox.com/dorkbox/Licensing'
 project.ext.tags = ['licensing', 'legal', 'notice', 'license', 'dependencies']
-
-
 
 sourceSets {
     main {
@@ -82,34 +82,55 @@ tasks.withType(JavaCompile) {
 
 gradlePlugin {
     plugins {
-        LicensingPlugin {
+        licensing {
             id = "${project.group}.${project.ext.id}"
             implementationClass = 'dorkbox.license.LicensePlugin'
         }
     }
 }
 
-// We don't publish to maven central, but only to local maven for testing
+///////////////////////////////
+//////    Publishing
+///////////////////////////////
+task sourceJar(type: Jar) {
+    description = "Creates a JAR that contains the source code."
+
+    from sourceSets.main.allSource
+
+    classifier = "sources"
+}
+
+task javaDocJar(type: Jar) {
+    description = "Creates a JAR that contains the javadocs."
+
+    classifier = "javadoc"
+}
+
+// for testing, we don't publish to maven central, but only to local maven
 publishing {
     publications {
-        pluginPublication(MavenPublication) {
+        licensing(MavenPublication) {
             from components.java
+
+            artifact(javaDocJar)
+            artifact(sourceJar)
 
             groupId project.group
             artifactId project.ext.id
             version project.version
 
             pom {
+                name = project.ext.id
                 url = project.ext.url
                 description = project.description
 
                 issueManagement {
-                    url = 'https://git.dorkbox.com/dorkbox/Licensing/issues'
+                    url = project.ext.url + '/issues'
                     system = 'Gitea Issues'
                 }
 
                 organization {
-                    name = 'Dorkbox, LLC'
+                    name = 'dorkbox, llc'
                     url = 'https://dorkbox.com'
                 }
 
@@ -118,6 +139,11 @@ publishing {
                         name = 'dorkbox, llc'
                         email = 'email@dorkbox.com'
                     }
+                }
+
+                scm {
+                    url = project.ext.url
+                    connection = "scm:${project.ext.url}.git".toString()
                 }
 
                 // this plugin automates including the "license" section in the POM
@@ -129,9 +155,33 @@ publishing {
                         url = 'http://www.apache.org/licenses/LICENSE-2.0'
                     }
                 }
+
+                withXml {
+                    def root = asNode()
+
+                    // eliminate test-scoped dependencies (no need in maven central POMs)
+                    root.dependencies.removeAll { dep ->
+                        dep.scope == "test"
+                    }
+                }
             }
         }
     }
+
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username sonatypeUsername
+                password sonatypePassword
+            }
+        }
+    }
+}
+
+nexusStaging {
+    username sonatypeUsername
+    password sonatypePassword
 }
 
 pluginBundle {
@@ -139,12 +189,34 @@ pluginBundle {
     vcsUrl = project.ext.url
 
     plugins {
-        LicensingPlugin {
+        licensing {
             id = "${project.group}.${project.ext.id}"
             displayName = project.ext.name
             description = project.description
             tags = project.ext.tags
             version = project.version
         }
+    }
+}
+
+// we don't upload the plugin to maven (it's uploaded separately to gradle plugins)
+tasks.withType(PublishToMavenRepository) {
+    onlyIf {
+        repository == publishing.repositories.maven &&
+       publication == publishing.publications.licensing
+    }
+}
+
+signing {
+    required { hasProperty('sonatypeUsername') }
+    sign publishing.publications.licensing
+}
+
+
+def loadExtraProperties(String fileName) {
+    def props = new Properties()
+    new File(fileName).withInputStream { props.load(it) }
+    props.each { key, val ->
+        project.set(key, val)
     }
 }
