@@ -225,6 +225,12 @@ tasks.withType(PublishToMavenRepository) {
        publication == publishing.publications.licensing
     }
 }
+tasks.withType(PublishToMavenLocal) {
+    onlyIf {
+        publication == publishing.publications.licensing
+    }
+}
+
 
 signing {
     required { hasProperty('sonatypeUsername') }
