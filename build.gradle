@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 /*
  * Copyright 2018 dorkbox, llc
  *
@@ -14,6 +16,17 @@
  * limitations under the License.
  */
 buildscript {
+    // load properties from custom location
+    def propsFile = Paths.get('../../gradle.properties').toAbsolutePath().normalize().toFile()
+    println("Loading custom property data from: ${propsFile}")
+
+    def props = new Properties()
+    propsFile.withInputStream { props.load(it) }
+    props.each { key, val ->
+        project.ext.set(key, val)
+    }
+
+    // for plugin publishing
     repositories {
         maven {
             url "https://plugins.gradle.org/m2/"
@@ -32,10 +45,11 @@ plugins {
 
     id "org.jetbrains.kotlin.jvm" version "1.2.51"
 
-    // release the plugin on sonatype
+    // close and release on sonatype
     id 'io.codearte.nexus-staging' version '0.11.0'
 }
 
+// for publishing the plugin to gradle
 apply plugin: "com.gradle.plugin-publish"
 
 
@@ -80,6 +94,9 @@ tasks.withType(JavaCompile) {
     options.incremental = true
 }
 
+///////////////////////////////
+//////    Plugin Publishing + Release
+///////////////////////////////
 gradlePlugin {
     plugins {
         licensing {
@@ -89,8 +106,24 @@ gradlePlugin {
     }
 }
 
+
+pluginBundle {
+    website = project.ext.website
+    vcsUrl = project.ext.url
+
+    plugins {
+        licensing {
+            id = "${project.group}.${project.ext.id}"
+            displayName = project.ext.name
+            description = project.description
+            tags = project.ext.tags
+            version = project.version
+        }
+    }
+}
+
 ///////////////////////////////
-//////    Publishing
+//////    Maven Publishing + Release
 ///////////////////////////////
 task sourceJar(type: Jar) {
     description = "Creates a JAR that contains the source code."
@@ -125,7 +158,7 @@ publishing {
                 description = project.description
 
                 issueManagement {
-                    url = project.ext.url + '/issues'
+                    url = "${project.ext.url}/issues".toString()
                     system = 'Gitea Issues'
                 }
 
@@ -184,20 +217,6 @@ nexusStaging {
     password sonatypePassword
 }
 
-pluginBundle {
-    website = project.ext.website
-    vcsUrl = project.ext.url
-
-    plugins {
-        licensing {
-            id = "${project.group}.${project.ext.id}"
-            displayName = project.ext.name
-            description = project.description
-            tags = project.ext.tags
-            version = project.version
-        }
-    }
-}
 
 // we don't upload the plugin to maven (it's uploaded separately to gradle plugins)
 tasks.withType(PublishToMavenRepository) {
@@ -212,11 +231,12 @@ signing {
     sign publishing.publications.licensing
 }
 
+// output the URL name in the console
+project.afterEvaluate {
+    def URL = 'https://oss.sonatype.org/content/repositories/releases/'
+    def projectName = project.group.toString().replaceAll('\\.', '/')
+    def name = project.ext.id
+    def version = project.version
 
-def loadExtraProperties(String fileName) {
-    def props = new Properties()
-    new File(fileName).withInputStream { props.load(it) }
-    props.each { key, val ->
-        project.set(key, val)
-    }
+    println("Maven URL: ${URL}${projectName}/${name}/${version}/")
 }
