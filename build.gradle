@@ -188,15 +188,6 @@ publishing {
                         url = 'http://www.apache.org/licenses/LICENSE-2.0'
                     }
                 }
-
-                withXml {
-                    def root = asNode()
-
-                    // eliminate test-scoped dependencies (no need in maven central POMs)
-                    root.dependencies.removeAll { dep ->
-                        dep.scope == "test"
-                    }
-                }
             }
         }
     }
