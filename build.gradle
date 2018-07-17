@@ -17,7 +17,7 @@ import java.nio.file.Paths
  */
 buildscript {
     // load properties from custom location
-    def propsFile = Paths.get('../../gradle.properties').toAbsolutePath().normalize().toFile()
+    def propsFile = Paths.get("${projectDir}/../../gradle.properties").toAbsolutePath().normalize().toFile()
     println("Loading custom property data from: ${propsFile}")
 
     def props = new Properties()
@@ -36,6 +36,7 @@ buildscript {
         classpath "com.gradle.publish:plugin-publish-plugin:0.9.10"
     }
 }
+
 
 plugins {
     id 'java'
@@ -63,6 +64,7 @@ project.ext.website = 'https://dorkbox.com/'
 project.ext.url = 'https://git.dorkbox.com/dorkbox/Licensing'
 project.ext.tags = ['licensing', 'legal', 'notice', 'license', 'dependencies']
 
+
 sourceSets {
     main {
         java {
@@ -79,7 +81,6 @@ sourceSets {
 }
 
 repositories {
-    mavenLocal()
     jcenter()
 }
 
@@ -105,7 +106,6 @@ gradlePlugin {
         }
     }
 }
-
 
 pluginBundle {
     website = project.ext.website
@@ -218,7 +218,7 @@ nexusStaging {
 }
 
 
-// we don't upload the plugin to maven (it's uploaded separately to gradle plugins)
+// we don't use maven with the plugin (it's uploaded separately to gradle plugins)
 tasks.withType(PublishToMavenRepository) {
     onlyIf {
         repository == publishing.repositories.maven &&
