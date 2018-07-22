@@ -1,4 +1,5 @@
 import java.nio.file.Paths
+import java.time.Instant
 
 /*
  * Copyright 2018 dorkbox, llc
@@ -92,6 +93,15 @@ dependencies {
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.incremental = true
+}
+
+tasks.withType(Jar) {
+    duplicatesStrategy DuplicatesStrategy.FAIL
+
+    manifest {
+        attributes['Implementation-Version'] = project.version
+        attributes['Build-Date'] = Instant.now().toString()
+    }
 }
 
 ///////////////////////////////
