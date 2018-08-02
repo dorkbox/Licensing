@@ -16,6 +16,7 @@
 package dorkbox.license
 
 import License
+import java.time.LocalDate
 import java.util.*
 
 class LicenseData(val name: String, val license: License) : Comparable<LicenseData> {
@@ -128,10 +129,16 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
 
 
                 b.append(SPACER).append("Copyright")
-                license.copyrights.forEach {
-                    b.append(" ").append(it).append(",")
+                if (license.copyrights.isEmpty()) {
+                    // append the current year
+                    b.append(" ").append(LocalDate.now().year)
                 }
-                b.deleteCharAt(b.length-1)
+                else {
+                    license.copyrights.forEach {
+                        b.append(" ").append(it).append(",")
+                    }
+                    b.deleteCharAt(b.length-1)
+                }
                 b.append(" - ").append(license.license.preferedName).append(NL)
 
                 license.authors.forEach {
