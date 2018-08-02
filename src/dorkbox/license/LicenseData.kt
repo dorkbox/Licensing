@@ -15,6 +15,7 @@
  */
 package dorkbox.license
 
+import License
 import java.util.*
 
 class LicenseData(val name: String, val license: License) : Comparable<LicenseData> {

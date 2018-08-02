@@ -15,6 +15,7 @@
  */
 package dorkbox.license
 
+import License
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project

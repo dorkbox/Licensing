@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dorkbox.license
 
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 
@@ -366,7 +365,7 @@ enum class License constructor(internal val names: Collection<String>, internal 
              */
             fun valueOfLicenseName(licenseName: String): License {
                 if (licenseName.isEmpty()) {
-                    return License.UNKNOWN
+                    return UNKNOWN
                 }
                 val normalizedLicenseName = licenseName.toLowerCaseAsciiOnly()
                 for (license in License.values()) {
@@ -376,7 +375,7 @@ enum class License constructor(internal val names: Collection<String>, internal 
                         }
                     }
                 }
-                return License.UNKNOWN
+                return UNKNOWN
             }
 
             /**
@@ -384,7 +383,7 @@ enum class License constructor(internal val names: Collection<String>, internal 
              */
             fun valueOfLicenseUrl(licenseUrl: String): License {
                 if (licenseUrl.isEmpty()) {
-                    return License.UNKNOWN
+                    return UNKNOWN
                 }
                 for (license in License.values()) {
                     for (url in license.urls) {
@@ -394,7 +393,7 @@ enum class License constructor(internal val names: Collection<String>, internal 
                     }
                 }
 
-                return License.UNKNOWN
+                return UNKNOWN
             }
         }
 }
