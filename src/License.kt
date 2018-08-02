@@ -362,41 +362,41 @@ enum class License constructor(internal val names: Collection<String>, internal 
         }
 
 
-        companion object {
-            /**
-             * Default is to return UNKNOWN license
-             */
-            fun valueOfLicenseName(licenseName: String): License {
-                if (licenseName.isEmpty()) {
-                    return UNKNOWN
-                }
-                val normalizedLicenseName = licenseName.toLowerCaseAsciiOnly()
-                for (license in License.values()) {
-                    for (name in license.names) {
-                        if (name.toLowerCaseAsciiOnly() == normalizedLicenseName) {
-                            return license
-                        }
-                    }
-                }
+    companion object {
+        /**
+         * Default is to return UNKNOWN license
+         */
+        fun valueOfLicenseName(licenseName: String): License {
+            if (licenseName.isEmpty()) {
                 return UNKNOWN
             }
-
-            /**
-             * Default is to return UNKNOWN license
-             */
-            fun valueOfLicenseUrl(licenseUrl: String): License {
-                if (licenseUrl.isEmpty()) {
-                    return UNKNOWN
-                }
-                for (license in License.values()) {
-                    for (url in license.urls) {
-                        if (url == licenseUrl) {
-                            return license
-                        }
+            val normalizedLicenseName = licenseName.toLowerCaseAsciiOnly()
+            for (license in License.values()) {
+                for (name in license.names) {
+                    if (name.toLowerCaseAsciiOnly() == normalizedLicenseName) {
+                        return license
                     }
                 }
-
-                return UNKNOWN
             }
+            return UNKNOWN
         }
+
+        /**
+         * Default is to return UNKNOWN license
+         */
+        fun valueOfLicenseUrl(licenseUrl: String): License {
+            if (licenseUrl.isEmpty()) {
+                return UNKNOWN
+            }
+            for (license in License.values()) {
+                for (url in license.urls) {
+                    if (url == licenseUrl) {
+                        return license
+                    }
+                }
+            }
+
+            return UNKNOWN
+        }
+    }
 }
