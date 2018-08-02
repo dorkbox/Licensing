@@ -45,7 +45,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
 
-    id "org.jetbrains.kotlin.jvm" version "1.2.51"
+    id "org.jetbrains.kotlin.jvm" version "1.2.60"
 
     // close and release on sonatype
     id 'io.codearte.nexus-staging' version '0.11.0'
@@ -57,7 +57,7 @@ apply plugin: "com.gradle.plugin-publish"
 
 project.description = 'License definitions and legal management plugin for the Gradle build system'
 project.group = 'com.dorkbox'
-project.version = '1.1.0'
+project.version = '1.2.0'
 
 project.ext.name = 'Gradle Licensing Plugin'
 project.ext.id = 'Licensing'
