@@ -23,6 +23,7 @@ import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import java.io.File
+import java.lang.Exception
 
 /**
  * License definition and management plugin for the Gradle build system
@@ -41,36 +42,39 @@ class LicensePlugin : Plugin<Project> {
                 extension.licenses.forEach {
                     when {
                         it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferedName}' license")
-                        it.copyrights.isEmpty() -> throw GradleException("The copyright date must be specified for the '${it.license.preferedName}' license")
                         it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferedName}' license")
                     }
                 }
 
                 // add the license information to maven POM, if applicable
-                val publishingExt = project.extensions.getByType(PublishingExtension::class.java)
-                publishingExt.publications.forEach {
-                    if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
-                        it as MavenPublication
+                try {
+                    val publishingExt = project.extensions.getByType(PublishingExtension::class.java)
+                    publishingExt.publications.forEach {
+                        if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
+                            it as MavenPublication
 
-                        // add the license information. ONLY THE FIRST ONE!
-                        val liceseData = extension.licenses.first()
-                        val license = liceseData.license
-                        it.pom.licenses { licSpec ->
-                            licSpec.license { newLic ->
-                                newLic.name.set(license.preferedName)
-                                newLic.url.set(license.preferedUrl)
+                            // add the license information. ONLY THE FIRST ONE!
+                            val liceseData = extension.licenses.first()
+                            val license = liceseData.license
+                            it.pom.licenses { licSpec ->
+                                licSpec.license { newLic ->
+                                    newLic.name.set(license.preferedName)
+                                    newLic.url.set(license.preferedUrl)
 
-                                // only include license "notes" if we are a custom license **which is the license itself**
-                                if (license == License.CUSTOM) {
-                                    val notes = liceseData.notes.asSequence().joinToString("")
-                                    newLic.comments.set(notes)
+                                    // only include license "notes" if we are a custom license **which is the license itself**
+                                    if (license == License.CUSTOM) {
+                                        val notes = liceseData.notes.asSequence().joinToString("")
+                                        newLic.comments.set(notes)
+                                    }
                                 }
                             }
                         }
+                        else {
+                            println("Licensing only supports maven pom license injection for now")
+                        }
                     }
-                    else {
-                        println("Licensing only supports maven pom license injection for now")
-                    }
+                } catch (ignored: Exception) {
+                    // there aren't always maven publishing used
                 }
 
 

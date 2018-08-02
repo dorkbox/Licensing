@@ -22,16 +22,12 @@ buildscript {
     println("Loading custom property data from: ${propsFile}")
 
     def props = new Properties()
-    propsFile.withInputStream { props.load(it) }
-    props.each { key, val ->
-        project.ext.set(key, val)
-    }
+    propsFile.withInputStream {props.load(it)}
+    props.each {key, val -> project.ext.set(key, val)}
 
     // for plugin publishing
     repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath "com.gradle.publish:plugin-publish-plugin:0.9.10"
@@ -42,13 +38,8 @@ buildscript {
 plugins {
     id 'java'
     id 'java-gradle-plugin'
-    id 'maven-publish'
-    id 'signing'
 
     id "org.jetbrains.kotlin.jvm" version "1.2.60"
-
-    // close and release on sonatype
-    id 'io.codearte.nexus-staging' version '0.11.0'
 }
 
 // for publishing the plugin to gradle
@@ -57,7 +48,7 @@ apply plugin: "com.gradle.plugin-publish"
 
 project.description = 'License definitions and legal management plugin for the Gradle build system'
 project.group = 'com.dorkbox'
-project.version = '1.2.0'
+project.version = '1.2.1'
 
 project.ext.name = 'Gradle Licensing Plugin'
 project.ext.id = 'Licensing'
@@ -86,7 +77,7 @@ repositories {
 
 
 dependencies {
-    compileOnly 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.51'
+    compileOnly 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.60'
 }
 
 
@@ -129,120 +120,4 @@ pluginBundle {
             version = project.version
         }
     }
-}
-
-///////////////////////////////
-//////    Maven Publishing + Release
-///////////////////////////////
-task sourceJar(type: Jar) {
-    description = "Creates a JAR that contains the source code."
-
-    from sourceSets.main.allSource
-
-    classifier = "sources"
-}
-
-task javaDocJar(type: Jar) {
-    description = "Creates a JAR that contains the javadocs."
-
-    classifier = "javadoc"
-}
-
-// for testing, we don't publish to maven central, but only to local maven
-publishing {
-    publications {
-        licensing(MavenPublication) {
-            from components.java
-
-            artifact(javaDocJar)
-            artifact(sourceJar)
-
-            groupId project.group
-            artifactId project.ext.id
-            version project.version
-
-            pom {
-                name = project.ext.id
-                url = project.ext.url
-                description = project.description
-
-                issueManagement {
-                    url = "${project.ext.url}/issues".toString()
-                    system = 'Gitea Issues'
-                }
-
-                organization {
-                    name = 'dorkbox, llc'
-                    url = 'https://dorkbox.com'
-                }
-
-                developers {
-                    developer {
-                        name = 'dorkbox, llc'
-                        email = 'email@dorkbox.com'
-                    }
-                }
-
-                scm {
-                    url = project.ext.url
-                    connection = "scm:${project.ext.url}.git".toString()
-                }
-
-                // this plugin automates including the "license" section in the POM
-                // with license only specific information (name/url). Everything else
-                // must be explicitly added the POM
-                licenses {
-                    license {
-                        name = 'The Apache Software License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0'
-                    }
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            credentials {
-                username sonatypeUsername
-                password sonatypePassword
-            }
-        }
-    }
-}
-
-nexusStaging {
-    username sonatypeUsername
-    password sonatypePassword
-}
-
-
-// we don't use maven with the plugin (it's uploaded separately to gradle plugins)
-tasks.withType(PublishToMavenRepository) {
-    onlyIf {
-        repository == publishing.repositories.maven &&
-       publication == publishing.publications.licensing
-    }
-}
-tasks.withType(PublishToMavenLocal) {
-    onlyIf {
-        publication == publishing.publications.licensing
-    }
-}
-
-
-signing {
-    required { hasProperty('sonatypeUsername') }
-    sign publishing.publications.licensing
-}
-
-// output the URL name in the console
-project.afterEvaluate {
-    def URL = 'https://oss.sonatype.org/content/repositories/releases/'
-    def projectName = project.group.toString().replaceAll('\\.', '/')
-    def name = project.ext.id
-    def version = project.version
-
-    println("Maven URL: ${URL}${projectName}/${name}/${version}/")
 }
