@@ -251,6 +251,9 @@ enum class License constructor(internal val names: Collection<String>, internal 
                            "http://www.postgresql.org/about/licence/")),
 
 
+    MIT(MIT_X11.names, MIT_X11.licenseFile, MIT_X11.urls),
+
+
     ICU(listOf<String>("ICU License", "ICU"),
         "LICENSE.ICU",
         listOf<String>("http://source.icu-project.org/repos/icu/icu/branches/maint/maint-4-8/license.html")),
