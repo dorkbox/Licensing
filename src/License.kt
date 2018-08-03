@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import dorkbox.license.Licensing
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 
 /**
@@ -423,7 +424,7 @@ enum class License constructor(internal val names: Collection<String>, internal 
     val licenseText: String
         // .use{} will close the stream when it's done...
         get() {
-            val stream = javaClass.getResourceAsStream(this.licenseFile)
+            val stream = Licensing.javaClass.getResourceAsStream(this.licenseFile)
             return stream?.bufferedReader()?.use { it.readText() } ?: ""
         }
 
