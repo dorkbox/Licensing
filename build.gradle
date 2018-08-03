@@ -48,7 +48,7 @@ apply plugin: "com.gradle.plugin-publish"
 
 project.description = 'License definitions and legal management plugin for the Gradle build system'
 project.group = 'com.dorkbox'
-project.version = '1.2.1'
+project.version = '1.2.2'
 
 project.ext.name = 'Gradle Licensing Plugin'
 project.ext.id = 'Licensing'
