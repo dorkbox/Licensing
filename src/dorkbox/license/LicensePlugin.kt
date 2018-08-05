@@ -36,7 +36,7 @@ class LicensePlugin : Plugin<Project> {
         // Create the Plugin extension object (for users to configure our execution).
         val extension = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
 
-        project.afterEvaluate {
+        project.afterEvaluate { prj ->
             val licensing = extension.licenses
             if (licensing.isNotEmpty()) {
                 extension.licenses.forEach {
@@ -48,7 +48,7 @@ class LicensePlugin : Plugin<Project> {
 
                 // add the license information to maven POM, if applicable
                 try {
-                    val publishingExt = project.extensions.getByType(PublishingExtension::class.java)
+                    val publishingExt = prj.extensions.getByType(PublishingExtension::class.java)
                     publishingExt.publications.forEach {
                         if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
                             it as MavenPublication
@@ -78,22 +78,15 @@ class LicensePlugin : Plugin<Project> {
                 }
 
 
-                val hasClean = project.gradle.startParameter.taskNames.filter { it.toLowerCase().contains("clean") }
-                if (hasClean.isNotEmpty()) {
-                    val task = project.tasks.last { it.name == hasClean.last() }
-
-                    task.doLast {
-                        buildLicenseFiles(outputDir, extension.licenses)
-                        buildLicenseFiles(project.rootDir, extension.licenses)
-                    }
-                }
-                else {
+                // IGNORE making license info on a CLEAN
+                val hasClean = prj.gradle.startParameter.taskNames.filter { it.toLowerCase().contains("clean") }
+                if (hasClean.isEmpty()) {
                     buildLicenseFiles(outputDir, extension.licenses)
-                    buildLicenseFiles(project.rootDir, extension.licenses)
+                    buildLicenseFiles(prj.rootDir, extension.licenses)
                 }
 
-                // make sure that our output dir is included when building
-                val javaSourceSet = it.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.findByName("main")
+                // make sure that our license files (in the output dir) are included in project resources (when building a jar, for example
+                val javaSourceSet = prj.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.findByName("main")
                 javaSourceSet!!.resources.srcDirs(outputDir)
             }
         }

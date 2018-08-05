@@ -64,9 +64,6 @@ sourceSets {
 
         resources {
             setSrcDirs Collections.singletonList('resources')
-
-            srcDirs '.'
-            include 'LICENSE*'
         }
     }
 }
@@ -88,6 +85,11 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(Jar) {
     duplicatesStrategy DuplicatesStrategy.FAIL
+
+    // also include our license information
+    from('.') {
+        include 'LICENSE*'
+    }
 
     manifest {
         attributes['Implementation-Version'] = project.version
