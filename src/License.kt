@@ -422,10 +422,8 @@ enum class License constructor(internal val names: Collection<String>, internal 
         get() = urls.first()
 
     val licenseText: String
-        // .use{} will close the stream when it's done...
         get() {
-            val stream = Licensing::class.java.getResourceAsStream(this.licenseFile)
-            return stream?.bufferedReader()?.use { it.readText() } ?: ""
+            return Licensing.getLicense(this.licenseFile)
         }
 
 

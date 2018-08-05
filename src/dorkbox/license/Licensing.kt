@@ -25,6 +25,13 @@ open class Licensing(project: Project) {
     val licenses = ArrayList<LicenseData>()
 
     companion object {
+        fun getLicense(licenseFile: String) : String{
+            // license files are located in this package...
+            val stream = Licensing::class.java.getResourceAsStream(licenseFile)
+            // .use{} will close the stream when it's done...
+            return stream?.bufferedReader()?.use { it.readText() } ?: ""
+        }
+
         internal const val NAME = "licensing"
     }
 
