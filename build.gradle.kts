@@ -160,7 +160,7 @@ gradlePlugin {
     plugins {
         create("Licensing") {
             id = "${Extras.group}.${Extras.id}"
-            implementationClass = "dorkbox.version.LicensePlugin"
+            implementationClass = "dorkbox.license.LicensePlugin"
         }
     }
 }
