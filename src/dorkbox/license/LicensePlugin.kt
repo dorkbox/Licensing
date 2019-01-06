@@ -19,11 +19,11 @@ import License
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.api.tasks.compile.AbstractCompile
 import java.io.File
-import java.lang.Exception
 
 /**
  * License definition and management plugin for the Gradle build system
@@ -34,7 +34,31 @@ class LicensePlugin : Plugin<Project> {
         val outputDir = File(project.buildDir, "licensing")
 
         // Create the Plugin extension object (for users to configure our execution).
-        val extension = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
+        val extension = project.extensions.create(Licensing.NAME, Licensing::class.java, project, outputDir)
+
+        val licenseInjector = project.tasks.create("get", LicenseInjector::class.java).apply {
+            group = "other"
+        }
+
+        licenseInjector.outputDir = outputDir
+        licenseInjector.rootDir = project.rootDir
+        licenseInjector.licenses = extension.licenses
+
+        // the task will only build files that it needs to (and will only run once)
+        project.tasks.forEach {
+            if (it is AbstractCompile) {
+                it.dependsOn += licenseInjector
+            }
+
+            else if (it is AbstractArchiveTask) {
+                it.dependsOn += licenseInjector
+
+                // make sure that our license files are included in task resources (when building a jar, for example)
+                it.from(extension.output())
+            }
+        }
+
+
 
         project.afterEvaluate { prj ->
             val licensing = extension.licenses
@@ -54,8 +78,8 @@ class LicensePlugin : Plugin<Project> {
                             it as MavenPublication
 
                             // add the license information. ONLY THE FIRST ONE!
-                            val liceseData = extension.licenses.first()
-                            val license = liceseData.license
+                            val licenseData = extension.licenses.first()
+                            val license = licenseData.license
                             it.pom.licenses { licSpec ->
                                 licSpec.license { newLic ->
                                     newLic.name.set(license.preferedName)
@@ -63,7 +87,7 @@ class LicensePlugin : Plugin<Project> {
 
                                     // only include license "notes" if we are a custom license **which is the license itself**
                                     if (license == License.CUSTOM) {
-                                        val notes = liceseData.notes.asSequence().joinToString("")
+                                        val notes = licenseData.notes.asSequence().joinToString("")
                                         newLic.comments.set(notes)
                                     }
                                 }
@@ -76,55 +100,9 @@ class LicensePlugin : Plugin<Project> {
                 } catch (ignored: Exception) {
                     // there aren't always maven publishing used
                 }
-
-
-                // IGNORE making license info on a CLEAN
-                val hasClean = prj.gradle.startParameter.taskNames.filter { it.toLowerCase().contains("clean") }
-                if (hasClean.isEmpty()) {
-                    buildLicenseFiles(outputDir, extension.licenses)
-                    buildLicenseFiles(prj.rootDir, extension.licenses)
-                }
-
-                // make sure that our license files (in the output dir) are included in project resources (when building a jar, for example
-                val javaSourceSet = prj.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.findByName("main")
-                javaSourceSet!!.resources.srcDirs(outputDir)
             }
         }
-    }
-
-    private fun buildLicenseFiles(outputDir: File, licenses: ArrayList<LicenseData>) {
-        if (!outputDir.exists()) outputDir.mkdirs()
-
-        val licenseText = LicenseData.buildString(licenses)
-        val licenseFile = File(outputDir, "LICENSE")
-
-        if (fileIsNotSame(licenseFile, licenseText)) {
-            // write out the LICENSE and various license files
-            licenseFile.writeText(licenseText)
-        }
-
-        licenses.forEach {
-            val license = it.license
-            val file = File(outputDir, license.licenseFile)
-            val sourceText = license.licenseText
-
-            if (fileIsNotSame(file, sourceText)) {
-                file.writeText(sourceText)
-            }
-        }
-    }
-
-    /**
-     * this is so we can check if we need to re-write the file. This is done to
-     * save write cycles on low-end drives where write frequency is an issue
-     *
-     * @return TRUE if the file IS NOT THE SAME, FALSE if the file IS THE SAME
-     */
-    private fun fileIsNotSame(outputFile: File, sourceText: String): Boolean {
-        if (outputFile.canRead()) {
-            return !(sourceText.toByteArray() contentEquals outputFile.readBytes())
-        }
-
-        return true
     }
 }
+
+

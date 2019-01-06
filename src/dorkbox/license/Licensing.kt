@@ -18,11 +18,24 @@ package dorkbox.license
 import License
 import org.gradle.api.Action
 import org.gradle.api.Project
+import java.io.File
 
-open class Licensing(project: Project) {
+open class Licensing(project: Project, private val outputDir: File) {
     private val projectName = project.name
 
     val licenses = ArrayList<LicenseData>()
+
+    fun output() : List<File> {
+        val files = mutableListOf<File>()
+
+        files.add(File(outputDir, "LICENSE"))
+
+        licenses.forEach {
+            files.add(File(outputDir, it.license.licenseFile))
+        }
+
+        return files.toList()
+    }
 
     companion object {
         fun getLicense(licenseFile: String) : String{

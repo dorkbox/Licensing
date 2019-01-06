@@ -129,11 +129,6 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.FAIL
 
-    // also include our license information
-    from(".") {
-        include("LICENSE")
-    }
-
     manifest {
         // https://docs.oracle.com/javase/tutorial/deployment/jar/packageman.html
         attributes["Name"] = Extras.name
