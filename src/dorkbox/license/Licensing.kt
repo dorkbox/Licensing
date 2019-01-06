@@ -32,7 +32,6 @@ open class Licensing(project: Project, private val outputDir: File) {
         val files = mutableListOf<File>()
 
         files.add(File(outputDir, "LICENSE"))
-
         licenses.forEach {
             files.add(File(outputDir, it.license.licenseFile))
         }

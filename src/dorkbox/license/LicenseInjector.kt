@@ -12,6 +12,12 @@ internal open class LicenseInjector : DefaultTask() {
     lateinit var outputDir: File
     lateinit var rootDir: File
 
+    init {
+        outputs.upToDateWhen {
+            alreadyBuilt || !(checkLicenseFiles(outputDir, licenses) || checkLicenseFiles(rootDir, licenses))
+        }
+    }
+
     @TaskAction
     fun doTask() {
         if (alreadyBuilt) {
@@ -19,12 +25,38 @@ internal open class LicenseInjector : DefaultTask() {
         }
         alreadyBuilt = true
 
-        // save the output files so we can access them when creating archives/jars/etc
-        buildLicenseFiles(outputDir, licenses)
-        buildLicenseFiles(rootDir, licenses)
+        // true if there was any work done
+        didWork = buildLicenseFiles(outputDir, licenses) || buildLicenseFiles(rootDir, licenses)
     }
 
-    private fun buildLicenseFiles(outputDir: File, licenses: ArrayList<LicenseData>){
+    private fun checkLicenseFiles(outputDir: File, licenses: ArrayList<LicenseData>): Boolean {
+        var needsToDoWork = false
+        if (!outputDir.exists()) outputDir.mkdirs()
+
+        val licenseText = LicenseData.buildString(licenses)
+        val licenseFile = File(outputDir, "LICENSE")
+
+        if (fileIsNotSame(licenseFile, licenseText)) {
+            // write out the LICENSE and various license files
+            needsToDoWork = true
+        }
+
+        licenses.forEach {
+            val license = it.license
+            val file = File(outputDir, license.licenseFile)
+            val sourceText = license.licenseText
+
+            if (fileIsNotSame(file, sourceText)) {
+                needsToDoWork = true
+            }
+        }
+
+        return needsToDoWork
+    }
+
+    private fun buildLicenseFiles(outputDir: File, licenses: ArrayList<LicenseData>): Boolean {
+        var hasDoneWork = false
+
         if (!outputDir.exists()) outputDir.mkdirs()
 
         val licenseText = LicenseData.buildString(licenses)
@@ -33,6 +65,7 @@ internal open class LicenseInjector : DefaultTask() {
         if (fileIsNotSame(licenseFile, licenseText)) {
             // write out the LICENSE and various license files
             licenseFile.writeText(licenseText)
+            hasDoneWork = true
         }
 
         licenses.forEach {
@@ -42,8 +75,11 @@ internal open class LicenseInjector : DefaultTask() {
 
             if (fileIsNotSame(file, sourceText)) {
                 file.writeText(sourceText)
+                hasDoneWork = true
             }
         }
+
+        return hasDoneWork
     }
 
     /**

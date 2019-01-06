@@ -52,9 +52,6 @@ class LicensePlugin : Plugin<Project> {
 
             else if (it is AbstractArchiveTask) {
                 it.dependsOn += licenseInjector
-
-                // make sure that our license files are included in task resources (when building a jar, for example)
-                it.from(extension.output())
             }
         }
 
@@ -99,6 +96,16 @@ class LicensePlugin : Plugin<Project> {
                     }
                 } catch (ignored: Exception) {
                     // there aren't always maven publishing used
+                }
+
+
+                // the task will only build files that it needs to (and will only run once)
+                project.tasks.forEach {
+                   if (it is AbstractArchiveTask) {
+                        // don't include the license file from the root directory (which happens by default).
+                        // make sure that our license files are included in task resources (when building a jar, for example)
+                        it.from(extension.output())
+                    }
                 }
             }
         }
