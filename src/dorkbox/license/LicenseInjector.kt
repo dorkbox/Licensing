@@ -4,7 +4,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
-internal class LicenseInjector : DefaultTask() {
+internal open class LicenseInjector : DefaultTask() {
     // only want to build these files once
     private var alreadyBuilt = false
 

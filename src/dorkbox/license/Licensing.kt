@@ -25,6 +25,9 @@ open class Licensing(project: Project, private val outputDir: File) {
 
     val licenses = ArrayList<LicenseData>()
 
+    /**
+     * Gets a list of files, representing the on-disk location of each generated license file
+     */
     fun output() : List<File> {
         val files = mutableListOf<File>()
 

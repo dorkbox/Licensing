@@ -36,7 +36,7 @@ class LicensePlugin : Plugin<Project> {
         // Create the Plugin extension object (for users to configure our execution).
         val extension = project.extensions.create(Licensing.NAME, Licensing::class.java, project, outputDir)
 
-        val licenseInjector = project.tasks.create("get", LicenseInjector::class.java).apply {
+        val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java).apply {
             group = "other"
         }
 
