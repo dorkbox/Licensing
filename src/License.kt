@@ -15,7 +15,7 @@
  */
 
 import dorkbox.license.Licensing
-import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
+import java.util.*
 
 /**
  * License data.
@@ -435,10 +435,10 @@ enum class License constructor(internal val names: Collection<String>, internal 
             if (licenseName.isEmpty()) {
                 return UNKNOWN
             }
-            val normalizedLicenseName = licenseName.toLowerCaseAsciiOnly()
+            val normalizedLicenseName = licenseName.toLowerCase(Locale.US)
             for (license in License.values()) {
                 for (name in license.names) {
-                    if (name.toLowerCaseAsciiOnly() == normalizedLicenseName) {
+                    if (name.toLowerCase(Locale.US) == normalizedLicenseName) {
                         return license
                     }
                 }
