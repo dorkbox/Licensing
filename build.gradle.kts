@@ -125,7 +125,6 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = Extras.JAVA_VERSION
 }
 
-
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.FAIL
 

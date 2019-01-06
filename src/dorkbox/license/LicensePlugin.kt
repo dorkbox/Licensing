@@ -23,6 +23,7 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.compile.AbstractCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
 /**
@@ -46,12 +47,10 @@ class LicensePlugin : Plugin<Project> {
 
         // the task will only build files that it needs to (and will only run once)
         project.tasks.forEach {
-            if (it is AbstractCompile) {
-                it.dependsOn += licenseInjector
-            }
-
-            else if (it is AbstractArchiveTask) {
-                it.dependsOn += licenseInjector
+            when (it) {
+                is KotlinCompile       -> it.dependsOn += licenseInjector
+                is AbstractCompile     -> it.dependsOn += licenseInjector
+                is AbstractArchiveTask -> it.dependsOn += licenseInjector
             }
         }
 
