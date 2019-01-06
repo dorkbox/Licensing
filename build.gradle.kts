@@ -131,7 +131,7 @@ tasks.withType<Jar> {
 
     // also include our license information
     from(".") {
-        include("LICENSE*")
+        include("LICENSE")
     }
 
     manifest {
