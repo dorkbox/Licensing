@@ -29,6 +29,7 @@ plugins {
 
     id("com.gradle.plugin-publish") version "0.10.0"
     id("com.dorkbox.Licensing") version "1.2.2"
+    id("com.dorkbox.VersionUpdate") version "1.4"
 
     kotlin("jvm") version "1.3.11"
 }
