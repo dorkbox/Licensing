@@ -34,7 +34,6 @@ plugins {
     kotlin("jvm") version "1.3.11"
 }
 
-
 println("Gradle ${project.gradle.gradleVersion}")
 
 // load properties from custom location
@@ -51,7 +50,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "1.3"
+    const val version = "1.4"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
