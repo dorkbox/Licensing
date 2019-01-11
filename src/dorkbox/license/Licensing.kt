@@ -29,7 +29,7 @@ open class Licensing(project: Project, private val outputDir: File) {
      * Gets a list of files, representing the on-disk location of each generated license file
      */
     fun output() : List<File> {
-        val files = mutableListOf<File>()
+        val files = mutableSetOf<File>()
 
         files.add(File(outputDir, "LICENSE"))
         licenses.forEach {
