@@ -137,7 +137,9 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.FAIL
+}
 
+tasks.jar.get().apply {
     manifest {
         // https://docs.oracle.com/javase/tutorial/deployment/jar/packageman.html
         attributes["Name"] = Extras.name
