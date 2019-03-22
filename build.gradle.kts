@@ -13,14 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Build_gradle.Extras.id
-import Build_gradle.Extras.tags
-import Build_gradle.Extras.url
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.include
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.nio.file.Paths
 import java.time.Instant
-import java.util.Properties
+import java.util.*
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.declaredMemberProperties
 
@@ -30,11 +25,11 @@ plugins {
     java
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "0.10.0"
+    id("com.gradle.plugin-publish") version "0.10.1"
     id("com.dorkbox.Licensing") version "1.4"
     id("com.dorkbox.VersionUpdate") version "1.4"
 
-    kotlin("jvm") version "1.3.11"
+    kotlin("jvm") version "1.3.21"
 }
 
 object Extras {
@@ -185,7 +180,7 @@ pluginBundle {
 //////    Gradle Wrapper Configuration.
 /////  Run this task, then refresh the gradle project
 ///////////////////////////////
-val wrapperUpdate by tasks.creating(Wrapper::class) {
-    gradleVersion = "5.1.1"
+task<Wrapper>("wrapperUpdate") {
+    gradleVersion = "5.3"
     distributionUrl = distributionUrl.replace("bin", "all")
 }
