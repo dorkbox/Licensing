@@ -33,6 +33,18 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
     }
 
     /**
+     * Copyright WITH Author info
+     */
+    val copyrightAndAuthors = ArrayList<Pair<Int, String>>()
+
+    /**
+     * If not specified, will use the current year
+     */
+    fun copyrightAndAuthors(copyright: Int, author:String) {
+        copyrightAndAuthors.add(Pair(copyright, author))
+    }
+
+    /**
      * URL
      */
     val urls = ArrayList<String>()
@@ -88,6 +100,7 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
         if (name != other.name) return false
         if (license != other.license) return false
         if (copyrights != other.copyrights) return false
+        if (copyrightAndAuthors != other.copyrightAndAuthors) return false
         if (urls != other.urls) return false
         if (notes != other.notes) return false
         if (authors != other.authors) return false
@@ -99,6 +112,7 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
         var result = name.hashCode()
         result = 31 * result + license.hashCode()
         result = 31 * result + copyrights.hashCode()
+        result = 31 * result + copyrightAndAuthors.hashCode()
         result = 31 * result + urls.hashCode()
         result = 31 * result + notes.hashCode()
         result = 31 * result + authors.hashCode()
@@ -139,22 +153,28 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
                     b.append(SPACER).append(it).append(NL)
                 }
 
+                val hasCopyrightElsewhere = license.copyrightAndAuthors.isNotEmpty()
 
                 b.append(SPACER).append("Copyright")
-                if (license.copyrights.isEmpty()) {
+                if (!hasCopyrightElsewhere && license.copyrights.isEmpty()) {
                     // append the current year
                     b.append(" ").append(LocalDate.now().year)
                 }
-                else {
+                else if (license.copyrights.isNotEmpty()) {
                     license.copyrights.forEach {
                         b.append(" ").append(it).append(",")
                     }
                     b.deleteCharAt(b.length-1)
                 }
+
                 b.append(" - ").append(license.license.preferedName).append(NL)
 
                 license.authors.forEach {
                     b.append(SPACR1).append(it).append(NL)
+                }
+
+                license.copyrightAndAuthors.forEach {
+                    b.append(SPACR1).append("Copyright ${it.first}, ${it.second}").append(NL)
                 }
 
                 if (license.license === License.CUSTOM) {
