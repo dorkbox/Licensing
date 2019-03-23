@@ -17,13 +17,12 @@ package dorkbox.license
 
 import License
 import java.time.LocalDate
-import java.util.*
 
 class LicenseData(val name: String, val license: License) : Comparable<LicenseData> {
     /**
      * Copyright
      */
-    val copyrights = ArrayList<Int>()
+    val copyrights = mutableListOf<Int>()
 
     /**
      * If not specified, will use the current year
@@ -35,7 +34,7 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
     /**
      * URL
      */
-    val urls = ArrayList<String>()
+    val urls = mutableListOf<String>()
 
     /**
      * Specifies the URLs this project is located at
@@ -47,7 +46,7 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
     /**
      * Notes
      */
-    val notes = ArrayList<String>()
+    val notes = mutableListOf<String>()
 
     /**
      * Specifies any extra notes (or copyright info) as needed
@@ -57,21 +56,9 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
     }
 
     /**
-     * Copyright WITH Author info
-     */
-    val copyrightAndAuthors = ArrayList<Pair<Int, String>>()
-
-    /**
-     * If not specified, will use the current year
-     */
-    fun author(copyright: Int, author:String) {
-        copyrightAndAuthors.add(Pair(copyright, author))
-    }
-
-    /**
      * AUTHOR
      */
-    val authors = ArrayList<String>()
+    val authors = mutableListOf<String>()
 
     /**
      * Specifies the authors of this project
@@ -100,7 +87,6 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
         if (name != other.name) return false
         if (license != other.license) return false
         if (copyrights != other.copyrights) return false
-        if (copyrightAndAuthors != other.copyrightAndAuthors) return false
         if (urls != other.urls) return false
         if (notes != other.notes) return false
         if (authors != other.authors) return false
@@ -112,7 +98,6 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
         var result = name.hashCode()
         result = 31 * result + license.hashCode()
         result = 31 * result + copyrights.hashCode()
-        result = 31 * result + copyrightAndAuthors.hashCode()
         result = 31 * result + urls.hashCode()
         result = 31 * result + notes.hashCode()
         result = 31 * result + authors.hashCode()
@@ -153,14 +138,12 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
                     b.append(SPACER).append(it).append(NL)
                 }
 
-                val hasCopyrightElsewhere = license.copyrightAndAuthors.isNotEmpty()
-
                 b.append(SPACER).append("Copyright")
-                if (!hasCopyrightElsewhere && license.copyrights.isEmpty()) {
+                if (license.copyrights.isEmpty()) {
                     // append the current year
                     b.append(" ").append(LocalDate.now().year)
                 }
-                else if (license.copyrights.isNotEmpty()) {
+                else {
                     license.copyrights.forEach {
                         b.append(" ").append(it).append(",")
                     }
@@ -171,10 +154,6 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
 
                 license.authors.forEach {
                     b.append(SPACR1).append(it).append(NL)
-                }
-
-                license.copyrightAndAuthors.forEach {
-                    b.append(SPACR1).append("Copyright ${it.first}, ${it.second}").append(NL)
                 }
 
                 if (license.license === License.CUSTOM) {

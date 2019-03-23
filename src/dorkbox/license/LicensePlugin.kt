@@ -107,11 +107,10 @@ class LicensePlugin : Plugin<Project> {
                 // we associate the artifact group + id + (start) version as a license.
                 // if a license for a dependency is UNKNOWN, then we emit a warning to the user to add it as a pull request
                 // if a license version is not specified, then we use the default
-//                val projectLicenses = mutableSetOf<String>()
-//                for (dependency in extension.projectDependencies) {
-//                    dependency.group + dependency.name
-//
-//                }
+                val projectLicenses = mutableSetOf<String>()
+                for (dependency in extension.projectDependencies) {
+                    println("DEP: " + dependency.group + dependency.name)
+                }
 
 
 

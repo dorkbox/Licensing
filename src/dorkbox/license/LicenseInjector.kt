@@ -29,6 +29,9 @@ internal open class LicenseInjector : DefaultTask() {
         didWork = buildLicenseFiles(outputDir, licenses) && buildLicenseFiles(rootDir, licenses)
     }
 
+    /**
+     * @return true when there is work that needs to be done
+     */
     private fun checkLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
         var needsToDoWork = false
         if (!outputDir.exists()) outputDir.mkdirs()
@@ -54,6 +57,9 @@ internal open class LicenseInjector : DefaultTask() {
         return needsToDoWork
     }
 
+    /**
+     * @return true when there is work that has be done
+     */
     private fun buildLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
         var hasDoneWork = false
 
@@ -63,7 +69,7 @@ internal open class LicenseInjector : DefaultTask() {
         val licenseFile = File(outputDir, "LICENSE")
 
         if (fileIsNotSame(licenseFile, licenseText)) {
-            // write out the LICENSE and various license files
+            // write out the LICENSE files
             licenseFile.writeText(licenseText)
             hasDoneWork = true
         }
@@ -74,6 +80,7 @@ internal open class LicenseInjector : DefaultTask() {
             val sourceText = license.licenseText
 
             if (fileIsNotSame(file, sourceText)) {
+                // write out the various license text files
                 file.writeText(sourceText)
                 hasDoneWork = true
             }
@@ -89,10 +96,6 @@ internal open class LicenseInjector : DefaultTask() {
      * @return TRUE if the file IS NOT THE SAME, FALSE if the file IS THE SAME
      */
     private fun fileIsNotSame(outputFile: File, sourceText: String): Boolean {
-        if (outputFile.canRead()) {
-            return !(sourceText.toByteArray() contentEquals outputFile.readBytes())
-        }
-
-        return true
+        return !(outputFile.canRead() && sourceText.toByteArray() contentEquals outputFile.readBytes())
     }
 }
