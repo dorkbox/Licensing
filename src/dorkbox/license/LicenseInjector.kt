@@ -14,7 +14,7 @@ internal open class LicenseInjector : DefaultTask() {
 
     init {
         outputs.upToDateWhen {
-            alreadyBuilt || !(checkLicenseFiles(outputDir, licenses) || checkLicenseFiles(rootDir, licenses))
+            alreadyBuilt || !(checkLicenseFiles(outputDir, licenses) && checkLicenseFiles(rootDir, licenses))
         }
     }
 
@@ -26,7 +26,7 @@ internal open class LicenseInjector : DefaultTask() {
         alreadyBuilt = true
 
         // true if there was any work done
-        didWork = buildLicenseFiles(outputDir, licenses) || buildLicenseFiles(rootDir, licenses)
+        didWork = buildLicenseFiles(outputDir, licenses) && buildLicenseFiles(rootDir, licenses)
     }
 
     private fun checkLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
