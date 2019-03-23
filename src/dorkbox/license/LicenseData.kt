@@ -33,18 +33,6 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
     }
 
     /**
-     * Copyright WITH Author info
-     */
-    val copyrightAndAuthors = ArrayList<Pair<Int, String>>()
-
-    /**
-     * If not specified, will use the current year
-     */
-    fun copyrightAndAuthors(copyright: Int, author:String) {
-        copyrightAndAuthors.add(Pair(copyright, author))
-    }
-
-    /**
      * URL
      */
     val urls = ArrayList<String>()
@@ -66,6 +54,18 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
      */
     fun note(note: String) {
         notes.add(note)
+    }
+
+    /**
+     * Copyright WITH Author info
+     */
+    val copyrightAndAuthors = ArrayList<Pair<Int, String>>()
+
+    /**
+     * If not specified, will use the current year
+     */
+    fun author(copyright: Int, author:String) {
+        copyrightAndAuthors.add(Pair(copyright, author))
     }
 
     /**
