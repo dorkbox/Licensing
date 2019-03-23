@@ -18,12 +18,15 @@ package dorkbox.license
 import License
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
 import java.io.File
 
 open class Licensing(project: Project, private val outputDir: File) {
     private val projectName = project.name
 
-    val licenses = ArrayList<LicenseData>()
+    val projectDependencies = mutableListOf<Dependency>()
+    val licenses = mutableListOf<LicenseData>()
+
 
     /**
      * Gets a list of files, representing the on-disk location of each generated license file

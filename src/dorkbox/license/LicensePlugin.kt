@@ -57,6 +57,10 @@ class LicensePlugin : Plugin<Project> {
 
 
         project.afterEvaluate { prj ->
+            // collect all of the dependencies
+            project.configurations.asIterable().forEach { extension.projectDependencies.addAll(it.dependencies) }
+
+
             val licensing = extension.licenses
             if (licensing.isNotEmpty()) {
                 extension.licenses.forEach {
@@ -96,6 +100,19 @@ class LicensePlugin : Plugin<Project> {
                 } catch (ignored: Exception) {
                     // there aren't always maven publishing used
                 }
+
+
+                // now we want to add license information that we know about from our dependencies to our list
+                // just to make it clear, license information CAN CHANGE BETWEEN VERSIONS! For example, JNA changed from GPL to Apache in version 4+
+                // we associate the artifact group + id + (start) version as a license.
+                // if a license for a dependency is UNKNOWN, then we emit a warning to the user to add it as a pull request
+                // if a license version is not specified, then we use the default
+//                val projectLicenses = mutableSetOf<String>()
+//                for (dependency in extension.projectDependencies) {
+//                    dependency.group + dependency.name
+//
+//                }
+
 
 
                 // the task will only build files that it needs to (and will only run once)

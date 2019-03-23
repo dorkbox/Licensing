@@ -8,7 +8,7 @@ internal open class LicenseInjector : DefaultTask() {
     // only want to build these files once
     private var alreadyBuilt = false
 
-    lateinit var licenses: ArrayList<LicenseData>
+    lateinit var licenses: MutableList<LicenseData>
     lateinit var outputDir: File
     lateinit var rootDir: File
 
@@ -29,7 +29,7 @@ internal open class LicenseInjector : DefaultTask() {
         didWork = buildLicenseFiles(outputDir, licenses) || buildLicenseFiles(rootDir, licenses)
     }
 
-    private fun checkLicenseFiles(outputDir: File, licenses: ArrayList<LicenseData>): Boolean {
+    private fun checkLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
         var needsToDoWork = false
         if (!outputDir.exists()) outputDir.mkdirs()
 
@@ -54,7 +54,7 @@ internal open class LicenseInjector : DefaultTask() {
         return needsToDoWork
     }
 
-    private fun buildLicenseFiles(outputDir: File, licenses: ArrayList<LicenseData>): Boolean {
+    private fun buildLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
         var hasDoneWork = false
 
         if (!outputDir.exists()) outputDir.mkdirs()
