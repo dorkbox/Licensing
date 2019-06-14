@@ -15,9 +15,6 @@
  */
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Instant
-import java.util.*
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.full.declaredMemberProperties
 
 println("Gradle ${project.gradle.gradleVersion}")
 
@@ -28,7 +25,7 @@ plugins {
     id("com.gradle.plugin-publish") version "0.10.1"
     id("com.dorkbox.Licensing") version "1.4"
     id("com.dorkbox.VersionUpdate") version "1.4.1"
-    id("com.dorkbox.GradleUtils") version "1.0"
+    id("com.dorkbox.GradleUtils") version "1.2"
 
     kotlin("jvm") version "1.3.21"
 }
@@ -47,42 +44,17 @@ object Extras {
     val tags = listOf("licensing", "legal", "notice", "license", "dependencies")
     val buildDate = Instant.now().toString()
 
-    val JAVA_VERSION = JavaVersion.VERSION_1_8.toString()
+    val JAVA_VERSION = JavaVersion.VERSION_1_8
+    val KOTLIN_VERSION = JavaVersion.VERSION_1_8
 }
 
 ///////////////////////////////
 /////  assign 'Extras'
 ///////////////////////////////
+GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 description = Extras.description
 group = Extras.group
 version = Extras.version
-
-val propsFile = File("$projectDir/../../gradle.properties").normalize()
-if (propsFile.canRead()) {
-    println("\tLoading custom property data from: [$propsFile]")
-
-    val props = Properties()
-    propsFile.inputStream().use {
-        props.load(it)
-    }
-
-    val extraProperties = Extras::class.declaredMemberProperties.filterIsInstance<KMutableProperty<String>>()
-    props.forEach { (k, v) ->
-        run {
-            val key = k as String
-            val value = v as String
-
-            val member = extraProperties.find { it.name == key }
-            if (member != null) {
-                member.setter.call(Extras::class.objectInstance, value)
-            }
-            else {
-                project.extra.set(k, v)
-            }
-        }
-    }
-}
-
 
 licensing {
     license(License.APACHE_2) {
@@ -117,18 +89,22 @@ repositories {
 dependencies {
     // the kotlin version is taken from the plugin, so it is not necessary to set it here
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin")
+
+    implementation ("com.dorkbox:Version:1.0")
+}
+
+java {
+    sourceCompatibility = Extras.JAVA_VERSION
+    targetCompatibility = Extras.JAVA_VERSION
 }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
-
-    sourceCompatibility = Extras.JAVA_VERSION
-    targetCompatibility = Extras.JAVA_VERSION
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = Extras.JAVA_VERSION
+    kotlinOptions.jvmTarget = Extras.KOTLIN_VERSION.toString()
 }
 
 tasks.withType<Jar> {
