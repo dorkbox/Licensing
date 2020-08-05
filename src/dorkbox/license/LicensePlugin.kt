@@ -19,12 +19,21 @@ import License
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ResolvedArtifact
+import org.gradle.api.artifacts.ResolvedDependency
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.compile.AbstractCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
+import java.io.*
+import java.time.Instant
+import java.time.ZoneId
+import java.util.*
+import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
+
+
 
 /**
  * License definition and management plugin for the Gradle build system
@@ -35,9 +44,9 @@ class LicensePlugin : Plugin<Project> {
         val outputDir = File(project.buildDir, "licensing")
 
         // Create the Plugin extension object (for users to configure our execution).
-        val extension = project.extensions.create(Licensing.NAME, Licensing::class.java, project, outputDir)
+        val extension: Licensing = project.extensions.create(Licensing.NAME, Licensing::class.java, project, outputDir)
 
-        val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java).apply {
+        val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, extension).apply {
             group = "other"
         }
 
@@ -45,21 +54,17 @@ class LicensePlugin : Plugin<Project> {
         licenseInjector.rootDir = project.rootDir
         licenseInjector.licenses = extension.licenses
 
-        // the task will only build files that it needs to (and will only run once)
-        project.tasks.forEach {
-            when (it) {
-                is KotlinCompile       -> it.dependsOn += licenseInjector
-                is AbstractCompile     -> it.dependsOn += licenseInjector
-                is AbstractArchiveTask -> it.dependsOn += licenseInjector
-            }
-        }
-
-
-
         project.afterEvaluate { prj ->
-            // collect all of the dependencies
-            project.configurations.asIterable().forEach { extension.projectDependencies.addAll(it.dependencies) }
 
+            // the task will only build files that it needs to (and will only run once)
+            project.tasks.forEach {
+                when (it) {
+                    is AbstractCompile     -> it.dependsOn(licenseInjector)
+                    is AbstractArchiveTask -> it.dependsOn(licenseInjector)
+                }
+            }
+
+            project.configurations.asIterable().forEach { extension.projectDependencies.addAll(it.dependencies) }
 
             val licensing = extension.licenses
             if (licensing.isNotEmpty()) {
@@ -87,7 +92,7 @@ class LicensePlugin : Plugin<Project> {
 
                                     // only include license "notes" if we are a custom license **which is the license itself**
                                     if (license == License.CUSTOM) {
-                                        val notes = licenseData.notes.asSequence().joinToString("")
+                                        val notes = licenseData.notes.joinToString("")
                                         newLic.comments.set(notes)
                                     }
                                 }
@@ -101,19 +106,6 @@ class LicensePlugin : Plugin<Project> {
                     // there aren't always maven publishing used
                 }
 
-
-                // now we want to add license information that we know about from our dependencies to our list
-                // just to make it clear, license information CAN CHANGE BETWEEN VERSIONS! For example, JNA changed from GPL to Apache in version 4+
-                // we associate the artifact group + id + (start) version as a license.
-                // if a license for a dependency is UNKNOWN, then we emit a warning to the user to add it as a pull request
-                // if a license version is not specified, then we use the default
-                val projectLicenses = mutableSetOf<String>()
-                for (dependency in extension.projectDependencies) {
-                    println("DEP: " + dependency.group + dependency.name)
-                }
-
-
-
                 // the task will only build files that it needs to (and will only run once)
                 project.tasks.forEach {
                    if (it is AbstractArchiveTask) {
@@ -126,5 +118,7 @@ class LicensePlugin : Plugin<Project> {
         }
     }
 }
+
+
 
 

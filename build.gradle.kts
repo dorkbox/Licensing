@@ -16,25 +16,24 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Instant
 
-println("Gradle ${project.gradle.gradleVersion}")
-
 plugins {
     java
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "0.10.1"
-    id("com.dorkbox.Licensing") version "1.4"
-    id("com.dorkbox.VersionUpdate") version "1.4.1"
-    id("com.dorkbox.GradleUtils") version "1.2"
+    id("com.gradle.plugin-publish") version "0.12.0"
 
-    kotlin("jvm") version "1.3.21"
+    id("com.dorkbox.VersionUpdate") version "1.7"
+    id("com.dorkbox.GradleUtils") version "1.8"
+
+    kotlin("jvm") version "1.3.72"
 }
+
 
 object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "1.4.1"
+    const val version = "2.0"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -52,17 +51,7 @@ object Extras {
 /////  assign 'Extras'
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
-description = Extras.description
-group = Extras.group
-version = Extras.version
-
-licensing {
-    license(License.APACHE_2) {
-        author(Extras.vendor)
-        url(Extras.url)
-        note(Extras.description)
-    }
-}
+GradleUtils.fixIntellijPaths()
 
 sourceSets {
     main {
@@ -83,14 +72,18 @@ sourceSets {
 }
 
 repositories {
+    mavenLocal() // this must be first!
     jcenter()
+    maven {
+        url = uri("https://plugins.gradle.org/m2/")
+    }
 }
 
 dependencies {
     // the kotlin version is taken from the plugin, so it is not necessary to set it here
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin")
 
-    implementation ("com.dorkbox:Version:1.0")
+    implementation("com.dorkbox:Version:1.2")
 }
 
 java {
@@ -152,3 +145,4 @@ pluginBundle {
         }
     }
 }
+

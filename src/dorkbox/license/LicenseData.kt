@@ -16,9 +16,27 @@
 package dorkbox.license
 
 import License
+import org.gradle.api.Action
+import org.gradle.api.GradleException
+import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.time.LocalDate
 
-class LicenseData(val name: String, val license: License) : Comparable<LicenseData> {
+
+class LicenseData(var name: String, var license: License) : java.io.Serializable, Comparable<LicenseData> {
+    /**
+     * Description/title
+     */
+    var description = ""
+
+    /**
+     * If not specified, will be blank after the name
+     */
+    fun description(description: String) {
+        this.description = description
+    }
+
     /**
      * Copyright
      */
@@ -27,8 +45,9 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
     /**
      * If not specified, will use the current year
      */
-    fun copyright(copyright: Int) {
+    fun copyright(copyright: Int = LocalDate.now().year): CopyrightRange {
         copyrights.add(copyright)
+        return CopyrightRange(copyright, copyrights)
     }
 
     /**
@@ -68,6 +87,29 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
     }
 
     /**
+     * Extra License information
+     */
+    val extras = mutableListOf<LicenseData>()
+
+    /**
+     * Specifies the extra license information for this project
+     */
+    fun extra(name: String, license: License, licenseAction: Action<LicenseData>) {
+        val licenseData = LicenseData(name, license)
+        licenseAction.execute(licenseData)
+        extras.add(licenseData)
+    }
+
+    /**
+     * Specifies the extra license information for this project
+     */
+    fun extra(name: String, license: License, licenseAction: (LicenseData) -> Unit) {
+        val licenseData = LicenseData(name, license)
+        licenseAction(licenseData)
+        extras.add(licenseData)
+    }
+
+    /**
      * ignore case when sorting these
      */
     override operator fun compareTo(other: LicenseData): Int {
@@ -86,10 +128,12 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
 
         if (name != other.name) return false
         if (license != other.license) return false
+        if (description != other.description) return false
         if (copyrights != other.copyrights) return false
         if (urls != other.urls) return false
         if (notes != other.notes) return false
         if (authors != other.authors) return false
+        if (extras != other.extras) return false
 
         return true
     }
@@ -97,29 +141,124 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
     override fun hashCode(): Int {
         var result = name.hashCode()
         result = 31 * result + license.hashCode()
+        result = 31 * result + description.hashCode()
         result = 31 * result + copyrights.hashCode()
         result = 31 * result + urls.hashCode()
         result = 31 * result + notes.hashCode()
         result = 31 * result + authors.hashCode()
+        result = 31 * result + extras.hashCode()
         return result
     }
 
+    @Throws(IOException::class)
+    fun writeObject(s: ObjectOutputStream) {
+        s.writeUTF(name)
+        s.writeUTF(license.name)
+        s.writeUTF(description)
+
+        s.writeInt(copyrights.size)
+        copyrights.forEach {
+            s.writeInt(it)
+        }
+
+        s.writeInt(urls.size)
+        urls.forEach {
+            s.writeUTF(it)
+        }
+
+        s.writeInt(notes.size)
+        notes.forEach {
+            s.writeUTF(it)
+        }
+
+        s.writeInt(authors.size)
+        authors.forEach {
+            s.writeUTF(it)
+        }
+
+        s.writeInt(extras.size)
+        if (extras.size > 0) {
+            extras.forEach {
+                it.writeObject(s)
+            }
+        }
+    }
+
+    // Gradle only needs to serialize objects, so this isn't strictly needed
+    @Throws(IOException::class)
+    fun readObject(s: ObjectInputStream) {
+        name = s.readUTF()
+        license = License.valueOfLicenseName(s.readUTF())
+        description = s.readUTF()
+
+
+        val copyrightsSize = s.readInt()
+        for (i in 1..copyrightsSize) {
+            copyrights.add(s.readInt())
+        }
+
+        val urlsSize = s.readInt()
+        for (i in 1..urlsSize) {
+            urls.add(s.readUTF())
+        }
+
+        val notesSize = s.readInt()
+        for (i in 1..notesSize) {
+            notes.add(s.readUTF())
+        }
+
+        val authorsSize = s.readInt()
+        for (i in 1..authorsSize) {
+            authors.add(s.readUTF())
+        }
+
+        val extrasSize = s.readInt()
+        for (i in 1..extrasSize) {
+            val dep = LicenseData("", License.CUSTOM)
+            dep.readObject(s) // can recursively create objects
+            extras.add(dep)
+        }
+    }
+
     companion object {
-        private val LINE_SEPARATOR = System.getProperty("line.separator")
-        private val newLineRegex = "\n".toRegex()
+        private const val serialVersionUID = 1L
+
+        // NOTE: we ALWAYS use unix line endings!
+        private const val NL = "\n"
+        private const val HEADER = " - "
+        private const val HEADR4 = " ---- "
+        private const val SPACER3 = "   "
+        private const val SPACER4 = "     "
+
+        private fun prefix(prefix: Int, builder: StringBuilder): StringBuilder {
+            if (prefix == 0) {
+                builder.append("")
+            } else {
+                for (i in 0 until prefix) {
+                    builder.append(" ")
+                }
+            }
+
+            return builder
+        }
+
+        private fun line(prefix: Int, builder: StringBuilder, vararg strings: Any) {
+            prefix(prefix, builder)
+
+            strings.forEach {
+                builder.append(it.toString())
+            }
+
+            builder.append(NL)
+        }
 
         /**
          * Returns the LICENSE text file, as a combo of the listed licenses. Duplicates are removed.
          */
-        fun buildString(licenses: MutableList<LicenseData>): String {
+        fun buildString(licenses: MutableList<LicenseData>, prefixOffset: Int = 0): String {
             val b = StringBuilder(256)
 
             sortAndClean(licenses)
-
-            val NL = LINE_SEPARATOR
-            val HEADER = " - "
-            val SPACER = "   "
-            val SPACR1 = "     "
 
             var first = true
 
@@ -132,59 +271,72 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
                     b.append(NL).append(NL)
                 }
 
-                b.append(HEADER).append(license.name).append(" - ").append(NL)
-
-                license.urls.forEach {
-                    b.append(SPACER).append(it).append(NL)
-                }
-
-                b.append(SPACER).append("Copyright")
-                if (license.copyrights.isEmpty()) {
-                    // append the current year
-                    b.append(" ").append(LocalDate.now().year)
-                }
-                else {
-                    license.copyrights.forEach {
-                        b.append(" ").append(it).append(",")
-                    }
-                    b.deleteCharAt(b.length-1)
-                }
-
-                b.append(" - ").append(license.license.preferedName).append(NL)
-
-                license.authors.forEach {
-                    b.append(SPACR1).append(it).append(NL)
-                }
-
-                if (license.license === License.CUSTOM) {
-                    license.notes.forEach {
-                        b.append(fixSpace(it, SPACER, 1)).append(NL)
-                    }
-                }
-                else {
-                    license.notes.forEach {
-                        b.append(SPACER).append(it).append(NL)
-                    }
-                }
+                buildLicenseString(b, license, prefixOffset)
             }
 
             return b.toString()
         }
 
-        /**
-         * fixes new lines that may appear in the text
-         * @param text text to format
-         * @param spacer how big will the space in front of each line be?
-         */
-        private fun fixSpace(text: String, spacerSize: String, spacer: Int): String {
-            val trimmedText = text.trim { it <= ' ' }
+        // NOTE: we ALWAYS use unix line endings!
+        private fun buildLicenseString(b: StringBuilder, license: LicenseData, prefixOffset: Int) {
+            line(prefixOffset, b, HEADER, license.name, " - ", license.description)
 
-            var space = ""
-            for (i in 0 until spacer) {
-                space += spacerSize
+            license.urls.forEach {
+                line(prefixOffset, b, SPACER3, it)
             }
 
-            return space + trimmedText.replace(newLineRegex, "\n" + space)
+            prefix(prefixOffset, b).append(SPACER3).append("Copyright")
+            if (license.copyrights.isEmpty()) {
+                // append the current year
+                b.append(" ").append(LocalDate.now().year)
+            }
+            else if (license.copyrights.size == 1) {
+                // this is 2001
+                b.append(" ").append(license.copyrights.first())
+            } else {
+                // is this 2001,2002,2004,2014  <OR>   2001-2014
+                val sumA = license.copyrights.sum()
+                val sumB = license.copyrights.first().rangeTo(license.copyrights.last()).sum()
+                if (sumA == sumB) {
+                    // this is 2001-2004
+                    b.append(" ").append(license.copyrights.first()).append("-").append(license.copyrights.last())
+                } else {
+                    // this is 2001,2002,2004
+                    license.copyrights.forEach {
+                        b.append(" ").append(it).append(",")
+                    }
+                    b.deleteCharAt(b.length-1)
+                }
+            }
+            b.append(HEADER).append(license.license.preferedName).append(NL)
+
+            license.authors.forEach {
+                line(prefixOffset, b, SPACER4, it)
+            }
+
+            if (license.license === License.CUSTOM) {
+                line(prefixOffset, b, HEADR4)
+            }
+
+            license.notes.forEach {
+                line(prefixOffset, b, SPACER3, it)
+            }
+
+            // now add the DEPENDENCY license information. This info is nested (and CAN contain duplicates from elsewhere!)
+            if (license.extras.isNotEmpty()) {
+                var isFirstExtra = true
+
+                line(prefixOffset, b, SPACER3, NL, "Extra license information")
+                license.extras.forEach { extraLicense ->
+                    if (isFirstExtra) {
+                        isFirstExtra = false
+                    } else {
+                        b.append(NL)
+                    }
+
+                    buildLicenseString(b, extraLicense, prefixOffset + 4)
+                }
+            }
         }
 
         /**
@@ -195,7 +347,7 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
                 return
             }
 
-            // The FIRST one is always FIRST! (the rest are alphabetical)
+            // The FIRST one is always FIRST! (the rest are alphabetical by name)
             val firstLicense = licenses[0]
 
             // remove dupes
@@ -216,5 +368,23 @@ class LicenseData(val name: String, val license: License) : Comparable<LicenseDa
             licenses.add(firstLicense)
             licenses.addAll(copy)
         }
+    }
+}
+
+class CopyrightRange internal constructor(private val start: Int, private val copyrights: MutableList<Int>) {
+    fun to(copyRight: Int) {
+        if (start >= copyRight) {
+            throw GradleException("Cannot have a start copyright date that is equal or greater than the `to` copyright date")
+        }
+
+        val newStart = start+1
+        if (newStart < copyRight) {
+            // increment by 1, since the first part of the range is already added
+            copyrights.addAll((newStart).rangeTo(copyRight))
+        }
+    }
+
+    fun toNow() {
+        to(LocalDate.now().year)
     }
 }

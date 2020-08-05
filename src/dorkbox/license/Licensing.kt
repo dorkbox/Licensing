@@ -34,7 +34,9 @@ open class Licensing(project: Project, private val outputDir: File) {
     fun output() : List<File> {
         val files = mutableSetOf<File>()
 
-        files.add(File(outputDir, "LICENSE"))
+        files.add(File(outputDir, LicenseInjector.LICENSE_FILE))
+        files.add(File(outputDir, LicenseInjector.LICENSE_BLOB))
+
         licenses.forEach {
             files.add(File(outputDir, it.license.licenseFile))
         }
@@ -56,18 +58,18 @@ open class Licensing(project: Project, private val outputDir: File) {
     /**
      * Adds a new license section using the project's name as the assigned name
      */
-    fun license(license: License, licenseData: Action<LicenseData>) {
-        val licenseAction = LicenseData(projectName, license)
-        licenseData.execute(licenseAction)
-        licenses.add(licenseAction)
+    fun license(license: License, licenseAction: Action<LicenseData>) {
+        val licenseData = LicenseData(projectName, license)
+        licenseAction.execute(licenseData)
+        licenses.add(licenseData)
     }
 
     /**
      * Adds a new license section using the specified name as the assigned name
      */
-    fun license(name: String, license: License, licenseData: Action<LicenseData>) {
-        val licenseAction = LicenseData(name, license)
-        licenseData.execute(licenseAction)
-        licenses.add(licenseAction)
+    fun license(name: String, license: License, licenseAction: Action<LicenseData>) {
+        val licenseData = LicenseData(name, license)
+        licenseAction.execute(licenseData)
+        licenses.add(licenseData)
     }
 }
