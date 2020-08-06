@@ -205,6 +205,16 @@ object AppLicensing {
                          }
             ),
 
+            LicenseChain("org.json:json",
+                         LicenseData("JSON in Java", License.JSON).apply {
+                             description("A light-weight language independent data interchange format.")
+                             copyright(2002)
+                             author("JSON.org")
+                             url("https://github.com/stleary/JSON-java")
+                             url("https://www.json.org/json-en.html")
+                         }
+            ),
+
             LicenseChain("net.jodah:typetools",
                          LicenseData("TypeTools", License.APACHE_2).apply {
                              description("A simple, zero-dependency library for working with types. Supports Java 1.6+ and Android.")
