@@ -57,14 +57,14 @@ class LicensePlugin : Plugin<Project> {
         project.afterEvaluate { prj ->
 
             // the task will only build files that it needs to (and will only run once)
-            project.tasks.forEach {
+            prj.tasks.forEach {
                 when (it) {
                     is AbstractCompile     -> it.dependsOn(licenseInjector)
                     is AbstractArchiveTask -> it.dependsOn(licenseInjector)
                 }
             }
 
-            project.configurations.asIterable().forEach { extension.projectDependencies.addAll(it.dependencies) }
+            prj.configurations.asIterable().forEach { extension.projectDependencies.addAll(it.dependencies) }
 
             val licensing = extension.licenses
             if (licensing.isNotEmpty()) {
@@ -107,7 +107,7 @@ class LicensePlugin : Plugin<Project> {
                 }
 
                 // the task will only build files that it needs to (and will only run once)
-                project.tasks.forEach {
+                prj.tasks.forEach {
                    if (it is AbstractArchiveTask) {
                         // don't include the license file from the root directory (which happens by default).
                         // make sure that our license files are included in task resources (when building a jar, for example)
