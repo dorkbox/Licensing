@@ -2,10 +2,7 @@ package dorkbox.license
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
@@ -13,7 +10,7 @@ import javax.inject.Inject
 
 
 
-internal open class LicenseInjector @Inject constructor(val extension: Licensing) : DefaultTask() {
+internal open class LicenseInjector @Inject constructor(@Internal val extension: Licensing) : DefaultTask() {
     // only want to build these files once
     private var alreadyBuilt = false
 
