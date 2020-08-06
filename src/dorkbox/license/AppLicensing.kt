@@ -195,6 +195,16 @@ object AppLicensing {
                              url("https://github.com/LWJGL/lwjgl3")
                          }
             ),
+
+            LicenseChain("com.github.ben-manes:gradle-versions-plugin",
+                         LicenseData("Gradle Versions Plugin", License.APACHE_2).apply {
+                             description("This plugin provides a task to determine which dependencies have updates")
+                             copyright(2012)
+                             author("Ben Manes")
+                             url("https://github.com/ben-manes/gradle-versions-plugin")
+                         }
+            ),
+
             LicenseChain("net.jodah:typetools",
                          LicenseData("TypeTools", License.APACHE_2).apply {
                              description("A simple, zero-dependency library for working with types. Supports Java 1.6+ and Android.")
@@ -203,8 +213,6 @@ object AppLicensing {
                              url("https://github.com/jhalterman/typetools")
                          }
             )
-
-
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
 
