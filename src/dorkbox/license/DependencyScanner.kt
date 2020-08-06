@@ -40,17 +40,16 @@ class DependencyScanner(private val project: Project, private val extension: Lic
         }
 
 
-        val missingLicenseInfo = mutableListOf<Dependency>()
-        val actuallyMissingLicenseInfo = mutableListOf<Dependency>()
+        val missingLicenseInfo = mutableSetOf<Dependency>()
+        val actuallyMissingLicenseInfo = mutableSetOf<Dependency>()
 
         if (extension.licenses.isNotEmpty()) {
             // when we scan, we ONLY want to scan a SINGLE LAYER (if we have license info for module ID, then we don't need license info for it's children)
-            println("\tLicense Detection")
-            print("\t\tScanning for preloaded license data...")
+            println("\t\tScanning for preloaded license data...")
 
             val primaryLicense = extension.licenses.first()
-            var found = false
 
+            // scan to see if we have in our predefined section
             projectDependencies.forEach { info: Dependency ->
                 val license: LicenseData? = try {
                     AppLicensing.getLicense(info.mavenId())
@@ -64,6 +63,8 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                     missingLicenseInfo.add(info)
                 } else {
                     if (!primaryLicense.extras.contains(license)) {
+                        println("\t\t\t${info.mavenId()}")
+
                         // get the OLDEST date from the artifacts and use that as the copyright date
                         var oldestDate = 0L
                         info.artifacts.forEach { artifact ->
@@ -77,35 +78,22 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                             oldestDate = Instant.now().toEpochMilli()
                         }
 
+                        // as per US Code Title 17, Chapter 4; for "visually perceptive copies" (which includes software).
+                        // http://www.copyright.gov/title17/92chap4.html
+                        // it is ONLY... © year name
                         val year = Date(oldestDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().year
-                        if (license.copyrights.size == 1) {
-                            if (year > license.copyrights.first()) {
-                                // only do this if we have copyright greater than our specified (it can be the SAME, so don't want to do this!)
-                                try {
-                                    CopyrightRange(license, license.copyrights.first(), license.copyrights).to(year)
-                                } catch (e: GradleException) {
-                                    throw GradleException("Error assigning internal copyright for ${info.mavenId()}", e)
-                                }
-                            }
-                        } else {
-                            license.copyright(year)
-                        }
+                        license.copyright = year
 
                         primaryLicense.extras.add(license)
                     }
                 }
             }
 
-            if (found) {
-                found = false
-                println(" found")
-            } else {
-                println()
-            }
 
 
-            print("\t\tScanning for embedded license data...")
+            println("\t\tScanning for embedded license data...")
 
+            // now scan to see if the jar has a license blob in it
             if (missingLicenseInfo.isNotEmpty()) {
                 missingLicenseInfo.forEach { info ->
                     // see if we have it in the dependency jar
@@ -114,12 +102,12 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                     info.artifacts.forEach search@{ artifact ->
                         ZipFile(artifact.file).use {
                             try {
+                                // read the license blob information
                                 val ze = it.getEntry(LicenseInjector.LICENSE_BLOB)
                                 if (ze != null) {
                                     it.getInputStream(ze).use { licenseStream ->
                                         licenseStream.copyTo(output)
                                         missingFound = true
-                                        found = true
                                         return@search
                                     }
                                 }
@@ -132,7 +120,7 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                     if (!missingFound) {
                         actuallyMissingLicenseInfo.add(info)
                     } else {
-//                        println("Found license info in: $info")
+                        println("\t\t\t$info")
 
                         try {
                             ObjectInputStream(ByteArrayInputStream(output.toByteArray())).use { ois ->
@@ -141,7 +129,11 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                                     val license = LicenseData("", License.CUSTOM)
                                     license.readObject(ois)
 
-    //                                println("Adding license: $license")
+                                    // as per US Code Title 17, Chapter 4; for "visually perceptive copies" (which includes software).
+                                    // http://www.copyright.gov/title17/92chap4.html
+                                    // it is ONLY... © year name
+                                    //
+                                    // this is correctly saved in the license blob
                                     if (!primaryLicense.extras.contains(license)) {
                                         primaryLicense.extras.add(license)
                                     }
@@ -154,23 +146,23 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                 }
             }
 
-
-            if (found) {
-                found = false
-                println(" found")
-            } else {
-                println()
-            }
-
             if (actuallyMissingLicenseInfo.isNotEmpty()) {
-                println("\t\tLicense information is missing for the following.  Please submit an issue with this information to include it in future license scans\n")
+                println("\t\tLicense information is missing for the following.  Please submit an issue with this information to include it in future license scans")
 
                 actuallyMissingLicenseInfo.forEach { missingDep ->
                     val flatDependencies = mutableSetOf<Dependency>()
                     missingDep.children.forEach {
                         flattenDep(it, flatDependencies)
                     }
-                    println("\t\t   ${missingDep.mavenId()} ${flatDependencies.map { it.mavenId() }}")
+
+                    val flat = flatDependencies.map { it.mavenId() }
+                    val extras = if (flat.isEmpty()) {
+                        ""
+                    } else {
+                        flat.toString()
+                    }
+
+                    println("\t\t   ${missingDep.mavenId()} $extras")
                 }
             }
         }

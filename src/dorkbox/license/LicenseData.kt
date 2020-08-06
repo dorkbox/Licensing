@@ -38,17 +38,33 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
     }
 
     /**
-     * Copyright
+     * The Berne Convention leaves "implementation details" up to individual countries.
+     *
+     * In the US (which is the relevant country for FSF documents), copyright notices are defined by Title 17, Chapter 4;
+     * for "visually perceptive copies" (which includes software). http://www.copyright.gov/title17/92chap4.html
+     *
+     * These take the form :
+     *
+     *  © year name
+     *
+     * where
+     *
+     * `©` is specifically that symbol (not "(c)", which has no legal value), and can be replaced by "Copyright" or "Copr." (§ 401(b)(1))
+     *
+     * `year` is the year of first publication of the work, or the year of first publication of the compilation or derivative work if relevant
+     *
+     * `name` is the name of the owner of the copyright.
+     *
+     * What counts is years of publication; for software this is generally considered years in which the software is released.
+     *
+     * So if you release a piece of software in 2014, and release it again in 2016 without making changes in 2015, the years of publication
+     * would be 2014 and 2016, and the copyright notices would be "© 2014" in the first release and "© 2016" in the second release.
+     *
+     *
+     *
+     * When scanning for license copyright dates, we use the date of publication (the date of the manifest file, within the published jar)
      */
-    val copyrights = mutableListOf<Int>()
-
-    /**
-     * If not specified, will use the current year
-     */
-    fun copyright(copyright: Int = LocalDate.now().year): CopyrightRange {
-        copyrights.add(copyright)
-        return CopyrightRange(this, copyright, copyrights)
-    }
+    var copyright = LocalDate.now().year
 
     /**
      * URL
@@ -129,7 +145,7 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
         if (name != other.name) return false
         if (license != other.license) return false
         if (description != other.description) return false
-        if (copyrights != other.copyrights) return false
+        if (copyright != other.copyright) return false
         if (urls != other.urls) return false
         if (notes != other.notes) return false
         if (authors != other.authors) return false
@@ -142,7 +158,7 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
         var result = name.hashCode()
         result = 31 * result + license.hashCode()
         result = 31 * result + description.hashCode()
-        result = 31 * result + copyrights.hashCode()
+        result = 31 * result + copyright
         result = 31 * result + urls.hashCode()
         result = 31 * result + notes.hashCode()
         result = 31 * result + authors.hashCode()
@@ -156,10 +172,7 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
         s.writeUTF(license.name)
         s.writeUTF(description)
 
-        s.writeInt(copyrights.size)
-        copyrights.forEach {
-            s.writeInt(it)
-        }
+        s.writeInt(copyright)
 
         s.writeInt(urls.size)
         urls.forEach {
@@ -184,18 +197,14 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
         }
     }
 
-    // Gradle only needs to serialize objects, so this isn't strictly needed
+    // this is used to load license data from supported dependencies
     @Throws(IOException::class)
     fun readObject(s: ObjectInputStream) {
         name = s.readUTF()
         license = License.valueOfLicenseName(s.readUTF())
         description = s.readUTF()
 
-
-        val copyrightsSize = s.readInt()
-        for (i in 1..copyrightsSize) {
-            copyrights.add(s.readInt())
-        }
+        copyright = s.readInt()
 
         val urlsSize = s.readInt()
         for (i in 1..urlsSize) {
@@ -225,10 +234,9 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
 
         // NOTE: we ALWAYS use unix line endings!
         private const val NL = "\n"
-        private const val HEADER = " - "
-        private const val HEADR4 = " ---- "
+        private const val HEADER1 = " - "
+        private const val HEADER4 = " ---- "
         private const val SPACER3 = "   "
-        private const val SPACER4 = "     "
 
         private fun prefix(prefix: Int, builder: StringBuilder): StringBuilder {
             if (prefix == 0) {
@@ -279,43 +287,25 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
 
         // NOTE: we ALWAYS use unix line endings!
         private fun buildLicenseString(b: StringBuilder, license: LicenseData, prefixOffset: Int) {
-            line(prefixOffset, b, HEADER, license.name, " - ", license.description)
+            line(prefixOffset, b, HEADER1, license.name, " - ", license.description)
+
+            line(prefixOffset, b, SPACER3, "[", license.license.preferedName, "]")
 
             license.urls.forEach {
                 line(prefixOffset, b, SPACER3, it)
             }
 
-            prefix(prefixOffset, b).append(SPACER3).append("Copyright")
-            if (license.copyrights.isEmpty()) {
-                // append the current year
-                b.append(" ").append(LocalDate.now().year)
-            }
-            else if (license.copyrights.size == 1) {
-                // this is 2001
-                b.append(" ").append(license.copyrights.first())
-            } else {
-                // is this 2001,2002,2004,2014  <OR>   2001-2014
-                val sumA = license.copyrights.sum()
-                val sumB = license.copyrights.first().rangeTo(license.copyrights.last()).sum()
-                if (sumA == sumB) {
-                    // this is 2001-2004
-                    b.append(" ").append(license.copyrights.first()).append("-").append(license.copyrights.last())
-                } else {
-                    // this is 2001,2002,2004
-                    license.copyrights.forEach {
-                        b.append(" ").append(it).append(",")
-                    }
-                    b.deleteCharAt(b.length-1)
-                }
-            }
-            b.append(HEADER).append(license.license.preferedName).append(NL)
-
+            // as per US Code Title 17, Chapter 4; for "visually perceptive copies" (which includes software).
+            // http://www.copyright.gov/title17/92chap4.html
+            // it is ONLY... © year name  (or Copyright year name)
+            // authors go on a separate line
+            line(prefixOffset, b, SPACER3, "Copyright ", license.copyright)
             license.authors.forEach {
-                line(prefixOffset, b, SPACER4, it)
+                line(prefixOffset, b, SPACER3, "  ", it)
             }
 
             if (license.license === License.CUSTOM) {
-                line(prefixOffset, b, HEADR4)
+                line(prefixOffset, b, HEADER4)
             }
 
             license.notes.forEach {
@@ -368,29 +358,6 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
             licenses.clear()
             licenses.add(firstLicense)
             licenses.addAll(copy)
-        }
-    }
-}
-
-class CopyrightRange internal constructor(private val license: LicenseData,
-                                          private val start: Int,
-                                          private val copyrights: MutableList<Int>) {
-    fun to(copyRight: Int) {
-        if (start >= copyRight) {
-            throw GradleException("Cannot have a start copyright date that is equal or greater than the `to` copyright date for ${license.name}")
-        }
-
-        val newStart = start+1
-        if (newStart < copyRight) {
-            // increment by 1, since the first part of the range is already added
-            copyrights.addAll((newStart).rangeTo(copyRight))
-        }
-    }
-
-    fun toNow() {
-        val nowYear = LocalDate.now().year
-        if (start < nowYear) {
-            to(nowYear)
         }
     }
 }

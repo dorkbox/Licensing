@@ -2,40 +2,49 @@ package dorkbox.license
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.Project
 import org.gradle.api.tasks.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
+import java.util.*
 import javax.inject.Inject
 
 
 
-internal open class LicenseInjector @Inject constructor(@Internal val extension: Licensing) : DefaultTask() {
-    // only want to build these files once
-    private var alreadyBuilt = false
-
+internal open class LicenseInjector @Inject constructor(project: Project, @Internal val extension: Licensing) : DefaultTask() {
     companion object {
         const val LICENSE_FILE = "LICENSE"
         const val LICENSE_BLOB = "LICENSE.blob"
     }
 
-    @Input lateinit var licenses: MutableList<LicenseData>
-    @OutputDirectory lateinit var outputDir: File
-    @InputDirectory lateinit var rootDir: File
+    @Input val licenses = extension.licenses
+
+    @Internal private val outputBuildDir = File(project.buildDir, "licensing")
+    @OutputFiles val outputFiles = mutableListOf<File>()
 
     init {
+        /// outputBuildDir
+        outputFiles.add(File(outputBuildDir, LICENSE_FILE))
+        outputFiles.add(File(outputBuildDir, LICENSE_BLOB))
+        licenses.forEach {
+            outputFiles.add(File(outputBuildDir, it.license.licenseFile))
+        }
+
+        /// root dir
+        outputFiles.add(File(project.rootDir, LICENSE_FILE))
+        outputFiles.add(File(project.rootDir, LICENSE_BLOB))
+        licenses.forEach {
+            outputFiles.add(File(project.rootDir, it.license.licenseFile))
+        }
+
         outputs.upToDateWhen {
-            alreadyBuilt || !(checkLicenseFiles(outputDir, licenses) && checkLicenseFiles(rootDir, licenses))
+            !(checkLicenseFiles(outputBuildDir, licenses) && checkLicenseFiles(project.rootDir, licenses))
         }
     }
 
     @TaskAction
     fun doTask() {
-        if (alreadyBuilt) {
-            return
-        }
-        alreadyBuilt = true
-
         // now we want to add license information that we know about from our dependencies to our list
         // just to make it clear, license information CAN CHANGE BETWEEN VERSIONS! For example, JNA changed from GPL to Apache in version 4+
         // we associate the artifact group + id + (start) version as a license.
@@ -44,14 +53,13 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
         DependencyScanner(project, extension).scanForLicenseData()
 
         // true if there was any work done
-        didWork = buildLicenseFiles(outputDir, licenses) && buildLicenseFiles(rootDir, licenses)
+        didWork = buildLicenseFiles(outputBuildDir, licenses, true) && buildLicenseFiles(project.rootDir, licenses, false)
     }
 
     /**
      * @return true when there is work that needs to be done
      */
     private fun checkLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
-        var needsToDoWork = false
         if (!outputDir.exists()) outputDir.mkdirs()
 
         val licenseText = LicenseData.buildString(licenses)
@@ -59,29 +67,26 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
 
         if (fileIsNotSame(licenseFile, licenseText)) {
             // write out the LICENSE and various license files
-            needsToDoWork = true
+            return true
         }
 
-        if (!needsToDoWork) {
-            licenses.forEach {
-                val license = it.license
-                val file = File(outputDir, license.licenseFile)
-                val sourceText = license.licenseText
+        licenses.forEach {
+            val license = it.license
+            val file = File(outputDir, license.licenseFile)
+            val sourceText = license.licenseText
 
-                if (fileIsNotSame(file, sourceText)) {
-                    needsToDoWork = true
-                }
+            if (fileIsNotSame(file, sourceText)) {
+                return true
             }
         }
 
-
-        return needsToDoWork
+        return false
     }
 
     /**
      * @return true when there is work that has be done
      */
-    private fun buildLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
+    private fun buildLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>, buildLicenseBlob: Boolean): Boolean {
         var hasDoneWork = false
 
         if (!outputDir.exists()) outputDir.mkdirs()
@@ -97,20 +102,36 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
                 // write out the LICENSE files
                 licenseFile.writeText(licenseText)
 
-                // save off the blob, so we can check when reading dependencies if we can
-                // import this license info as extra license info for the project
-                ObjectOutputStream(FileOutputStream(licenseBlob)).use { oos ->
-                    oos.writeInt(licenses.size)
+                if (buildLicenseBlob) {
+                    // save off the blob, so we can check when reading dependencies if we can
+                    // import this license info as extra license info for the project
+                    ObjectOutputStream(FileOutputStream(licenseBlob)).use { oos ->
+                        oos.writeInt(licenses.size)
 
-                    licenses.forEach {
-                        it.writeObject(oos)
+                        licenses.forEach {
+                            it.writeObject(oos)
+                        }
                     }
                 }
 
                 hasDoneWork = true
             }
 
-            licenses.forEach {
+            // for the license files, we have to FLATTEN the list of licenses!
+            val flattenedLicenses = mutableSetOf<LicenseData>()
+            val scanningLicenses: LinkedList<LicenseData> = LinkedList<LicenseData>()
+            scanningLicenses.addAll(licenses)
+
+            while(scanningLicenses.isNotEmpty()) {
+                val license = scanningLicenses.remove()
+                val wasAdded = flattenedLicenses.add(license)
+                if (wasAdded) {
+                    // should always be added, but MAYBE there is a loop somewhere. this hopefully prevents that
+                    scanningLicenses.addAll(license.extras)
+                }
+            }
+
+            flattenedLicenses.forEach {
                 val license = it.license
                 val file = File(outputDir, license.licenseFile)
                 val sourceText = license.licenseText

@@ -1,4 +1,25 @@
  - Licensing - License definitions and legal management plugin for the Gradle build system
+   [The Apache Software License, Version 2.0]
    https://git.dorkbox.com/dorkbox/Licensing
-   Copyright 2020 - The Apache Software License, Version 2.0
+   Copyright 2020
      Dorkbox LLC
+
+   Extra license information
+     - Kotlin - 
+       [The Apache Software License, Version 2.0]
+       https://github.com/JetBrains/kotlin
+       Copyright 2020
+         JetBrains s.r.o. and Kotlin Programming Language contributors
+       Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply
+       See: https://github.com/JetBrains/kotlin/blob/master/license/README.md
+
+     - Version - Java Semantic Versioning with exceptions. Minor/Patch number optional and build-after-final-dot (minor/patch) permitted.
+       [MIT License]
+       https://git.dorkbox.com/dorkbox/Version
+       Copyright 2020
+         Dorkbox LLC
+         G. Richard Bellamy
+         Kenduck
+         Larry Bordowitz <lbordowitz@yahoo-inc.com>
+         Martin Rüegg <martin.rueegg@bristolpound.org> <martin.rueegg@metaworx.ch>
+         Zafar Khaja <zafarkhaja@gmail.com>

@@ -16,13 +16,18 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Instant
 
+gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
+gradle.startParameter.warningMode = WarningMode.All
+
+
 plugins {
     java
     `java-gradle-plugin`
 
     id("com.gradle.plugin-publish") version "0.12.0"
 
-    id("com.dorkbox.VersionUpdate") version "1.7"
+    id("com.dorkbox.Licensing") version "2.1"
+    id("com.dorkbox.VersionUpdate") version "1.8"
     id("com.dorkbox.GradleUtils") version "1.8"
 
     kotlin("jvm") version "1.3.72"
@@ -33,7 +38,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.0"
+    const val version = "2.1"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -52,6 +57,15 @@ object Extras {
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.fixIntellijPaths()
+
+
+licensing {
+    license(License.APACHE_2) {
+        description(Extras.description)
+        author(Extras.vendor)
+        url(Extras.url)
+    }
+}
 
 sourceSets {
     main {
@@ -83,7 +97,7 @@ dependencies {
     // the kotlin version is taken from the plugin, so it is not necessary to set it here
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin")
 
-    implementation("com.dorkbox:Version:1.2")
+    implementation("com.dorkbox:Version:2.4")
 }
 
 java {

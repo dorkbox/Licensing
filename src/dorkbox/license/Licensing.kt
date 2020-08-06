@@ -21,7 +21,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import java.io.File
 
-open class Licensing(project: Project, private val outputDir: File) {
+open class Licensing(private val project: Project) {
     private val projectName = project.name
 
     val projectDependencies = mutableListOf<Dependency>()
@@ -32,13 +32,15 @@ open class Licensing(project: Project, private val outputDir: File) {
      * Gets a list of files, representing the on-disk location of each generated license file
      */
     fun output() : List<File> {
+        val outputBuilDir = File(project.buildDir, "licensing")
+
         val files = mutableSetOf<File>()
 
-        files.add(File(outputDir, LicenseInjector.LICENSE_FILE))
-        files.add(File(outputDir, LicenseInjector.LICENSE_BLOB))
+        files.add(File(outputBuilDir, LicenseInjector.LICENSE_FILE))
+        files.add(File(outputBuilDir, LicenseInjector.LICENSE_BLOB))
 
         licenses.forEach {
-            files.add(File(outputDir, it.license.licenseFile))
+            files.add(File(outputBuilDir, it.license.licenseFile))
         }
 
         return files.toList()

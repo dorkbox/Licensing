@@ -19,6 +19,7 @@ import License
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.plugins.JavaPlugin
@@ -41,26 +42,29 @@ import java.util.zip.ZipInputStream
 class LicensePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        val outputDir = File(project.buildDir, "licensing")
-
         // Create the Plugin extension object (for users to configure our execution).
-        val extension: Licensing = project.extensions.create(Licensing.NAME, Licensing::class.java, project, outputDir)
+        val extension: Licensing = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
 
-        val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, extension).apply {
+        val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, project, extension).apply {
             group = "other"
         }
 
-        licenseInjector.outputDir = outputDir
-        licenseInjector.rootDir = project.rootDir
-        licenseInjector.licenses = extension.licenses
-
         project.afterEvaluate { prj ->
-
             // the task will only build files that it needs to (and will only run once)
             prj.tasks.forEach {
                 when (it) {
                     is AbstractCompile     -> it.dependsOn(licenseInjector)
                     is AbstractArchiveTask -> it.dependsOn(licenseInjector)
+                }
+            }
+
+            // Make sure to cleanup the generated license files on clean
+            project.tasks.getByName("clean").apply {
+                // delete the license info
+                extension.output().forEach {
+                    if (it.exists()) {
+                        it.delete()
+                    }
                 }
             }
 
@@ -82,7 +86,7 @@ class LicensePlugin : Plugin<Project> {
                         if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
                             it as MavenPublication
 
-                            // add the license information. ONLY THE FIRST ONE!
+                            // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
                             val licenseData = extension.licenses.first()
                             val license = licenseData.license
                             it.pom.licenses { licSpec ->

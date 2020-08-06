@@ -43,7 +43,6 @@ object AppLicensing {
     private val map = listOf(
             LicenseChain("org.jetbrains.kotlin",
                          LicenseData("Kotlin", License.APACHE_2).apply {
-                             copyright(2000)
                              author("JetBrains s.r.o. and Kotlin Programming Language contributors")
                              url("https://github.com/JetBrains/kotlin")
                              note("Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply")
@@ -54,7 +53,6 @@ object AppLicensing {
                          LicenseData("Java Annotations", License.APACHE_2).apply {
                              description("Annotations for JVM-based languages")
                              url("https://github.com/JetBrains/java-annotations")
-                             copyright(2000)
                              author("JetBrains s.r.o.")
                          }
             ),
@@ -62,7 +60,6 @@ object AppLicensing {
                          LicenseData("kotlinx.coroutines", License.APACHE_2).apply {
                              description("Library support for Kotlin coroutines with multiplatform support")
                              url("https://github.com/Kotlin/kotlinx.coroutines")
-                             copyright(2000)
                              author("JetBrains s.r.o.")
                          }
             ),
@@ -70,7 +67,6 @@ object AppLicensing {
                          LicenseData("kotlin-logging", License.APACHE_2).apply {
                              description("Lightweight logging framework for Kotlin")
                              url("https://github.com/MicroUtils/kotlin-logging")
-                             copyright(2016)
                              author("Ohad Shai")
                          }
             ),
@@ -78,7 +74,6 @@ object AppLicensing {
                          LicenseData("SLF4J", License.MIT).apply {
                              description("Simple facade or abstraction for various logging frameworks")
                              url("http://www.slf4j.org")
-                             copyright(2004)
                              author("QOS.ch")
                          }
             ),
@@ -86,7 +81,6 @@ object AppLicensing {
                          LicenseData("JNA", License.LGPLv2_1).apply {
                              description("Simplified native library access for Java.")
                              url("https://github.com/twall/jna")
-                             copyright(2004)
                              author("Timothy Wall")
                          }
             ),
@@ -94,7 +88,6 @@ object AppLicensing {
                          LicenseData("JNA", License.APACHE_2).apply {
                              description("Simplified native library access for Java.")
                              url("https://github.com/twall/jna")
-                             copyright(2013)
                              author("Timothy Wall")
                          }
             ),
@@ -103,7 +96,6 @@ object AppLicensing {
                          LicenseData("JNA-Platform", License.LGPLv2_1).apply {
                              description("Mappings for a number of commonly used platform functions")
                              url("https://github.com/twall/jna")
-                             copyright(2013)
                              author("Timothy Wall")
                          }
             ),
@@ -111,7 +103,6 @@ object AppLicensing {
                          LicenseData("JNA-Platform", License.APACHE_2).apply {
                              description("Mappings for a number of commonly used platform functions")
                              url("https://github.com/twall/jna")
-                             copyright(2013)
                              author("Timothy Wall")
                          }
             ),
@@ -120,29 +111,24 @@ object AppLicensing {
                          LicenseData("SSHJ", License.APACHE_2).apply {
                              description("SSHv2 library for Java")
                              url("https://github.com/hierynomus/sshj")
-                             copyright(2009)
                              author("Jeroen van Erp")
                              author("SSHJ Contributors")
 
                              extra("Apache MINA", License.APACHE_2) {
                                  it.url("https://mina.apache.org/sshd-project/")
-                                 it.copyright(2003).to(2017)
                                  it.author("The Apache Software Foundation")
                              }
                              extra("Apache Commons-Net", License.APACHE_2) {
                                   it.url("https://commons.apache.org/proper/commons-net/")
-                                  it.copyright(2001).to(2017)
                                   it.author("The Apache Software Foundation")
                               }
                              extra("JZlib", License.APACHE_2) {
                                   it.url("http://www.jcraft.com/jzlib")
-                                  it.copyright(2002).to(2008)
                                   it.author("Atsuhiko Yamanaka")
                                   it.author("JCraft, Inc.")
                               }
                              extra("Bouncy Castle Crypto", License.APACHE_2) {
                                   it.url("http://www.bouncycastle.org")
-                                  it.copyright(2000).to(2006)
                                   it.author("The Legion of the Bouncy Castle Inc")
                               }
                              extra("ed25519-java", License.CC0) {
@@ -155,7 +141,6 @@ object AppLicensing {
             LicenseChain("org.bouncycastle",
                          LicenseData("Bouncy Castle Crypto", License.APACHE_2).apply {
                              description("Lightweight cryptography API and JCE Extension")
-                             copyright(2000)
                              author("The Legion of the Bouncy Castle Inc")
                              url("http://www.bouncycastle.org")
                          }
@@ -164,7 +149,6 @@ object AppLicensing {
             LicenseChain("com.fasterxml.uuid:java-uuid-generator",
                          LicenseData("Java Uuid Generator", License.APACHE_2).apply {
                              description("A set of Java classes for working with UUIDs")
-                             copyright(2002)
                              author("Tatu Saloranta (tatu.saloranta@iki.fi)")
                              author("Contributors. See source release-notes/CREDITS")
                              url("https://github.com/cowtowncoder/java-uuid-generator")
@@ -181,7 +165,6 @@ object AppLicensing {
             LicenseChain("io.netty",
                          LicenseData("Netty", License.APACHE_2).apply {
                              description("An event-driven asynchronous network application framework")
-                             copyright(2014)
                              author("The Netty Project")
                              author("Contributors. See source NOTICE")
                              url("https://netty.io")
@@ -190,7 +173,6 @@ object AppLicensing {
             LicenseChain("org.lwjgl:lwjgl-xxhash",
                          LicenseData("Lightweight Java Game Library", License.BSD_3).apply {
                              description("Java library that enables cross-platform access to popular native APIs")
-                             copyright(2012)
                              author("Lightweight Java Game Library")
                              url("https://github.com/LWJGL/lwjgl3")
                          }
@@ -199,7 +181,6 @@ object AppLicensing {
             LicenseChain("com.github.ben-manes:gradle-versions-plugin",
                          LicenseData("Gradle Versions Plugin", License.APACHE_2).apply {
                              description("This plugin provides a task to determine which dependencies have updates")
-                             copyright(2012)
                              author("Ben Manes")
                              url("https://github.com/ben-manes/gradle-versions-plugin")
                          }
@@ -208,7 +189,6 @@ object AppLicensing {
             LicenseChain("org.json:json",
                          LicenseData("JSON in Java", License.JSON).apply {
                              description("A light-weight language independent data interchange format.")
-                             copyright(2002)
                              author("JSON.org")
                              url("https://github.com/stleary/JSON-java")
                              url("https://www.json.org/json-en.html")
@@ -218,7 +198,6 @@ object AppLicensing {
             LicenseChain("net.jodah:typetools",
                          LicenseData("TypeTools", License.APACHE_2).apply {
                              description("A simple, zero-dependency library for working with types. Supports Java 1.6+ and Android.")
-                             copyright(2010)
                              author("Jonathan Halterman and friends")
                              url("https://github.com/jhalterman/typetools")
                          }
