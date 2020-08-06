@@ -24,7 +24,7 @@ import java.io.ObjectOutputStream
 import java.time.LocalDate
 
 
-class LicenseData(var name: String, var license: License) : java.io.Serializable, Comparable<LicenseData> {
+open class LicenseData(var name: String, var license: License) : java.io.Serializable, Comparable<LicenseData> {
     /**
      * Description/title
      */
@@ -110,8 +110,8 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
     /**
      * Specifies the extra license information for this project
      */
-    fun extra(name: String, license: License, licenseAction: Action<LicenseData>) {
-        val licenseData = LicenseData(name, license)
+    fun extra(name: String, license: License, licenseAction: Action<ExtraLicenseData>) {
+        val licenseData = ExtraLicenseData(name, license)
         licenseAction.execute(licenseData)
         extras.add(licenseData)
     }
@@ -119,8 +119,8 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
     /**
      * Specifies the extra license information for this project
      */
-    fun extra(name: String, license: License, licenseAction: (LicenseData) -> Unit) {
-        val licenseData = LicenseData(name, license)
+    fun extra(name: String, license: License, licenseAction: (ExtraLicenseData) -> Unit) {
+        val licenseData = ExtraLicenseData(name, license)
         licenseAction(licenseData)
         extras.add(licenseData)
     }
@@ -223,7 +223,7 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
 
         val extrasSize = s.readInt()
         for (i in 1..extrasSize) {
-            val dep = LicenseData("", License.CUSTOM)
+            val dep = ExtraLicenseData("", License.CUSTOM)
             dep.readObject(s) // can recursively create objects
             extras.add(dep)
         }
