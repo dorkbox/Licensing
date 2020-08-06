@@ -326,7 +326,8 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
             if (license.extras.isNotEmpty()) {
                 var isFirstExtra = true
 
-                line(prefixOffset, b, SPACER3, NL, "Extra license information")
+                b.append(NL)
+                line(prefixOffset, b, SPACER3, "Extra license information")
                 license.extras.forEach { extraLicense ->
                     if (isFirstExtra) {
                         isFirstExtra = false
