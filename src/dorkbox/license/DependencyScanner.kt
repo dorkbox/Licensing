@@ -4,6 +4,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
+import org.gradle.api.tasks.Internal
 import java.io.*
 import java.time.Instant
 import java.time.ZoneId
@@ -19,7 +20,17 @@ class DependencyScanner(private val project: Project, private val extension: Lic
 
         val projectDependencies = mutableListOf<Dependency>()
         val existingNames = mutableSetOf<String>()
-        project.configurations.getByName("default").resolvedConfiguration.firstLevelModuleDependencies.forEach { dep ->
+
+        // we scan BOTH, because we want ALL POSSIBLE DEPENDENCIES for our project.
+        project.configurations.getByName("compileClasspath").resolvedConfiguration.firstLevelModuleDependencies.forEach { dep ->
+            // we know the FIRST series will exist
+            val makeDepTree = makeDepTree(dep, existingNames)
+            if (makeDepTree != null) {
+                // it's only null if we've ALREADY scanned it
+                projectDependencies.add(makeDepTree)
+            }
+        }
+        project.configurations.getByName("runtimeClasspath").resolvedConfiguration.firstLevelModuleDependencies.forEach { dep ->
             // we know the FIRST series will exist
             val makeDepTree = makeDepTree(dep, existingNames)
             if (makeDepTree != null) {
