@@ -41,7 +41,14 @@ class DependencyScanner(private val project: Project, private val extension: Lic
             var found = false
 
             projectDependencies.forEach { info: Dependency ->
-                val license: LicenseData? = AppLicensing.getLicense(info.mavenId())
+                val license: LicenseData? = try {
+                    AppLicensing.getLicense(info.mavenId())
+                } catch (e: Exception) {
+                    println("Error getting license information for ${info.mavenId()}")
+                    e.printStackTrace()
+                    null
+                }
+
                 if (license == null) {
                     missingLicenseInfo.add(info)
                 } else {
@@ -93,7 +100,7 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                     // see if we have it in the dependency jar
                     val output = ByteArrayOutputStream()
                     var missingFound = false
-                    info.artifacts.forEach { artifact ->
+                    info.artifacts.forEach search@{ artifact ->
                         ZipFile(artifact.file).use {
                             try {
                                 val ze = it.getEntry(LicenseInjector.LICENSE_BLOB)
@@ -102,7 +109,7 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                                         licenseStream.copyTo(output)
                                         missingFound = true
                                         found = true
-                                        return@forEach
+                                        return@search
                                     }
                                 }
                             }
@@ -116,17 +123,21 @@ class DependencyScanner(private val project: Project, private val extension: Lic
                     } else {
 //                        println("Found license info in: $info")
 
-                        ObjectInputStream(ByteArrayInputStream(output.toByteArray())).use { ois ->
-                            val size = ois.readInt()
-                            for (i in 0 until size) {
-                                val license = LicenseData("", License.CUSTOM)
-                                license.readObject(ois)
+                        try {
+                            ObjectInputStream(ByteArrayInputStream(output.toByteArray())).use { ois ->
+                                val size = ois.readInt()
+                                for (i in 0 until size) {
+                                    val license = LicenseData("", License.CUSTOM)
+                                    license.readObject(ois)
 
-//                                println("Adding license: $license")
-                                if (!primaryLicense.extras.contains(license)) {
-                                    primaryLicense.extras.add(license)
+    //                                println("Adding license: $license")
+                                    if (!primaryLicense.extras.contains(license)) {
+                                        primaryLicense.extras.add(license)
+                                    }
                                 }
                             }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     }
                 }
