@@ -47,7 +47,7 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
      */
     fun copyright(copyright: Int = LocalDate.now().year): CopyrightRange {
         copyrights.add(copyright)
-        return CopyrightRange(copyright, copyrights)
+        return CopyrightRange(this, copyright, copyrights)
     }
 
     /**
@@ -371,10 +371,12 @@ class LicenseData(var name: String, var license: License) : java.io.Serializable
     }
 }
 
-class CopyrightRange internal constructor(private val start: Int, private val copyrights: MutableList<Int>) {
+class CopyrightRange internal constructor(private val license: LicenseData,
+                                          private val start: Int,
+                                          private val copyrights: MutableList<Int>) {
     fun to(copyRight: Int) {
         if (start >= copyRight) {
-            throw GradleException("Cannot have a start copyright date that is equal or greater than the `to` copyright date")
+            throw GradleException("Cannot have a start copyright date that is equal or greater than the `to` copyright date for ${license.name}")
         }
 
         val newStart = start+1
@@ -385,6 +387,9 @@ class CopyrightRange internal constructor(private val start: Int, private val co
     }
 
     fun toNow() {
-        to(LocalDate.now().year)
+        val nowYear = LocalDate.now().year
+        if (start < nowYear) {
+            to(nowYear)
+        }
     }
 }

@@ -1,5 +1,6 @@
 package dorkbox.license
 
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
@@ -7,7 +8,6 @@ import java.io.*
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
-import java.util.concurrent.Executor
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
@@ -61,7 +61,14 @@ class DependencyScanner(private val project: Project, private val extension: Lic
 
                         val year = Date(oldestDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().year
                         if (license.copyrights.size == 1) {
-                            CopyrightRange(license.copyrights.first(), license.copyrights).to(year)
+                            if (year > license.copyrights.first()) {
+                                // only do this if we have copyright greater than our specified (it can be the SAME, so don't want to do this!)
+                                try {
+                                    CopyrightRange(license, license.copyrights.first(), license.copyrights).to(year)
+                                } catch (e: GradleException) {
+                                    throw GradleException("Error assigning internal copyright for ${info.mavenId()}", e)
+                                }
+                            }
                         } else {
                             license.copyright(year)
                         }
