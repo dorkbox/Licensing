@@ -20,10 +20,11 @@ internal open class LicenseInjector @Inject constructor(project: Project, @Inter
 
     @Input val licenses = extension.licenses
 
-    @Internal private val outputBuildDir = File(project.buildDir, "licensing")
     @OutputFiles val outputFiles = mutableListOf<File>()
 
     init {
+        val outputBuildDir = File(project.buildDir, "licensing")
+
         /// outputBuildDir
         outputFiles.add(File(outputBuildDir, LICENSE_FILE))
         outputFiles.add(File(outputBuildDir, LICENSE_BLOB))
@@ -53,7 +54,7 @@ internal open class LicenseInjector @Inject constructor(project: Project, @Inter
         DependencyScanner(project, extension).scanForLicenseData()
 
         // true if there was any work done
-        didWork = buildLicenseFiles(outputBuildDir, licenses, true) && buildLicenseFiles(project.rootDir, licenses, false)
+        didWork = buildLicenseFiles(File(project.buildDir, "licensing"), licenses, true) && buildLicenseFiles(project.rootDir, licenses, false)
     }
 
     /**
