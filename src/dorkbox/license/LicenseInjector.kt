@@ -27,7 +27,7 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
 
     @TaskAction
     fun doTask() {
-        // true if there was any work done
+        // true if there was any work done. checks while it goes as well
         didWork = buildLicenseFiles(extension.outputBuildDir, licenses, true) && buildLicenseFiles(extension.outputRootDir, licenses, false)
     }
 
@@ -41,17 +41,21 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
         val licenseFile = File(outputDir, LICENSE_FILE)
 
         if (fileIsNotSame(licenseFile, licenseText)) {
-            // write out the LICENSE and various license files
+            // work needs doing
             return true
         }
 
         licenses.forEach {
             val license = it.license
-            val file = File(outputDir, license.licenseFile)
-            val sourceText = license.licenseText
 
-            if (fileIsNotSame(file, sourceText)) {
-                return true
+            if (license != License.UNKNOWN) {
+                val file = File(outputDir, license.licenseFile)
+                val sourceText = license.licenseText
+
+                if (fileIsNotSame(file, sourceText)) {
+                    // work needs doing
+                    return true
+                }
             }
         }
 
@@ -106,17 +110,20 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
                 }
             }
 
-            flattenedLicenses.forEach { it: LicenseData ->
+            flattenedLicenses.forEach {
                 val license = it.license
 
-                val file = File(outputDir, license.licenseFile)
-                val sourceText = license.licenseText
+                // DO NOT write license text/info for custom or unknown licenses
+                if (license != License.UNKNOWN && license != License.CUSTOM) {
+                    val file = File(outputDir, license.licenseFile)
+                    val sourceText = license.licenseText
 
-                if (fileIsNotSame(file, sourceText)) {
-                    // write out the various license text files
-                    file.writeText(sourceText)
+                    if (fileIsNotSame(file, sourceText)) {
+                        // write out the various license text files
+                        file.writeText(sourceText)
 
-                    hasDoneWork = true
+                        hasDoneWork = true
+                    }
                 }
             }
         }
@@ -131,7 +138,7 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
      * @return TRUE if the file IS NOT THE SAME, FALSE if the file IS THE SAME
      */
     private fun fileIsNotSame(outputFile: File, sourceText: String): Boolean {
-        if (!outputFile.exists() && !outputFile.canRead()) {
+        if (!outputFile.canRead()) {
             return true // not the same, so work needs to be done
         }
 
