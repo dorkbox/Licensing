@@ -62,11 +62,14 @@ class LicensePlugin : Plugin<Project> {
             }
 
             // Make sure to cleanup the generated license files on clean
-            project.tasks.getByName("clean").apply {
-                // delete the license info
-                extension.output.forEach {
-                    if (it.exists()) {
-                        it.delete()
+            project.gradle.taskGraph.whenReady { it ->
+                val isClean = it.allTasks.firstOrNull { it.name == "clean" } != null
+                if (isClean) {
+                    println("\tCleaning license data...")
+                    extension.output.forEach {
+                        if (it.exists()) {
+                            it.delete()
+                        }
                     }
                 }
             }
