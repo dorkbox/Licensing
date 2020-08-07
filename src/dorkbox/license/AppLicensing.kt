@@ -195,6 +195,46 @@ object AppLicensing {
                          }
             ),
 
+            LicenseChain("com.esotericsoftware:kryo",
+                         LicenseData("Kryo", License.BSD_3).apply {
+                             description("Fast and efficient binary object graph serialization framework for Java")
+                             author("Nathan Sweet")
+                             url("https://github.com/EsotericSoftware/kryo")
+
+                             extra("ReflectASM", License.BSD_3) {
+                                 it.url("https://github.com/EsotericSoftware/reflectasm")
+                                 it.author("Nathan Sweet")
+                             }
+                             extra("Objenesis ", License.APACHE_2) {
+                                 it.url("http://objenesis.org")
+                                 it.author("Objenesis Team and all contributors")
+                             }
+                             extra("MinLog-SLF4J", License.BSD_3) {
+                                 it.url("https://github.com/EsotericSoftware/minlog")
+                                 it.author("Nathan Sweet")
+                             }
+                         }
+            ),
+
+            LicenseChain("de.javakaffee:kryo-serializers",
+                         LicenseData("Kryo Serializers", License.APACHE_2).apply {
+                             description("Extra kryo serializers")
+                             url("https://github.com/magro/kryo-serializers")
+                             author("Martin Grotzke")
+                             author("Rafael Winterhalter")
+                         }
+            ),
+
+            // most of the time this is just SWT, but each arch/os has it's own id, so it's dumb to include them all
+            LicenseChain("org.eclipse.platform",
+                         LicenseData("Eclipse Platform", License.EPL).apply {
+                             description("Frameworks and common services to support the use of Eclipse and it's tools (SWT)")
+                             author("The Eclipse Foundation, Inc.")
+                             url("https://projects.eclipse.org/projects/eclipse.platform")
+                         }
+            ),
+
+
             LicenseChain("net.jodah:typetools",
                          LicenseData("TypeTools", License.APACHE_2).apply {
                              description("A simple, zero-dependency library for working with types. Supports Java 1.6+ and Android.")

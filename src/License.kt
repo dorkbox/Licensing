@@ -429,38 +429,26 @@ enum class License constructor(internal val names: Collection<String>, internal 
 
     companion object {
         /**
+         * Parse all known license names to discover what license is described
+         *
          * Default is to return UNKNOWN license
          */
-        fun valueOfLicenseName(licenseName: String): License {
+        fun fromName(licenseName: String): License {
             if (licenseName.isEmpty()) {
+                println("\tEmpty license value!")
                 return UNKNOWN
             }
+
             val normalizedLicenseName = licenseName.toLowerCase(Locale.US)
-            for (license in License.values()) {
-                for (name in license.names) {
-                    if (name.toLowerCase(Locale.US) == normalizedLicenseName) {
-                        return license
-                    }
-                }
-            }
-            return UNKNOWN
-        }
 
-        /**
-         * Default is to return UNKNOWN license
-         */
-        fun valueOfLicenseUrl(licenseUrl: String): License {
-            if (licenseUrl.isEmpty()) {
-                return UNKNOWN
-            }
-            for (license in License.values()) {
-                for (url in license.urls) {
-                    if (url == licenseUrl) {
-                        return license
-                    }
+            values().forEach { license ->
+                val found = license.names.firstOrNull { it.toLowerCase(Locale.US) == normalizedLicenseName }
+                if (found != null) {
+                    return license
                 }
             }
 
+            println("\tUnknown license value: $licenseName")
             return UNKNOWN
         }
     }

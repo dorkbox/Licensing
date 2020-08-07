@@ -1,8 +1,6 @@
 package dorkbox.license
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.api.tasks.*
 import java.io.File
 import java.io.FileOutputStream
@@ -12,49 +10,25 @@ import javax.inject.Inject
 
 
 
-internal open class LicenseInjector @Inject constructor(project: Project, @Internal val extension: Licensing) : DefaultTask() {
+internal open class LicenseInjector @Inject constructor(@Internal val extension: Licensing) : DefaultTask() {
     companion object {
         const val LICENSE_FILE = "LICENSE"
         const val LICENSE_BLOB = "LICENSE.blob"
     }
 
     @Input val licenses = extension.licenses
-
-    @OutputFiles val outputFiles = mutableListOf<File>()
+    @OutputFiles val outputFiles = extension.output
 
     init {
-        val outputBuildDir = File(project.buildDir, "licensing")
-
-        /// outputBuildDir
-        outputFiles.add(File(outputBuildDir, LICENSE_FILE))
-        outputFiles.add(File(outputBuildDir, LICENSE_BLOB))
-        licenses.forEach {
-            outputFiles.add(File(outputBuildDir, it.license.licenseFile))
-        }
-
-        /// root dir
-        outputFiles.add(File(project.rootDir, LICENSE_FILE))
-        outputFiles.add(File(project.rootDir, LICENSE_BLOB))
-        licenses.forEach {
-            outputFiles.add(File(project.rootDir, it.license.licenseFile))
-        }
-
         outputs.upToDateWhen {
-            !(checkLicenseFiles(outputBuildDir, licenses) && checkLicenseFiles(project.rootDir, licenses))
+            !(checkLicenseFiles(extension.outputBuildDir, licenses) && checkLicenseFiles(extension.outputRootDir, licenses))
         }
     }
 
     @TaskAction
     fun doTask() {
-        // now we want to add license information that we know about from our dependencies to our list
-        // just to make it clear, license information CAN CHANGE BETWEEN VERSIONS! For example, JNA changed from GPL to Apache in version 4+
-        // we associate the artifact group + id + (start) version as a license.
-        // if a license for a dependency is UNKNOWN, then we emit a warning to the user to add it as a pull request
-        // if a license version is not specified, then we use the default
-        DependencyScanner(project, extension).scanForLicenseData()
-
         // true if there was any work done
-        didWork = buildLicenseFiles(File(project.buildDir, "licensing"), licenses, true) && buildLicenseFiles(project.rootDir, licenses, false)
+        didWork = buildLicenseFiles(extension.outputBuildDir, licenses, true) && buildLicenseFiles(extension.outputRootDir, licenses, false)
     }
 
     /**
@@ -132,8 +106,9 @@ internal open class LicenseInjector @Inject constructor(project: Project, @Inter
                 }
             }
 
-            flattenedLicenses.forEach {
+            flattenedLicenses.forEach { it: LicenseData ->
                 val license = it.license
+
                 val file = File(outputDir, license.licenseFile)
                 val sourceText = license.licenseText
 
@@ -156,6 +131,14 @@ internal open class LicenseInjector @Inject constructor(project: Project, @Inter
      * @return TRUE if the file IS NOT THE SAME, FALSE if the file IS THE SAME
      */
     private fun fileIsNotSame(outputFile: File, sourceText: String): Boolean {
-        return !(outputFile.canRead() && sourceText.toByteArray() contentEquals outputFile.readBytes())
+        if (!outputFile.exists() && !outputFile.canRead()) {
+            return true // not the same, so work needs to be done
+        }
+
+        return try {
+            !(sourceText.toByteArray() contentEquals outputFile.readBytes())
+        } catch (e: Exception) {
+            return true // not the same, so work needs to be done
+        }
     }
 }

@@ -22,30 +22,6 @@ import org.gradle.api.artifacts.Dependency
 import java.io.File
 
 open class Licensing(private val project: Project) {
-    private val projectName = project.name
-
-    val projectDependencies = mutableListOf<Dependency>()
-    val licenses = mutableListOf<LicenseData>()
-
-
-    /**
-     * Gets a list of files, representing the on-disk location of each generated license file
-     */
-    fun output() : List<File> {
-        val outputBuilDir = File(project.buildDir, "licensing")
-
-        val files = mutableSetOf<File>()
-
-        files.add(File(outputBuilDir, LicenseInjector.LICENSE_FILE))
-        files.add(File(outputBuilDir, LicenseInjector.LICENSE_BLOB))
-
-        licenses.forEach {
-            files.add(File(outputBuilDir, it.license.licenseFile))
-        }
-
-        return files.toList()
-    }
-
     companion object {
         fun getLicense(licenseFile: String) : String{
             // license files are located in this package...
@@ -55,6 +31,91 @@ open class Licensing(private val project: Project) {
         }
 
         internal const val NAME = "licensing"
+    }
+
+    private val projectName = project.name
+
+    val projectDependencies = mutableListOf<Dependency>()
+    val licenses = mutableListOf<LicenseData>()
+
+
+    val outputBuildDir: File = File(project.buildDir, "licensing")
+    val outputRootDir: File = project.rootDir
+
+    /**
+     * Gets a list of files, representing the on-disk location of each generated license file
+     */
+    val jarOutput: List<File> by lazy {
+        // have to get the list of flattened license files, so we can get ALL of the files needed
+        val flatLicenseFiles = mutableSetOf<String>()
+        licenses.forEach {
+            flattenDep(it, flatLicenseFiles)
+        }
+
+        val files = mutableSetOf<File>()
+
+        /// outputBuildDir
+        files.add(File(outputBuildDir, LicenseInjector.LICENSE_FILE))
+        files.add(File(outputBuildDir, LicenseInjector.LICENSE_BLOB))
+        flatLicenseFiles.forEach {
+            if (it.isNotBlank()) {
+                files.add(File(outputBuildDir, it))
+            } else {
+                println("UNKNOWN!")
+            }
+        }
+
+        files.toList()
+    }
+
+    private fun flattenDep(dep: LicenseData, flatFiles: MutableSet<String>) {
+        flatFiles.add(dep.license.licenseFile)
+        dep.extras.forEach {
+            flattenDep(it, flatFiles)
+        }
+    }
+
+    /**
+     * Gets a list of files, representing the on-disk location of each generated license file
+     */
+    val output: List<File> by lazy {
+        // have to get the list of flattened license files, so we can get ALL of the files needed
+        val flatLicenseFiles = mutableSetOf<String>()
+        licenses.forEach {
+            flattenDep(it, flatLicenseFiles)
+        }
+
+
+        val files = mutableSetOf<File>()
+
+        /// outputBuildDir
+        files.add(File(outputBuildDir, LicenseInjector.LICENSE_FILE))
+        files.add(File(outputBuildDir, LicenseInjector.LICENSE_BLOB))
+        flatLicenseFiles.forEach {
+            if (it.isNotBlank()) {
+                files.add(File(outputBuildDir, it))
+            }
+        }
+
+        /// root dir
+        files.add(File(outputRootDir, LicenseInjector.LICENSE_FILE))
+        flatLicenseFiles.forEach {
+            if (it.isNotBlank()) {
+                files.add(File(outputRootDir, it))
+            }
+        }
+
+        files.toList()
+    }
+
+    // note: we SCAN first! our output files are created when the injector is initialized (which happens after scanning)
+    fun scanDependencies() {
+        // now we want to add license information that we know about from our dependencies to our list
+        // just to make it clear, license information CAN CHANGE BETWEEN VERSIONS! For example, JNA changed from GPL to Apache in version 4+
+        // we associate the artifact group + id + (start) version as a license.
+        // if a license for a dependency is UNKNOWN, then we emit a warning to the user to add it as a pull request
+        // if a license version is not specified, then we use the default
+        DependencyScanner(project, this.licenses).scanForLicenseData()
     }
 
     /**

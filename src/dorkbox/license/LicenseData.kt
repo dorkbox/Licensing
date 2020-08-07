@@ -61,10 +61,10 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
      * would be 2014 and 2016, and the copyright notices would be "© 2014" in the first release and "© 2016" in the second release.
      *
      *
-     *
      * When scanning for license copyright dates, we use the date of publication (the date of the manifest file, within the published jar)
      */
-    var copyright = LocalDate.now().year
+    internal var copyright = LocalDate.now().year
+
 
     /**
      * URL
@@ -201,7 +201,9 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
     @Throws(IOException::class)
     fun readObject(s: ObjectInputStream) {
         name = s.readUTF()
-        license = License.valueOfLicenseName(s.readUTF())
+
+        val licenseName = s.readUTF()
+        license = License.valueOf(licenseName)
         description = s.readUTF()
 
         copyright = s.readInt()
@@ -222,10 +224,12 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
         }
 
         val extrasSize = s.readInt()
-        for (i in 1..extrasSize) {
-            val dep = ExtraLicenseData("", License.CUSTOM)
-            dep.readObject(s) // can recursively create objects
-            extras.add(dep)
+        if (extrasSize > 0) {
+            for (i in 1..extrasSize) {
+                val dep = ExtraLicenseData("", License.CUSTOM)
+                dep.readObject(s) // can recursively create objects
+                extras.add(dep)
+            }
         }
     }
 
@@ -299,7 +303,16 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
             // http://www.copyright.gov/title17/92chap4.html
             // it is ONLY... © year name  (or Copyright year name)
             // authors go on a separate line
-            line(prefixOffset, b, SPACER3, "Copyright ", license.copyright)
+            if (license is ExtraLicenseData) {
+                if (license.copyright != 0) {
+                    // we only want to have the copyright info IF we specified it on the extra license info (otherwise, they are under
+                    // the same copyright date as the parent)
+                    line(prefixOffset, b, SPACER3, "Copyright ", license.copyright)
+                }
+            } else {
+                line(prefixOffset, b, SPACER3, "Copyright ", license.copyright)
+            }
+
             license.authors.forEach {
                 line(prefixOffset, b, SPACER3, "  ", it)
             }

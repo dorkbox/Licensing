@@ -45,11 +45,14 @@ class LicensePlugin : Plugin<Project> {
         // Create the Plugin extension object (for users to configure our execution).
         val extension: Licensing = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
 
-        val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, project, extension).apply {
-            group = "other"
-        }
-
         project.afterEvaluate { prj ->
+            // This MUST be first!
+            extension.scanDependencies()
+
+            val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, extension).apply {
+                group = "other"
+            }
+
             // the task will only build files that it needs to (and will only run once)
             prj.tasks.forEach {
                 when (it) {
@@ -61,7 +64,7 @@ class LicensePlugin : Plugin<Project> {
             // Make sure to cleanup the generated license files on clean
             project.tasks.getByName("clean").apply {
                 // delete the license info
-                extension.output().forEach {
+                extension.output.forEach {
                     if (it.exists()) {
                         it.delete()
                     }
@@ -115,7 +118,7 @@ class LicensePlugin : Plugin<Project> {
                    if (it is AbstractArchiveTask) {
                         // don't include the license file from the root directory (which happens by default).
                         // make sure that our license files are included in task resources (when building a jar, for example)
-                        it.from(extension.output())
+                        it.from(extension.jarOutput)
                     }
                 }
             }
