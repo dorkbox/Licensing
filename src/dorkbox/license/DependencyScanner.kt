@@ -43,7 +43,7 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
 
         if (licenses.isNotEmpty()) {
             // when we scan, we ONLY want to scan a SINGLE LAYER (if we have license info for module ID, then we don't need license info for it's children)
-            println("\t\tScanning for preloaded license data...")
+            println("\tScanning for preloaded license data...")
 
             val primaryLicense = licenses.first()
 
@@ -52,7 +52,7 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
                 val data: LicenseData? = try {
                     AppLicensing.getLicense(info.mavenId())
                 } catch (e: Exception) {
-                    println("\t\t\tError getting license information for ${info.mavenId()}")
+                    println("\t\tError getting license information for ${info.mavenId()}")
                     null
                 }
 
@@ -60,7 +60,7 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
                     missingLicenseInfo.add(info)
                 } else {
                     if (!primaryLicense.extras.contains(data)) {
-                        println("\t\t\t${info.mavenId()} [${data.license}]")
+                        println("\t\t${info.mavenId()} [${data.license}]")
 
                         // get the OLDEST date from the artifacts and use that as the copyright date
                         var oldestDate = 0L
@@ -87,12 +87,12 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
             }
 
 
-            println("\t\tScanning for embedded license data...")
+            println("\tScanning for embedded license data...")
 
             // now scan to see if the jar has a license blob in it
             if (missingLicenseInfo.isNotEmpty()) {
                 missingLicenseInfo.forEach { info ->
-                    print("\t\t\t$info ")
+                    print("\t\t$info ")
 
                     // see if we have it in the dependency jar
                     var missingFound = false
@@ -142,7 +142,7 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
             }
 
             if (actuallyMissingLicenseInfo.isNotEmpty()) {
-                println("\t\tMissing license information for the following:")
+                println("\tMissing license information for the following:")
 
                 actuallyMissingLicenseInfo.forEach { missingDep ->
                     val flatDependencies = mutableSetOf<Dependency>()
@@ -157,10 +157,10 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
                         flat.toString()
                     }
 
-                    println("\t\t   ${missingDep.mavenId()} $extras")
+                    println("\t   ${missingDep.mavenId()} $extras")
                 }
 
-                println("\t\tPlease submit an issue with this information to include it in future license scans.")
+                println("\tPlease submit an issue with this information to include it in future license scans.")
             }
         }
     }
