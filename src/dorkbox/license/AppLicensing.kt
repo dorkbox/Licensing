@@ -91,7 +91,6 @@ object AppLicensing {
                              author("Timothy Wall")
                          }
             ),
-
             LicenseChain("net.java.dev.jna:jna-platform:1.0",
                          LicenseData("JNA-Platform", License.LGPLv2_1).apply {
                              description("Mappings for a number of commonly used platform functions")
@@ -106,7 +105,6 @@ object AppLicensing {
                              author("Timothy Wall")
                          }
             ),
-
             LicenseChain("com.hierynomus:sshj",
                          LicenseData("SSHJ", License.APACHE_2).apply {
                              description("SSHv2 library for Java")
@@ -137,7 +135,6 @@ object AppLicensing {
                              }
                          }
             ),
-
             LicenseChain("org.bouncycastle",
                          LicenseData("Bouncy Castle Crypto", License.APACHE_2).apply {
                              description("Lightweight cryptography API and JCE Extension")
@@ -145,7 +142,6 @@ object AppLicensing {
                              url("http://www.bouncycastle.org")
                          }
             ),
-
             LicenseChain("com.fasterxml.uuid:java-uuid-generator",
                          LicenseData("Java Uuid Generator", License.APACHE_2).apply {
                              description("A set of Java classes for working with UUIDs")
@@ -177,7 +173,6 @@ object AppLicensing {
                              url("https://github.com/LWJGL/lwjgl3")
                          }
             ),
-
             LicenseChain("com.github.ben-manes:gradle-versions-plugin",
                          LicenseData("Gradle Versions Plugin", License.APACHE_2).apply {
                              description("This plugin provides a task to determine which dependencies have updates")
@@ -185,7 +180,6 @@ object AppLicensing {
                              url("https://github.com/ben-manes/gradle-versions-plugin")
                          }
             ),
-
             LicenseChain("org.json:json",
                          LicenseData("JSON in Java", License.JSON).apply {
                              description("A light-weight language independent data interchange format.")
@@ -194,7 +188,6 @@ object AppLicensing {
                              url("https://www.json.org/json-en.html")
                          }
             ),
-
             LicenseChain("com.esotericsoftware:kryo",
                          LicenseData("Kryo", License.BSD_3).apply {
                              description("Fast and efficient binary object graph serialization framework for Java")
@@ -215,7 +208,6 @@ object AppLicensing {
                              }
                          }
             ),
-
             LicenseChain("de.javakaffee:kryo-serializers",
                          LicenseData("Kryo Serializers", License.APACHE_2).apply {
                              description("Extra kryo serializers")
@@ -224,13 +216,42 @@ object AppLicensing {
                              author("Rafael Winterhalter")
                          }
             ),
-
             // most of the time this is just SWT, but each arch/os has it's own id, so it's dumb to include them all
             LicenseChain("org.eclipse.platform",
                          LicenseData("Eclipse Platform", License.EPL).apply {
                              description("Frameworks and common services to support the use of Eclipse and it's tools (SWT)")
                              author("The Eclipse Foundation, Inc.")
                              url("https://projects.eclipse.org/projects/eclipse.platform")
+                         }
+            ),
+            LicenseChain("net.jpountz.lz4:lz4",
+                         LicenseData("LZ4 and XXhash", License.APACHE_2).apply {
+                             description("LZ4 compression for Java, based on Yann Collet's work")
+                             author("Yann Collet")
+                             author("Adrien Grand")
+                             url("https://github.com/jpountz/lz4-java")
+                             url("http://code.google.com/p/lz4/")
+                         }
+            ),
+            LicenseChain("com.conversantmedia:disruptor",
+                         LicenseData("Conversant Disruptor", License.APACHE_2).apply {
+                             description("Disruptor is the highest performing intra-thread transfer mechanism available in Java.")
+                             author("Conversant, Inc")
+                             url("https://github.com/conversant/disruptor")
+                         }
+            ),
+            LicenseChain("io.aeron",
+                         LicenseData("Aeron", License.APACHE_2).apply {
+                             description("Efficient reliable UDP unicast, UDP multicast, and IPC message transport")
+                             author("Real Logic Limited")
+                             url("https://github.com/real-logic/aeron")
+                         }
+            ),
+            LicenseChain("org.agrona:agrona",
+                         LicenseData("Agrona", License.APACHE_2).apply {
+                             description("A Library of data structures and utility methods for high-performance applications")
+                             author("Real Logic Limited")
+                             url("https://github.com/real-logic/agrona")
                          }
             ),
 
