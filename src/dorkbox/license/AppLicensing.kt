@@ -26,7 +26,7 @@ import org.gradle.api.IllegalDependencyNotation
  *      "com.dorkbox:Console:2.0" -> it will return APACHE_2, AND it will return the Version project license info!! DO NOT DO THIS!
  *
  */
-data class LicenseChain(val mavenId: String, val licenseData: LicenseData)
+data class L(val mavenId: String, val licenseData: LicenseData)
 
 object AppLicensing {
     // have to add the version this license applies from
@@ -40,73 +40,80 @@ object AppLicensing {
     // and not us, since we are correctly attributing their work (they are incorrectly attributing whatever THEY should).
     //
     // We DO NOT have to maintain a FULL HISTORY CHAIN of contributions of all dependent libraries -- only the library + license that we use.
-    private val map = listOf(
-            LicenseChain("org.jetbrains.kotlin",
-                         LicenseData("Kotlin", License.APACHE_2).apply {
+    private val data = listOf(
+            L("ch.qos.logback",
+              LicenseData("Logback", License.APACHE_2).apply {
+                  description("Logback is a logging framework for Java applications")
+                  author("QOS.ch")
+                  url("http://logback.qos.ch")
+              }
+            ),
+            L("org.jetbrains.kotlin",
+              LicenseData("Kotlin", License.APACHE_2).apply {
                              author("JetBrains s.r.o. and Kotlin Programming Language contributors")
                              url("https://github.com/JetBrains/kotlin")
                              note("Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply")
                              note("See: https://github.com/JetBrains/kotlin/blob/master/license/README.md")
                          }
             ),
-            LicenseChain("org.jetbrains:annotations",
-                         LicenseData("Java Annotations", License.APACHE_2).apply {
+            L("org.jetbrains:annotations",
+              LicenseData("Java Annotations", License.APACHE_2).apply {
                              description("Annotations for JVM-based languages")
                              url("https://github.com/JetBrains/java-annotations")
                              author("JetBrains s.r.o.")
                          }
             ),
-            LicenseChain("org.jetbrains.kotlinx",
-                         LicenseData("kotlinx.coroutines", License.APACHE_2).apply {
+            L("org.jetbrains.kotlinx",
+              LicenseData("kotlinx.coroutines", License.APACHE_2).apply {
                              description("Library support for Kotlin coroutines with multiplatform support")
                              url("https://github.com/Kotlin/kotlinx.coroutines")
                              author("JetBrains s.r.o.")
                          }
             ),
-            LicenseChain("io.github.microutils:kotlin-logging",
-                         LicenseData("kotlin-logging", License.APACHE_2).apply {
+            L("io.github.microutils:kotlin-logging",
+              LicenseData("kotlin-logging", License.APACHE_2).apply {
                              description("Lightweight logging framework for Kotlin")
                              url("https://github.com/MicroUtils/kotlin-logging")
                              author("Ohad Shai")
                          }
             ),
-            LicenseChain("org.slf4j:slf4j-api",
-                         LicenseData("SLF4J", License.MIT).apply {
+            L("org.slf4j:slf4j-api",
+              LicenseData("SLF4J", License.MIT).apply {
                              description("Simple facade or abstraction for various logging frameworks")
                              url("http://www.slf4j.org")
                              author("QOS.ch")
                          }
             ),
-            LicenseChain("net.java.dev.jna:jna:1.0",
-                         LicenseData("JNA", License.LGPLv2_1).apply {
+            L("net.java.dev.jna:jna:1.0",
+              LicenseData("JNA", License.LGPLv2_1).apply {
                              description("Simplified native library access for Java.")
                              url("https://github.com/twall/jna")
                              author("Timothy Wall")
                          }
             ),
-            LicenseChain("net.java.dev.jna:jna:4.0",
-                         LicenseData("JNA", License.APACHE_2).apply {
+            L("net.java.dev.jna:jna:4.0",
+              LicenseData("JNA", License.APACHE_2).apply {
                              description("Simplified native library access for Java.")
                              url("https://github.com/twall/jna")
                              author("Timothy Wall")
                          }
             ),
-            LicenseChain("net.java.dev.jna:jna-platform:1.0",
-                         LicenseData("JNA-Platform", License.LGPLv2_1).apply {
+            L("net.java.dev.jna:jna-platform:1.0",
+              LicenseData("JNA-Platform", License.LGPLv2_1).apply {
                              description("Mappings for a number of commonly used platform functions")
                              url("https://github.com/twall/jna")
                              author("Timothy Wall")
                          }
             ),
-            LicenseChain("net.java.dev.jna:jna-platform:4.0",
-                         LicenseData("JNA-Platform", License.APACHE_2).apply {
+            L("net.java.dev.jna:jna-platform:4.0",
+              LicenseData("JNA-Platform", License.APACHE_2).apply {
                              description("Mappings for a number of commonly used platform functions")
                              url("https://github.com/twall/jna")
                              author("Timothy Wall")
                          }
             ),
-            LicenseChain("com.hierynomus:sshj",
-                         LicenseData("SSHJ", License.APACHE_2).apply {
+            L("com.hierynomus:sshj",
+              LicenseData("SSHJ", License.APACHE_2).apply {
                              description("SSHv2 library for Java")
                              url("https://github.com/hierynomus/sshj")
                              author("Jeroen van Erp")
@@ -135,61 +142,61 @@ object AppLicensing {
                              }
                          }
             ),
-            LicenseChain("org.bouncycastle",
-                         LicenseData("Bouncy Castle Crypto", License.APACHE_2).apply {
+            L("org.bouncycastle",
+              LicenseData("Bouncy Castle Crypto", License.APACHE_2).apply {
                              description("Lightweight cryptography API and JCE Extension")
                              author("The Legion of the Bouncy Castle Inc")
                              url("http://www.bouncycastle.org")
                          }
             ),
-            LicenseChain("com.fasterxml.uuid:java-uuid-generator",
-                         LicenseData("Java Uuid Generator", License.APACHE_2).apply {
+            L("com.fasterxml.uuid:java-uuid-generator",
+              LicenseData("Java Uuid Generator", License.APACHE_2).apply {
                              description("A set of Java classes for working with UUIDs")
                              author("Tatu Saloranta (tatu.saloranta@iki.fi)")
                              author("Contributors. See source release-notes/CREDITS")
                              url("https://github.com/cowtowncoder/java-uuid-generator")
                          }
             ),
-            LicenseChain("org.tukaani:xz",
-                         LicenseData("XZ for Java", License.CC0).apply {
+            L("org.tukaani:xz",
+              LicenseData("XZ for Java", License.CC0).apply {
                              description("Complete implementation of XZ data compression in pure Java")
                              author("Lasse Collin")
                              author("Igor Pavlov")
                              url("https://tukaani.org/xz/java.html")
                          }
             ),
-            LicenseChain("io.netty",
-                         LicenseData("Netty", License.APACHE_2).apply {
+            L("io.netty",
+              LicenseData("Netty", License.APACHE_2).apply {
                              description("An event-driven asynchronous network application framework")
                              author("The Netty Project")
                              author("Contributors. See source NOTICE")
                              url("https://netty.io")
                          }
             ),
-            LicenseChain("org.lwjgl:lwjgl-xxhash",
-                         LicenseData("Lightweight Java Game Library", License.BSD_3).apply {
+            L("org.lwjgl:lwjgl-xxhash",
+              LicenseData("Lightweight Java Game Library", License.BSD_3).apply {
                              description("Java library that enables cross-platform access to popular native APIs")
                              author("Lightweight Java Game Library")
                              url("https://github.com/LWJGL/lwjgl3")
                          }
             ),
-            LicenseChain("com.github.ben-manes:gradle-versions-plugin",
-                         LicenseData("Gradle Versions Plugin", License.APACHE_2).apply {
+            L("com.github.ben-manes:gradle-versions-plugin",
+              LicenseData("Gradle Versions Plugin", License.APACHE_2).apply {
                              description("This plugin provides a task to determine which dependencies have updates")
                              author("Ben Manes")
                              url("https://github.com/ben-manes/gradle-versions-plugin")
                          }
             ),
-            LicenseChain("org.json:json",
-                         LicenseData("JSON in Java", License.JSON).apply {
+            L("org.json:json",
+              LicenseData("JSON in Java", License.JSON).apply {
                              description("A light-weight language independent data interchange format.")
                              author("JSON.org")
                              url("https://github.com/stleary/JSON-java")
                              url("https://www.json.org/json-en.html")
                          }
             ),
-            LicenseChain("com.esotericsoftware:kryo",
-                         LicenseData("Kryo", License.BSD_3).apply {
+            L("com.esotericsoftware:kryo",
+              LicenseData("Kryo", License.BSD_3).apply {
                              description("Fast and efficient binary object graph serialization framework for Java")
                              author("Nathan Sweet")
                              url("https://github.com/EsotericSoftware/kryo")
@@ -208,8 +215,8 @@ object AppLicensing {
                              }
                          }
             ),
-            LicenseChain("de.javakaffee:kryo-serializers",
-                         LicenseData("Kryo Serializers", License.APACHE_2).apply {
+            L("de.javakaffee:kryo-serializers",
+              LicenseData("Kryo Serializers", License.APACHE_2).apply {
                              description("Extra kryo serializers")
                              url("https://github.com/magro/kryo-serializers")
                              author("Martin Grotzke")
@@ -217,15 +224,15 @@ object AppLicensing {
                          }
             ),
             // most of the time this is just SWT, but each arch/os has it's own id, so it's dumb to include them all
-            LicenseChain("org.eclipse.platform",
-                         LicenseData("Eclipse Platform", License.EPL).apply {
+            L("org.eclipse.platform",
+              LicenseData("Eclipse Platform", License.EPL).apply {
                              description("Frameworks and common services to support the use of Eclipse and it's tools (SWT)")
                              author("The Eclipse Foundation, Inc.")
                              url("https://projects.eclipse.org/projects/eclipse.platform")
                          }
             ),
-            LicenseChain("net.jpountz.lz4:lz4",
-                         LicenseData("LZ4 and XXhash", License.APACHE_2).apply {
+            L("net.jpountz.lz4:lz4",
+              LicenseData("LZ4 and XXhash", License.APACHE_2).apply {
                              description("LZ4 compression for Java, based on Yann Collet's work")
                              author("Yann Collet")
                              author("Adrien Grand")
@@ -233,31 +240,40 @@ object AppLicensing {
                              url("http://code.google.com/p/lz4/")
                          }
             ),
-            LicenseChain("com.conversantmedia:disruptor",
-                         LicenseData("Conversant Disruptor", License.APACHE_2).apply {
+            L("com.conversantmedia:disruptor",
+              LicenseData("Conversant Disruptor", License.APACHE_2).apply {
                              description("Disruptor is the highest performing intra-thread transfer mechanism available in Java.")
                              author("Conversant, Inc")
                              url("https://github.com/conversant/disruptor")
                          }
             ),
-            LicenseChain("io.aeron",
-                         LicenseData("Aeron", License.APACHE_2).apply {
+            L("io.aeron",
+              LicenseData("Aeron", License.APACHE_2).apply {
                              description("Efficient reliable UDP unicast, UDP multicast, and IPC message transport")
                              author("Real Logic Limited")
                              url("https://github.com/real-logic/aeron")
                          }
             ),
-            LicenseChain("org.agrona:agrona",
-                         LicenseData("Agrona", License.APACHE_2).apply {
+            L("org.agrona:agrona",
+              LicenseData("Agrona", License.APACHE_2).apply {
                              description("A Library of data structures and utility methods for high-performance applications")
                              author("Real Logic Limited")
                              url("https://github.com/real-logic/agrona")
                          }
             ),
-
-
-            LicenseChain("net.jodah:typetools",
-                         LicenseData("TypeTools", License.APACHE_2).apply {
+            L("org.javassist:javassist",
+              LicenseData("Javassist", License.APACHE_2).apply {
+                          description("Javassist (JAVA programming ASSISTant) makes Java bytecode manipulation simple")
+                          author("Shigeru Chiba")
+                          author("Bill Burke")
+                          author("Jason T. Greene")
+                          url("http://www.javassist.org")
+                          url("https://github.com/jboss-javassist/javassist")
+                          note("Licensed under the MPL/LGPL/Apache triple license")
+                         }
+            ),
+            L("net.jodah:typetools",
+              LicenseData("TypeTools", License.APACHE_2).apply {
                              description("A simple, zero-dependency library for working with types. Supports Java 1.6+ and Android.")
                              author("Jonathan Halterman and friends")
                              url("https://github.com/jhalterman/typetools")
@@ -269,7 +285,7 @@ object AppLicensing {
 
 
     init {
-        map.forEach {
+        data.forEach {
             license(it)
         }
     }
@@ -303,11 +319,11 @@ object AppLicensing {
     }
 
 
-    private fun license(licenseChain: LicenseChain) {
-        val (moduleId, version) = getFromModuleName(licenseChain.mavenId)
+    private fun license(l: L) {
+        val (moduleId, version) = getFromModuleName(l.mavenId)
 
         val internalList = allLicenseData.getOrPut(moduleId) { mutableListOf() }
-        internalList.add(Pair(version, licenseChain.licenseData))
+        internalList.add(Pair(version, l.licenseData))
 
         // largest version number is first, smallest version number is last.
         // when checking WHAT license applies to WHICH version, we start at the largest (so we stop looking at the first match <= to us)
