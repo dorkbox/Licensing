@@ -135,7 +135,7 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
                     }
 
                     if (!missingFound) {
-                        println("[NOT FOUND]")
+                        println()
                         actuallyMissingLicenseInfo.add(info)
                     }
                 }
