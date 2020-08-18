@@ -41,6 +41,21 @@ object AppLicensing {
     //
     // We DO NOT have to maintain a FULL HISTORY CHAIN of contributions of all dependent libraries -- only the library + license that we use.
     private val data = listOf(
+            L("de.marcphilipp.gradle:nexus-publish-plugin",
+              LicenseData("Nexus Publish Plugin", License.APACHE_2).apply {
+                  description("Gradle Plugin that explicitly creates a Staging Repository before publishing to Nexus.")
+                  author("Marc Philipp")
+                  url("https://github.com/marcphilipp/nexus-publish-plugin")
+              }
+            ),
+            L("io.codearte.gradle.nexus:gradle-nexus-staging-plugin",
+              LicenseData("Gradle Nexus Staging plugin", License.APACHE_2).apply {
+                  description("A gradle plugin providing tasks to close and promote/release staged repositories.")
+                  author("Marcin Zajączkowski")
+                  author("https://github.com/Codearte/gradle-nexus-staging-plugin/graphs/contributors")
+                  url("https://github.com/Codearte/gradle-nexus-staging-plugin")
+              }
+            ),
             L("ch.qos.logback",
               LicenseData("Logback", License.APACHE_2).apply {
                   description("Logback is a logging framework for Java applications")
