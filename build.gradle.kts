@@ -27,9 +27,9 @@ plugins {
 
     id("com.dorkbox.Licensing") version "2.2"
     id("com.dorkbox.VersionUpdate") version "2.0"
-    id("com.dorkbox.GradleUtils") version "1.8"
+    id("com.dorkbox.GradleUtils") version "1.10"
 
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.3.61"
 }
 
 
@@ -37,7 +37,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.3"
+    const val version = "2.4"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -46,9 +46,6 @@ object Extras {
     const val url = "https://git.dorkbox.com/dorkbox/Licensing"
     val tags = listOf("licensing", "legal", "notice", "license", "dependencies")
     val buildDate = Instant.now().toString()
-
-    val JAVA_VERSION = JavaVersion.VERSION_1_8
-    val KOTLIN_VERSION = JavaVersion.VERSION_1_8
 }
 
 ///////////////////////////////
@@ -56,6 +53,8 @@ object Extras {
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.fixIntellijPaths()
+GradleUtils.defaultResolutionStrategy()
+GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
 
 
 licensing {
@@ -97,24 +96,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin")
 
     implementation("com.dorkbox:Version:2.4")
-}
-
-java {
-    sourceCompatibility = Extras.JAVA_VERSION
-    targetCompatibility = Extras.JAVA_VERSION
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.isIncremental = true
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = Extras.KOTLIN_VERSION.toString()
-}
-
-tasks.withType<Jar> {
-    duplicatesStrategy = DuplicatesStrategy.FAIL
 }
 
 tasks.jar.get().apply {

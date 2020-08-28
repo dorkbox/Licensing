@@ -17,7 +17,6 @@ package dorkbox.license
 
 import License
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
@@ -171,6 +170,15 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
 
     @Throws(IOException::class)
     fun writeObject(s: ObjectOutputStream) {
+        // as STUPID as this is, the first value in version '0' is a UTF8 string.
+        //
+        // Without horrifically breaking how the license information is read/written, we must ALSO write the
+        // version integer as a string, then read + parse it later (so we can still parse version 0 files).
+        //
+        // If we don't do this, then we cannot read license information for any older jars, because this
+        // feature wasn't added from the start :(
+        s.writeUTF(version.toString())
+
         s.writeUTF(name)
         s.writeUTF(license.name)
         s.writeUTF(description)
@@ -201,43 +209,104 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
     }
 
     // this is used to load license data from supported dependencies
+    @Suppress("DuplicatedCode")
     @Throws(IOException::class)
-    fun readObject(s: ObjectInputStream) {
-        name = s.readUTF()
+    fun readObject(stream: ObjectInputStream) {
+        // as STUPID as this is, the first value in version '0' is a UTF8 string.
+        //
+        // Without horrifically breaking how the license information is read/written, we must ALSO write the
+        // version integer as a string, then read + parse it later (so we can still parse version 0 files).
+        //
+        // If we don't do this, then we cannot read license information for any older jars, because this
+        // feature wasn't added from the start :(
 
-        val licenseName = s.readUTF()
-        license = License.valueOf(licenseName)
-        description = s.readUTF()
 
-        copyright = s.readInt()
+        // first we check for a version number, if there is an error parsing info, then this is version 0.
+        val versionOrName = stream.readUTF()
 
-        val urlsSize = s.readInt()
-        for (i in 1..urlsSize) {
-            urls.add(s.readUTF())
+        val version = try {
+            Integer.parseInt(versionOrName)
+        } catch (e: Exception) {
+            0
         }
 
-        val notesSize = s.readInt()
-        for (i in 1..notesSize) {
-            notes.add(s.readUTF())
-        }
+        when (version) {
+            0 -> {
+                name = versionOrName
 
-        val authorsSize = s.readInt()
-        for (i in 1..authorsSize) {
-            authors.add(s.readUTF())
-        }
+                val licenseName = stream.readUTF()
+                license = License.valueOf(licenseName)
+                description = stream.readUTF()
 
-        val extrasSize = s.readInt()
-        if (extrasSize > 0) {
-            for (i in 1..extrasSize) {
-                val dep = ExtraLicenseData("", License.CUSTOM)
-                dep.readObject(s) // can recursively create objects
-                extras.add(dep)
+                copyright = stream.readInt()
+
+                val urlsSize = stream.readInt()
+                for (i in 1..urlsSize) {
+                    urls.add(stream.readUTF())
+                }
+
+                val notesSize = stream.readInt()
+                for (i in 1..notesSize) {
+                    notes.add(stream.readUTF())
+                }
+
+                val authorsSize = stream.readInt()
+                for (i in 1..authorsSize) {
+                    authors.add(stream.readUTF())
+                }
+
+                val extrasSize = stream.readInt()
+                if (extrasSize > 0) {
+                    for (i in 1..extrasSize) {
+                        val dep = ExtraLicenseData("", License.CUSTOM)
+                        dep.readObject(stream) // can recursively create objects
+                        extras.add(dep)
+                    }
+                }
+            }
+            1 -> {
+                // this the same as version 0, but with the version information header
+                name = stream.readUTF()
+
+                val licenseName = stream.readUTF()
+                license = License.valueOf(licenseName)
+                description = stream.readUTF()
+
+                copyright = stream.readInt()
+
+                val urlsSize = stream.readInt()
+                for (i in 1..urlsSize) {
+                    urls.add(stream.readUTF())
+                }
+
+                val notesSize = stream.readInt()
+                for (i in 1..notesSize) {
+                    notes.add(stream.readUTF())
+                }
+
+                val authorsSize = stream.readInt()
+                for (i in 1..authorsSize) {
+                    authors.add(stream.readUTF())
+                }
+
+                val extrasSize = stream.readInt()
+                if (extrasSize > 0) {
+                    for (i in 1..extrasSize) {
+                        val dep = ExtraLicenseData("", License.CUSTOM)
+                        dep.readObject(stream) // can recursively create objects
+                        extras.add(dep)
+                    }
+                }
+            }
+            else -> {
+                // no other versions yet!
             }
         }
     }
 
     companion object {
-        private const val serialVersionUID = 1L
+        private const val version = 1
+        private const val serialVersionUID = version.toLong()
 
         // NOTE: we ALWAYS use unix line endings!
         private const val NL = "\n"

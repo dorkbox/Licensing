@@ -62,24 +62,30 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
                     if (!primaryLicense.extras.contains(data)) {
                         println("\t\t${info.mavenId()} [${data.license}]")
 
-                        // get the OLDEST date from the artifacts and use that as the copyright date
-                        var oldestDate = 0L
-                        info.artifacts.forEach { artifact ->
-                            // get the date of the manifest file (which is the first entry)
-                            ZipInputStream(FileInputStream(artifact.file)).use {
-                                oldestDate = oldestDate.coerceAtLeast(it.nextEntry.lastModifiedTime.toMillis())
+                        // NOTE: the END copyright for these are determined by the DATE of the files!
+                        //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it
+                        if (data.copyright == 0) {
+                            // get the OLDEST date from the artifacts and use that as the copyright date
+                            var oldestDate = 0L
+                            info.artifacts.forEach { artifact ->
+                                // get the date of the manifest file (which is the first entry)
+                                ZipInputStream(FileInputStream(artifact.file)).use {
+                                    oldestDate = oldestDate.coerceAtLeast(it.nextEntry.lastModifiedTime.toMillis())
+                                }
                             }
+
+                            if (oldestDate == 0L) {
+                                oldestDate = Instant.now().toEpochMilli()
+                            }
+
+                            // as per US Code Title 17, Chapter 4; for "visually perceptive copies" (which includes software).
+                            // http://www.copyright.gov/title17/92chap4.html
+                            // it is ONLY... © year name
+                            val year = Date(oldestDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().year
+                            data.copyright = year
                         }
 
-                        if (oldestDate == 0L) {
-                            oldestDate = Instant.now().toEpochMilli()
-                        }
-
-                        // as per US Code Title 17, Chapter 4; for "visually perceptive copies" (which includes software).
-                        // http://www.copyright.gov/title17/92chap4.html
-                        // it is ONLY... © year name
-                        val year = Date(oldestDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().year
-                        data.copyright = year
+                        // otherwise the copyright was specified
 
                         primaryLicense.extras.add(data)
                     }

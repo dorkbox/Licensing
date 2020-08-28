@@ -26,12 +26,12 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
             val mainSourceSet: SourceSet = sourceSets.getByName("main")
             val kotlin = (mainSourceSet as org.gradle.api.internal.HasConvention).convention.getPlugin(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class.java).kotlin
 
-            kotlin.files.none { it.endsWith(".kt") }
+            kotlin.files.none { it.name.endsWith(".kt") }
         } catch (e: Exception) {
             false
         }
 
-        // we only should include the kotlin license information IF we actually use kotlin. If kotlin is not used, we should supress that license
+        // we only should include the kotlin license information IF we actually use kotlin. If kotlin is not used, we should suppress the license
         if (doesNotUseKotlin) {
             licenses.first().extras.removeIf { it.mavenId == "org.jetbrains.kotlin" }
         }
