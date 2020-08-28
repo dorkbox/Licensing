@@ -25,6 +25,9 @@ import java.time.LocalDate
 
 
 open class LicenseData(var name: String, var license: License) : java.io.Serializable, Comparable<LicenseData> {
+    // This is only for internal use when checking if specific license information needs to be suppressed under certain circumstances
+    internal var mavenId = ""
+
     /**
      * Description/title
      */

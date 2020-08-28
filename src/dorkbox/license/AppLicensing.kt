@@ -301,6 +301,8 @@ object AppLicensing {
 
     init {
         data.forEach {
+            // assign the maven ID, so we can use this later, as necessary. This is only for internal use
+            it.licenseData.mavenId = it.mavenId
             license(it)
         }
     }
