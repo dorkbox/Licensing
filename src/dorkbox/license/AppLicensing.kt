@@ -26,7 +26,7 @@ import org.gradle.api.IllegalDependencyNotation
  *      "com.dorkbox:Console:2.0" -> it will return APACHE_2, AND it will return the Version project license info!! DO NOT DO THIS!
  *
  */
-data class L(val mavenId: String, val licenseData: LicenseData)
+data class L(val mavenIdWithInfo: String, val licenseData: LicenseData)
 
 object AppLicensing {
     private const val DEBUG = false
@@ -336,14 +336,14 @@ object AppLicensing {
 
 
     private fun buildLicenseData(license: L) {
-        // assign the maven ID, so we can use this later, as necessary. This is only for internal use
-        license.licenseData.mavenId = license.mavenId
-
         // will always return moduleID ("com.dorkbox") and a version ("1.4", or "0" if not defined)
-        val (moduleId, version) = getFromModuleName(license.mavenId)
+        val (mavenId, version) = getFromModuleName(license.mavenIdWithInfo)
+
+        // assign the maven ID, so we can use this later, as necessary. This is only for internal use
+        license.licenseData.mavenId = mavenId
 
 
-        val internalList = allLicenseData.getOrPut(moduleId) { mutableListOf() }
+        val internalList = allLicenseData.getOrPut(mavenId) { mutableListOf() }
         internalList.add(Pair(version, license.licenseData))
 
         // largest version number is first, smallest version number is last.
