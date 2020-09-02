@@ -133,7 +133,7 @@ open class Licensing(private val project: Project) {
         }
 
         if (doesNotUseKotlin) {
-            licenses.first().extras.removeIf {
+            licenses.firstOrNull()?.extras?.removeIf {
                 it.mavenId == "org.jetbrains.kotlin" || it.mavenId == "org.jetbrains.kotlinx"
             }
         }
