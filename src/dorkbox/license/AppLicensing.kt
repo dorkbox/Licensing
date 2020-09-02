@@ -277,7 +277,13 @@ object AppLicensing {
              description("A simple, zero-dependency library for working with types. Supports Java 1.6+ and Android.")
              author("Jonathan Halterman and friends")
              url("https://github.com/jhalterman/typetools")
-         })
+         }),
+        L("com.github.ben-manes.caffeine:caffeine",
+          LicenseData("Caffeine", License.APACHE_2).apply {
+             description("Caffeine is a high performance, near optimal caching library based on Java 8.")
+             author("Ben Manes")
+             url("https://github.com/ben-manes/caffeine")
+         }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
     //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it
