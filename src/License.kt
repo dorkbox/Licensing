@@ -333,6 +333,9 @@ enum class License constructor(internal val names: Collection<String>, internal 
         listOf("http://scripts.sil.org/OFL",
                "http://opensource.org/licenses/OFL-1.1")),
 
+    OLDAP(listOf("The OpenLDAP Public License"),
+        "LICENSE.OLDAPv2.8",
+        listOf("https://www.openldap.org/software/release/license.html")),
 
     PHP_3_1(listOf("The PHP License, version 3.01",
                    "PHP License 3.01",
