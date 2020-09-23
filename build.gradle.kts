@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Instant
 
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
@@ -37,7 +36,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.5"
+    const val version = "2.5.2"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"

@@ -104,6 +104,12 @@ object AppLicensing {
              url("http://www.slf4j.org")
              author("QOS.ch")
          }),
+        L("org.slf4j:jcl-over-slf4j",
+          LicenseData("jcl-over-slf4j ", License.MIT).apply {
+             description("JCL 1.2 implemented over SLF4J")
+             url("http://www.slf4j.org")
+             author("QOS.ch")
+         }),
         L("net.java.dev.jna:jna:1.0",
           LicenseData("JNA", License.LGPLv2_1).apply {
              description("Simplified native library access for Java.")
@@ -283,6 +289,138 @@ object AppLicensing {
              description("Caffeine is a high performance, near optimal caching library based on Java 8.")
              author("Ben Manes")
              url("https://github.com/ben-manes/caffeine")
+         }),
+        L("org.ow2.asm",
+          LicenseData("ASM", License.APACHE_2).apply {
+             description("ASM: a very small and fast Java bytecode manipulation framework")
+             author("INRIA, France Telecom")
+             url("https://asm.ow2.io/")
+         }),
+        L("com.github.jnr",
+          LicenseData("The Java Native Runtime Project", License.APACHE_2).apply {
+              description("Java Native code interactions for easier JNI usage")
+              author("Wayne Meissner and contributors")
+              url("https://github.com/jnr")
+          }),
+        L("org.lmdbjava:lmdbjava",
+          LicenseData("LMDB for Java", License.APACHE_2).apply {
+             description("LMDB is an ordered, embedded, durable, key-value store which uses B+ Trees.")
+             author("The LmdbJava Open Source Project")
+             url("https://github.com/lmdbjava/lmdbjava")
+
+             extra("LMDB", License.OLDAP) {
+                 it.url("https://symas.com/lmdb/")
+                 it.author("Symas Corporation")
+             }
+         }),
+        L("com.intellij:annotations",
+          LicenseData("IntelliJ IDEA Annotations", License.APACHE_2).apply {
+              description("A set of annotations used for code inspection support and code documentation. ")
+              author("JetBrains s.r.o.")
+              url("https://github.com/JetBrains/java-annotations")
+          }),
+        L("org.jetbrains:annotations",
+          LicenseData("Annotations for JVM-based languages", License.APACHE_2).apply {
+              description("A set of Java annotations which can be used in JVM-based languages.")
+              author("JetBrains s.r.o.")
+              url("https://github.com/JetBrains/java-annotations")
+          }),
+
+
+
+        L("net.openhft:chronicle-map",
+          LicenseData("Chronicle Map", License.APACHE_2).apply {
+             description("Chronicle Map is a super-fast, in-memory, non-blocking, key-value store")
+             author("Chronicle Map Contributors")
+             url("https://github.com/OpenHFT/Chronicle-Map")
+         }),
+        L("net.openhft:chronicle-core",
+          LicenseData("Chronicle Core", License.APACHE_2).apply {
+             description("Library that wraps up low level access")
+             author("Chronicle Software")
+             url("https://github.com/OpenHFT/Chronicle-Core")
+         }),
+        L("net.openhft:chronicle-values",
+          LicenseData("Chronicle Values", License.APACHE_2).apply {
+             description("Poor man's value types, Java 8+")
+             author("Chronicle Software")
+             url("https://github.com/OpenHFT/Chronicle-Values")
+         }),
+        L("net.openhft:chronicle-bytes",
+          LicenseData("Chronicle Bytes", License.APACHE_2).apply {
+             description("Chronicle Bytes contains all the low level memory access wrappers")
+             author("Chronicle Software")
+             url("https://github.com/OpenHFT/Chronicle-Bytes")
+         }),
+        L("net.openhft:chronicle-threads",
+          LicenseData("Chronicle Threads", License.APACHE_2).apply {
+             description("This library provide a high performance thread pool.")
+             author("Chronicle Software")
+             url("https://github.com/OpenHFT/Chronicle-Threads")
+         }),
+        L("net.openhft:affinity",
+          LicenseData("Thread Affinity", License.APACHE_2).apply {
+             description("Lets you bind a thread to a given core")
+             author("Chronicle Software")
+             url("https://github.com/OpenHFT/Java-Thread-Affinity")
+         }),
+        L("net.openhft:chronicle-wire",
+          LicenseData("Chronicle-Wire", License.APACHE_2).apply {
+             description("Wire Format abstraction library")
+             author("Chronicle Software")
+             url("https://github.com/OpenHFT/Chronicle-Wire")
+         }),
+        L("net.openhft:compiler",
+          LicenseData("Java-Runtime-Compiler", License.APACHE_2).apply {
+             description("This takes a String, compiles it and loads it returning you a class")
+             author("Chronicle Software")
+             url("https://github.com/OpenHFT/Java-Runtime-Compiler")
+         }),
+        L("net.openhft:chronicle-algorithms",
+          LicenseData("Chronicle-Algorithms", License.APACHE_2).apply {
+             description("Zero allocation, efficient algorithms")
+             author("Chronicle Software")
+             url("https://github.com/OpenHFT/Chronicle-Algorithms")
+         }),
+        L("com.squareup:javapoet",
+          LicenseData("JavaPoet", License.APACHE_2).apply {
+             description("JavaPoet is a Java API for generating .java source files.")
+             author("Square, Inc.")
+             url("https://github.com/square/javapoet")
+         }),
+        L("com.thoughtworks.xstream:xstream",
+          LicenseData("XStream", License.BSD_3).apply {
+             description("XStream is a simple library to serialize objects to XML and back again.")
+             author("Joe Walnes")
+             author("XStream Committers")
+             url("http://x-stream.github.io/")
+         }),
+        L("xmlpull:xmlpull",
+          LicenseData("XML Pull Parsing API", License.CC0).apply {
+             description("XML Pull Parsing API ")
+         }),
+        L("xpp3:xpp3_min",
+          LicenseData("MXP1: Xml Pull Parser 3rd Edition (XPP3)", License.CC0).apply {
+             description("XmlPull parsing engine")
+             url("https://mvnrepository.com/artifact/xpp3/xpp3_min")
+         }),
+        L("org.codehaus.jettison:jettison",
+          LicenseData("Jettison ", License.APACHE_2).apply {
+             description("Jettison is a Java library for converting XML to JSON")
+             author("Envoi Solutions LLC")
+             url("https://github.com/jettison-json/jettison")
+         }),
+        L("org.ops4j.pax.url",
+          LicenseData("Pax URL", License.APACHE_2).apply {
+             description("Custom URL stream handlers for OSGi")
+             author("OPS4J Contributors")
+             url("https://github.com/ops4j/org.ops4j.pax.url")
+         }),
+        L("org.apache.maven.resolver",
+          LicenseData("Apache Maven Artifact Resolver", License.APACHE_2).apply {
+             description("A library for working with artifact repositories and dependency resolution")
+             author("The Apache Software Foundation")
+             url("https://github.com/apache/maven-resolver")
          }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!

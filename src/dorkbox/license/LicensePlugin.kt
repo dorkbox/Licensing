@@ -45,83 +45,85 @@ class LicensePlugin : Plugin<Project> {
         // Create the Plugin extension object (for users to configure our execution).
         val extension: Licensing = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
 
-        project.afterEvaluate { prj ->
-            // This MUST be first!
-            extension.scanDependencies()
+        val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, extension).apply {
+            group = "other"
+        }
 
-            val licenseInjector = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, extension).apply {
-                group = "other"
-            }
-
-            // the task will only build files that it needs to (and will only run once)
-            prj.tasks.forEach {
-                when (it) {
-                    is AbstractCompile     -> it.dependsOn(licenseInjector)
-                    is AbstractArchiveTask -> it.dependsOn(licenseInjector)
-                }
-            }
-
-            // Make sure to cleanup the generated license files on clean
-            project.gradle.taskGraph.whenReady { it ->
-                val isClean = it.allTasks.firstOrNull { it.name == "clean" } != null
-                if (isClean) {
-                    println("\tCleaning license data...")
-                    extension.output.forEach {
-                        if (it.exists()) {
-                            it.delete()
-                        }
-                    }
-                }
-            }
-
-            prj.configurations.asIterable().forEach { extension.projectDependencies.addAll(it.dependencies) }
-
-            val licensing = extension.licenses
-            if (licensing.isNotEmpty()) {
-                extension.licenses.forEach {
-                    when {
-                        it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferedName}' license")
-                        it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferedName}' license")
-                    }
-                }
-
-                // add the license information to maven POM, if applicable
-                try {
-                    val publishingExt = prj.extensions.getByType(PublishingExtension::class.java)
-                    publishingExt.publications.forEach {
-                        if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
-                            it as MavenPublication
-
-                            // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
-                            val licenseData = extension.licenses.first()
-                            val license = licenseData.license
-                            it.pom.licenses { licSpec ->
-                                licSpec.license { newLic ->
-                                    newLic.name.set(license.preferedName)
-                                    newLic.url.set(license.preferedUrl)
-
-                                    // only include license "notes" if we are a custom license **which is the license itself**
-                                    if (license == License.CUSTOM) {
-                                        val notes = licenseData.notes.joinToString("")
-                                        newLic.comments.set(notes)
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            println("Licensing only supports maven pom license injection for now")
-                        }
-                    }
-                } catch (ignored: Exception) {
-                    // there aren't always maven publishing used
-                }
+        project.allprojects.forEach { project ->
+            project.afterEvaluate { prj ->
+                // This MUST be first!
+                extension.scanDependencies()
 
                 // the task will only build files that it needs to (and will only run once)
                 prj.tasks.forEach {
-                   if (it is AbstractArchiveTask) {
-                        // don't include the license file from the root directory (which happens by default).
-                        // make sure that our license files are included in task resources (when building a jar, for example)
-                        it.from(extension.jarOutput)
+                    when (it) {
+                        is AbstractCompile -> it.dependsOn(licenseInjector)
+                        is AbstractArchiveTask -> it.dependsOn(licenseInjector)
+                    }
+                }
+
+                // Make sure to cleanup the generated license files on clean
+                project.gradle.taskGraph.whenReady { it ->
+                    val isClean = it.allTasks.firstOrNull { it.name == "clean" } != null
+                    if (isClean) {
+                        println("\tCleaning license data...")
+                        extension.output.forEach {
+                            if (it.exists()) {
+                                it.delete()
+                            }
+                        }
+                    }
+                }
+
+                prj.configurations.asIterable().forEach { extension.projectDependencies.addAll(it.dependencies) }
+
+                val licensing = extension.licenses
+                if (licensing.isNotEmpty()) {
+                    extension.licenses.forEach {
+                        when {
+                            it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferedName}' license")
+                            it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferedName}' license")
+                        }
+                    }
+
+                    // add the license information to maven POM, if applicable
+                    try {
+                        val publishingExt = prj.extensions.getByType(PublishingExtension::class.java)
+                        publishingExt.publications.forEach {
+                            if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
+                                it as MavenPublication
+
+                                // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
+                                val licenseData = extension.licenses.first()
+                                val license = licenseData.license
+                                it.pom.licenses { licSpec ->
+                                    licSpec.license { newLic ->
+                                        newLic.name.set(license.preferedName)
+                                        newLic.url.set(license.preferedUrl)
+
+                                        // only include license "notes" if we are a custom license **which is the license itself**
+                                        if (license == License.CUSTOM) {
+                                            val notes = licenseData.notes.joinToString("")
+                                            newLic.comments.set(notes)
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                println("Licensing only supports maven pom license injection for now")
+                            }
+                        }
+                    } catch (ignored: Exception) {
+                        // there aren't always maven publishing used
+                    }
+
+                    // the task will only build files that it needs to (and will only run once)
+                    prj.tasks.forEach {
+                        if (it is AbstractArchiveTask) {
+                            // don't include the license file from the root directory (which happens by default).
+                            // make sure that our license files are included in task resources (when building a jar, for example)
+                            it.from(extension.jarOutput)
+                        }
                     }
                 }
             }
