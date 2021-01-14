@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2021 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ plugins {
 
     id("com.gradle.plugin-publish") version "0.12.0"
 
-    id("com.dorkbox.Licensing") version "2.5"
-    id("com.dorkbox.VersionUpdate") version "2.0"
+    id("com.dorkbox.Licensing") version "2.5.3"
+    id("com.dorkbox.VersionUpdate") version "2.1"
     id("com.dorkbox.GradleUtils") version "1.12"
 
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.4.21-2"
 }
 
 
@@ -36,7 +36,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.5.2"
+    const val version = "2.5.3"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
