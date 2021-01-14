@@ -103,40 +103,42 @@ class DependencyScanner(private val project: Project, private val licenses: Muta
                     // see if we have it in the dependency jar
                     var missingFound = false
                     info.artifacts.forEach search@{ artifact ->
-                        ZipFile(artifact.file).use {
-                            try {
-                                // read the license blob information
-                                val ze = it.getEntry(LicenseInjector.LICENSE_BLOB)
-                                if (ze != null) {
-                                    it.getInputStream(ze).use { licenseStream ->
-                                        try {
-                                            ObjectInputStream(licenseStream).use { ois ->
-                                                val data = LicenseData("", License.CUSTOM)
-                                                ois.readInt() // weird stuff from serialization. No idea what this value is for, but it is REQUIRED
-                                                data.readObject(ois)
-                                                println("[${data.license}]")
+                        val file = artifact.file
+                        try {
+                            if (file.canRead()) {
+                                ZipFile(file).use {
+                                    // read the license blob information
+                                    val ze = it.getEntry(LicenseInjector.LICENSE_BLOB)
+                                    if (ze != null) {
+                                        it.getInputStream(ze).use { licenseStream ->
+                                            try {
+                                                ObjectInputStream(licenseStream).use { ois ->
+                                                    val data = LicenseData("", License.CUSTOM)
+                                                    ois.readInt() // weird stuff from serialization. No idea what this value is for, but it is REQUIRED
+                                                    data.readObject(ois)
+                                                    println("[${data.license}]")
 
-                                                // as per US Code Title 17, Chapter 4; for "visually perceptive copies" (which includes software).
-                                                // http://www.copyright.gov/title17/92chap4.html
-                                                // it is ONLY... © year name
-                                                //
-                                                // this is correctly saved in the license blob
-                                                if (!primaryLicense.extras.contains(data)) {
-                                                    primaryLicense.extras.add(data)
+                                                    // as per US Code Title 17, Chapter 4; for "visually perceptive copies" (which includes software).
+                                                    // http://www.copyright.gov/title17/92chap4.html
+                                                    // it is ONLY... © year name
+                                                    //
+                                                    // this is correctly saved in the license blob
+                                                    if (!primaryLicense.extras.contains(data)) {
+                                                        primaryLicense.extras.add(data)
+                                                    }
                                                 }
+                                            } catch (e: Exception) {
+                                                println("[ERROR $file], ${e.message ?: e.javaClass}")
                                             }
-                                        } catch (e: Exception) {
-                                            println("[ERROR ${artifact.file}], ${e.message ?: e.javaClass}")
-                                        }
 
-                                        missingFound = true
-                                        return@search
+                                            missingFound = true
+                                            return@search
+                                        }
                                     }
                                 }
                             }
-                            catch (e: Exception) {
-                                println("[ERROR ${artifact.file}], ${e.message ?: e.javaClass}")
-                            }
+                        } catch (e: Exception) {
+                            println("[ERROR $file], ${e.message ?: e.javaClass}")
                         }
                     }
 
