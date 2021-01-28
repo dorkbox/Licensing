@@ -44,6 +44,17 @@ object AppLicensing {
     //
     // We DO NOT have to maintain a FULL HISTORY CHAIN of contributions of all dependent libraries -- only the library + license that we use.
     private val data = listOf(
+        // NOTE: 1.4.0 screwed up the build date (the jar dates are 1980, instead of 2020)
+        L("org.jetbrains.kotlin:1.4.0",
+          LicenseData("Kotlin", License.APACHE_2).apply {
+              copyright = 2020
+              author("JetBrains s.r.o. and Kotlin Programming Language contributors")
+              url("https://github.com/JetBrains/kotlin")
+              note("Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply")
+              note("See: https://github.com/JetBrains/kotlin/blob/master/license/README.md")
+          }),
+
+
         L("de.marcphilipp.gradle:nexus-publish-plugin",
           LicenseData("Nexus Publish Plugin", License.APACHE_2).apply {
               description("Gradle Plugin that explicitly creates a Staging Repository before publishing to Nexus.")
@@ -66,15 +77,6 @@ object AppLicensing {
           }),
         L("org.jetbrains.kotlin",
           LicenseData("Kotlin", License.APACHE_2).apply {
-             author("JetBrains s.r.o. and Kotlin Programming Language contributors")
-             url("https://github.com/JetBrains/kotlin")
-             note("Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply")
-             note("See: https://github.com/JetBrains/kotlin/blob/master/license/README.md")
-         }),
-        // NOTE: 1.4.0 screwed up the build date (the jar dates are 1980, instead of 2020)
-        L("org.jetbrains.kotlin:1.4.0",
-          LicenseData("Kotlin", License.APACHE_2).apply {
-             copyright = 2020
              author("JetBrains s.r.o. and Kotlin Programming Language contributors")
              url("https://github.com/JetBrains/kotlin")
              note("Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply")
@@ -325,9 +327,6 @@ object AppLicensing {
               author("JetBrains s.r.o.")
               url("https://github.com/JetBrains/java-annotations")
           }),
-
-
-
         L("net.openhft:chronicle-map",
           LicenseData("Chronicle Map", License.APACHE_2).apply {
              description("Chronicle Map is a super-fast, in-memory, non-blocking, key-value store")
@@ -421,6 +420,12 @@ object AppLicensing {
              description("A library for working with artifact repositories and dependency resolution")
              author("The Apache Software Foundation")
              url("https://github.com/apache/maven-resolver")
+         }),
+        L("org.openjfx",
+          LicenseData("OpenJFX", License.GPLv2_CLASSPATH).apply {
+             description("OpenJFX client application platform for desktop, mobile and embedded systems")
+             author("Oracle and/or its affiliates")
+             url("https://github.com/openjdk/jfx")
          }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
