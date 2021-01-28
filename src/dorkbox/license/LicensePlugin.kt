@@ -49,8 +49,8 @@ class LicensePlugin : Plugin<Project> {
             group = "other"
         }
 
-        project.allprojects.forEach { project ->
-            project.afterEvaluate { prj ->
+        project.allprojects.forEach { innerProject ->
+            innerProject.afterEvaluate { prj ->
                 // This MUST be first!
                 extension.scanDependencies()
 
@@ -63,7 +63,7 @@ class LicensePlugin : Plugin<Project> {
                 }
 
                 // Make sure to cleanup the generated license files on clean
-                project.gradle.taskGraph.whenReady { it ->
+                innerProject.gradle.taskGraph.whenReady { it ->
                     val isClean = it.allTasks.firstOrNull { it.name == "clean" } != null
                     if (isClean) {
                         println("\tCleaning license data...")
