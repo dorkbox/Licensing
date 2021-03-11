@@ -132,9 +132,12 @@ open class Licensing(private val project: Project) {
             false
         }
 
-        if (doesNotUseKotlin) {
-            licenses.firstOrNull()?.extras?.removeIf {
-                it.mavenId == "org.jetbrains.kotlin" || it.mavenId == "org.jetbrains.kotlinx"
+        if (doesNotUseKotlin && licenses.isNotEmpty()) {
+            val extras: MutableList<LicenseData>? = licenses.firstOrNull()?.extras
+            if (extras?.isNotEmpty() == true) {
+                extras.removeIf {
+                    it.mavenId == "org.jetbrains.kotlin" || it.mavenId == "org.jetbrains.kotlinx"
+                }
             }
         }
     }
