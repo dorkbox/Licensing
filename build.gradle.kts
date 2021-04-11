@@ -22,13 +22,13 @@ plugins {
     java
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "0.13.0"
+    id("com.gradle.plugin-publish") version "0.14.0"
 
-    id("com.dorkbox.Licensing") version "2.5.4"
-    id("com.dorkbox.VersionUpdate") version "2.1"
-    id("com.dorkbox.GradleUtils") version "1.15"
+    id("com.dorkbox.Licensing") version "2.5.5"
+    id("com.dorkbox.VersionUpdate") version "2.3"
+    id("com.dorkbox.GradleUtils") version "2.2"
 
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
 }
 
 
