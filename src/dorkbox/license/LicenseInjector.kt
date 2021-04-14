@@ -1,7 +1,11 @@
 package dorkbox.license
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.*
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import java.io.File
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
@@ -28,8 +32,86 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
 
     @TaskAction
     fun doTask() {
+        // This MUST be first, since it loads license data that is used elsewhere
+        // show scanning or missing, but not both
+        val (preloadedText, embeddedText, missingText) = extension.scanDependencies(project)
+
+        // validate the license text configuration section in the gradle file ONLY WHEN PUSHING A JAR
+        val licensing = extension.licenses
+        if (licensing.isNotEmpty()) {
+            extension.licenses.forEach {
+                when {
+                    it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferedName}' license")
+                    it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferedName}' license")
+                }
+            }
+
+            // add the license information to maven POM, if applicable
+            try {
+                val publishingExt = project.extensions.getByType(PublishingExtension::class.java)
+                publishingExt.publications.forEach {
+                    if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
+                        it as MavenPublication
+
+                        // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
+                        val licenseData = extension.licenses.first()
+                        val license = licenseData.license
+                        it.pom.licenses { licSpec ->
+                            licSpec.license { newLic ->
+                                newLic.name.set(license.preferedName)
+                                newLic.url.set(license.preferedUrl)
+
+                                // only include license "notes" if we are a custom license **which is the license itself**
+                                if (license == License.CUSTOM) {
+                                    val notes = licenseData.notes.joinToString("")
+                                    newLic.comments.set(notes)
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        println("Licensing only supports maven pom license injection for now")
+                    }
+                }
+            } catch (ignored: Exception) {
+                // there aren't always maven publishing used
+            }
+
+            // the task will only build files that it needs to (and will only run once)
+            project.tasks.forEach {
+                if (it is AbstractArchiveTask) {
+                    // don't include the license file from the root directory (which happens by default).
+                    // make sure that our license files are included in task resources (when building a jar, for example)
+                    it.from(extension.jarOutput)
+                }
+            }
+        }
+
         // true if there was any work done. checks while it goes as well
         didWork = buildLicenseFiles(extension.outputBuildDir, licenses, true) && buildLicenseFiles(extension.outputRootDir, licenses, false)
+
+        val hasArchiveTask = project.gradle.taskGraph.allTasks.filterIsInstance<AbstractArchiveTask>().isNotEmpty()
+        if (hasArchiveTask || didWork) {
+            if (preloadedText.isNotEmpty()) {
+                println("\tPreloaded license data:")
+                preloadedText.forEach {
+                    println(it)
+                }
+            }
+            if (embeddedText.isNotEmpty()) {
+                println("\tEmbedded license data:")
+                embeddedText.forEach {
+                    println(it)
+                }
+            }
+            if (missingText.isNotEmpty()) {
+                println("\tMissing license data:")
+                missingText.forEach {
+                    println(it)
+                }
+                println("\tPlease submit an issue with this information to include it in future license scans.")
+            }
+        }
     }
 
     /**

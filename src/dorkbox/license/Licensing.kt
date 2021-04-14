@@ -36,9 +36,7 @@ open class Licensing(private val project: Project) {
 
     private val projectName = project.name
 
-    val projectDependencies = mutableListOf<Dependency>()
     val licenses = mutableListOf<LicenseData>()
-
 
     val outputBuildDir: File = File(project.buildDir, "licensing")
     val outputRootDir: File = project.rootDir
@@ -109,14 +107,46 @@ open class Licensing(private val project: Project) {
         files.toList()
     }
 
-    // note: we SCAN first! our output files are created when the injector is initialized (which happens after scanning)
-    fun scanDependencies() {
+
+    /**
+     * Gets a list of files, representing the on-disk location of ALL POSSIBLE generated license file
+     */
+    fun allPossibleOutput(): List<File> {
+        val licenseFileNames = License.values().map { it.licenseFile }.filter { it.isNotEmpty() }
+
+        val files = mutableListOf<File>()
+
+        /// outputBuildDir
+        files.add(File(outputBuildDir, LicenseInjector.LICENSE_FILE))
+        files.add(File(outputBuildDir, LicenseInjector.LICENSE_BLOB))
+        licenseFileNames.forEach {
+            val file = File(outputBuildDir, it)
+            if (file.exists()) {
+                files.add(file)
+            }
+        }
+
+        /// root dir
+        files.add(File(outputRootDir, LicenseInjector.LICENSE_FILE))
+        licenseFileNames.forEach {
+            val file = File(outputRootDir, it)
+            if (file.exists()) {
+                files.add(file)
+            }
+        }
+
+        return files
+    }
+
+
+    // scan as part of the plugin
+    fun scanDependencies(project: Project): Triple<MutableList<String>, MutableList<String>, MutableList<String>> {
         // now we want to add license information that we know about from our dependencies to our list
         // just to make it clear, license information CAN CHANGE BETWEEN VERSIONS! For example, JNA changed from GPL to Apache in version 4+
         // we associate the artifact group + id + (start) version as a license.
         // if a license for a dependency is UNKNOWN, then we emit a warning to the user to add it as a pull request
         // if a license version is not specified, then we use the default
-        DependencyScanner(project, this.licenses).scanForLicenseData()
+        val textOutput = LicenseDependencyScanner.scanForLicenseData(project, this.licenses)
 
 
         // we only should include the kotlin license information IF we actually use kotlin.
@@ -140,6 +170,8 @@ open class Licensing(private val project: Project) {
                 }
             }
         }
+
+        return textOutput
     }
 
     /**
