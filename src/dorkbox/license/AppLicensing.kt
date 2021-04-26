@@ -136,6 +136,18 @@ object AppLicensing {
              url("https://github.com/twall/jna")
              author("Timothy Wall")
          }),
+        L("net.java.dev.jna:jna-jpms:5.8",
+            LicenseData("JNA", License.APACHE_2).apply {
+                description("Simplified native library access for Java.")
+                url("https://github.com/twall/jna")
+                author("Timothy Wall")
+            }),
+        L("net.java.dev.jna:jna-platform-jpms:5.8",
+            LicenseData("JNA-Platform", License.APACHE_2).apply {
+                description("Mappings for a number of commonly used platform functions")
+                url("https://github.com/twall/jna")
+                author("Timothy Wall")
+            }),
         L("com.hierynomus:sshj",
           LicenseData("SSHJ", License.APACHE_2).apply {
              description("SSHv2 library for Java")
