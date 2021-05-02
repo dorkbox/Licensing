@@ -156,25 +156,25 @@ object AppLicensing {
              author("SSHJ Contributors")
 
              extra("Apache MINA", License.APACHE_2) {
-                 it.url("https://mina.apache.org/sshd-project/")
-                 it.author("The Apache Software Foundation")
+                 url("https://mina.apache.org/sshd-project/")
+                 author("The Apache Software Foundation")
              }
              extra("Apache Commons-Net", License.APACHE_2) {
-                  it.url("https://commons.apache.org/proper/commons-net/")
-                  it.author("The Apache Software Foundation")
+                 url("https://commons.apache.org/proper/commons-net/")
+                 author("The Apache Software Foundation")
               }
              extra("JZlib", License.APACHE_2) {
-                  it.url("http://www.jcraft.com/jzlib")
-                  it.author("Atsuhiko Yamanaka")
-                  it.author("JCraft, Inc.")
+                 url("http://www.jcraft.com/jzlib")
+                 author("Atsuhiko Yamanaka")
+                 author("JCraft, Inc.")
               }
              extra("Bouncy Castle Crypto", License.APACHE_2) {
-                  it.url("http://www.bouncycastle.org")
-                  it.author("The Legion of the Bouncy Castle Inc")
+                 url("http://www.bouncycastle.org")
+                 author("The Legion of the Bouncy Castle Inc")
               }
              extra("ed25519-java", License.CC0) {
-                  it.url("https://github.com/str4d/ed25519-java")
-                  it.author("https://github.com/str4d")
+                 url("https://github.com/str4d/ed25519-java")
+                 author("https://github.com/str4d")
              }
          }),
         L("org.bouncycastle",
@@ -230,16 +230,16 @@ object AppLicensing {
              url("https://github.com/EsotericSoftware/kryo")
 
              extra("ReflectASM", License.BSD_3) {
-                 it.url("https://github.com/EsotericSoftware/reflectasm")
-                 it.author("Nathan Sweet")
+                 url("https://github.com/EsotericSoftware/reflectasm")
+                 author("Nathan Sweet")
              }
              extra("Objenesis ", License.APACHE_2) {
-                 it.url("http://objenesis.org")
-                 it.author("Objenesis Team and all contributors")
+                 url("http://objenesis.org")
+                 author("Objenesis Team and all contributors")
              }
              extra("MinLog-SLF4J", License.BSD_3) {
-                 it.url("https://github.com/EsotericSoftware/minlog")
-                 it.author("Nathan Sweet")
+                 url("https://github.com/EsotericSoftware/minlog")
+                 author("Nathan Sweet")
              }
          }),
         L("de.javakaffee:kryo-serializers",
@@ -323,8 +323,8 @@ object AppLicensing {
              url("https://github.com/lmdbjava/lmdbjava")
 
              extra("LMDB", License.OLDAP) {
-                 it.url("https://symas.com/lmdb/")
-                 it.author("Symas Corporation")
+                 url("https://symas.com/lmdb/")
+                 author("Symas Corporation")
              }
          }),
         L("com.intellij:annotations",

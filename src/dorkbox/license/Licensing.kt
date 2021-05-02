@@ -177,18 +177,18 @@ open class Licensing(private val project: Project) {
     /**
      * Adds a new license section using the project's name as the assigned name
      */
-    fun license(license: License, licenseAction: Action<LicenseData>) {
+    fun license(license: License, licenseAction: LicenseData.() -> Unit) {
         val licenseData = LicenseData(projectName, license)
-        licenseAction.execute(licenseData)
+        licenseAction(licenseData)
         licenses.add(licenseData)
     }
 
     /**
      * Adds a new license section using the specified name as the assigned name
      */
-    fun license(name: String, license: License, licenseAction: Action<LicenseData>) {
+    fun license(name: String, license: License, licenseAction: LicenseData.() -> Unit) {
         val licenseData = LicenseData(name, license)
-        licenseAction.execute(licenseData)
+        licenseAction(licenseData)
         licenses.add(licenseData)
     }
 }

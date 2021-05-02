@@ -109,19 +109,11 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
      */
     val extras = mutableListOf<LicenseData>()
 
-    /**
-     * Specifies the extra license information for this project
-     */
-    fun extra(name: String, license: License, licenseAction: Action<ExtraLicenseData>) {
-        val licenseData = ExtraLicenseData(name, license)
-        licenseAction.execute(licenseData)
-        extras.add(licenseData)
-    }
 
     /**
      * Specifies the extra license information for this project
      */
-    fun extra(name: String, license: License, licenseAction: (ExtraLicenseData) -> Unit) {
+    fun extra(name: String, license: License, licenseAction: ExtraLicenseData.() -> Unit) {
         val licenseData = ExtraLicenseData(name, license)
         licenseAction(licenseData)
         extras.add(licenseData)
