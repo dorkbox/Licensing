@@ -439,6 +439,63 @@ object AppLicensing {
              author("Oracle and/or its affiliates")
              url("https://github.com/openjdk/jfx")
          }),
+        L("com.squareup.moshi",
+          LicenseData("moshi", License.APACHE_2).apply {
+             description("A modern JSON library for Kotlin and Java")
+             author("Square, Inc")
+             url("https://github.com/square/moshi")
+         }),
+        L("com.squareup.moshi",
+          LicenseData("moshi-kotlin", License.APACHE_2).apply {
+             description("A modern JSON library for Kotlin and Java")
+             author("Square, Inc")
+             url("https://github.com/square/moshi")
+         }),
+        L("com.squareup.okio",
+          LicenseData("okio", License.APACHE_2).apply {
+             description("A modern I/O library for Android, Kotlin, and Java")
+             author("Square, Inc")
+             url("https://github.com/square/okio")
+         }),
+        L("com.squareup.okhttp3",
+          LicenseData("okhttp", License.APACHE_2).apply {
+             description("Square’s meticulous HTTP client for the JVM, Android, and GraalVM")
+             author("Square, Inc")
+             url("https://github.com/square/okhttp")
+         }),
+        L("net.sf.trove4j",
+          LicenseData("core", License.LGPLv2_1).apply {
+             description("Fast, lightweight implementations of the Java Collections API")
+             author("Eric D. Friedman")
+             url("http://trove4j.sourceforge.net")
+
+            extra("HashFunctions", License.CC0) {
+                copyright(1999)
+                url("https://mina.apache.org/sshd-project/")
+                author("CERN")
+            }
+            extra("PrimeFinder", License.CC0) {
+                copyright(1999)
+                url("https://mina.apache.org/sshd-project/")
+                author("CERN")
+            }
+         }),
+        L("com.koloboke",
+            LicenseData("koloboke-api-jdk8", License.APACHE_2).apply {
+                description("Java Collections till the last breadcrumb of memory and performance ")
+                author("Roman Leventov")
+                author("Peter K Lawrey")
+                author("Brent Douglas")
+                url("https://github.com/leventov/Koloboke")
+            }),
+        L("com.koloboke",
+            LicenseData("koloboke-impl-jdk8", License.APACHE_2).apply {
+                description("Java Collections till the last breadcrumb of memory and performance ")
+                author("Roman Leventov")
+                author("Peter K Lawrey")
+                author("Brent Douglas")
+                url("https://github.com/leventov/Koloboke")
+            }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
     //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it
