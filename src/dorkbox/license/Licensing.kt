@@ -59,8 +59,6 @@ open class Licensing(private val project: Project) {
         flatLicenseFiles.forEach {
             if (it.isNotBlank()) {
                 files.add(File(outputBuildDir, it))
-            } else {
-                println("UNKNOWN!")
             }
         }
 
@@ -84,8 +82,7 @@ open class Licensing(private val project: Project) {
             flattenDep(it, flatLicenseFiles)
         }
 
-
-        val files = mutableSetOf<File>()
+         val files = mutableSetOf<File>()
 
         /// outputBuildDir
         files.add(File(outputBuildDir, LicenseInjector.LICENSE_FILE))
@@ -140,13 +137,13 @@ open class Licensing(private val project: Project) {
 
 
     // scan as part of the plugin
-    fun scanDependencies(project: Project): Triple<MutableList<String>, MutableList<String>, MutableList<String>> {
+    fun scanDependencies(project: Project, allProjects: Boolean): Triple<MutableList<String>, MutableList<String>, MutableList<String>> {
         // now we want to add license information that we know about from our dependencies to our list
         // just to make it clear, license information CAN CHANGE BETWEEN VERSIONS! For example, JNA changed from GPL to Apache in version 4+
         // we associate the artifact group + id + (start) version as a license.
         // if a license for a dependency is UNKNOWN, then we emit a warning to the user to add it as a pull request
         // if a license version is not specified, then we use the default
-        val textOutput = LicenseDependencyScanner.scanForLicenseData(project, this.licenses)
+        val textOutput = LicenseDependencyScanner.scanForLicenseData(project, allProjects, this.licenses)
 
 
         // we only should include the kotlin license information IF we actually use kotlin.

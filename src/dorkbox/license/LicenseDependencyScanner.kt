@@ -16,14 +16,30 @@ object LicenseDependencyScanner {
     // - from jars on runtime/compile classpath
 
     // THIS MUST BE IN "afterEvaluate" or run from a specific task.
-    fun scanForLicenseData(project: Project, licenses: MutableList<LicenseData>): Triple<MutableList<String>, MutableList<String>, MutableList<String>> {
+    fun scanForLicenseData(project: Project, allProjects: Boolean,
+                           licenses: MutableList<LicenseData>): Triple<MutableList<String>, MutableList<String>, MutableList<String>> {
+
         val preloadedText = mutableListOf<String>();
         val embeddedText = mutableListOf<String>();
         val missingText = mutableListOf<String>();
 
 
         // NOTE: there will be some duplicates, so we want to remove them
-        val projectDependencies = (scan(project, "compileClasspath") + scan(project, "runtimeClasspath")).toSet().toList()
+        val dependencies = mutableSetOf<Dependency>()
+
+        if (allProjects) {
+            project.allprojects.forEach { proj ->
+                // root + children
+                dependencies.addAll(scan(proj, "compileClasspath"))
+                dependencies.addAll(scan(proj, "runtimeClasspath"))
+            }
+        } else {
+            // only the root project
+            dependencies.addAll(scan(project, "compileClasspath"))
+            dependencies.addAll(scan(project, "runtimeClasspath"))
+        }
+
+        val projectDependencies = dependencies.toList()
 
         val missingLicenseInfo = mutableSetOf<Dependency>()
         val actuallyMissingLicenseInfo = mutableSetOf<Dependency>()

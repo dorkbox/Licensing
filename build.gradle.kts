@@ -26,7 +26,7 @@ plugins {
 
     id("com.dorkbox.Licensing") version "2.5.5"
     id("com.dorkbox.VersionUpdate") version "2.3"
-    id("com.dorkbox.GradleUtils") version "2.2"
+    id("com.dorkbox.GradleUtils") version "2.7"
 
     kotlin("jvm") version "1.4.32"
 }
@@ -36,7 +36,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.7.1"
+    const val version = "2.7.5"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -51,8 +51,7 @@ object Extras {
 /////  assign 'Extras'
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
-GradleUtils.fixIntellijPaths()
-GradleUtils.defaultResolutionStrategy()
+GradleUtils.defaults()
 GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
 
 
