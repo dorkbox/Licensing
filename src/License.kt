@@ -159,7 +159,7 @@ enum class License constructor(internal val names: Collection<String>, internal 
                 "Common Development and Distribution License (CDDL)",
                 "CDDL License",
                 "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0"),
-         "VERSION.CDDL",
+         "LICENSE.CDDL",
          listOf("http://opensource.org/licenses/CDDL-1.0")),
 
 
@@ -168,7 +168,7 @@ enum class License constructor(internal val names: Collection<String>, internal 
                     "Common Development and Distribution License (CDDL 1.1)",
                     "CDDL License v1.1",
                     "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1"),
-             "VERSION.CDDLv1.1",
+             "LICENSE.CDDLv1.1",
              listOf("https://javaee.github.io/glassfish/LICENSE")),
 
 
