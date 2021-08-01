@@ -22,7 +22,7 @@ plugins {
     java
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "0.15.0"
+    id("com.gradle.plugin-publish") version "0.14.0"
 
     id("com.dorkbox.Licensing") version "2.9"
     id("com.dorkbox.VersionUpdate") version "2.3"
@@ -43,7 +43,6 @@ object Extras {
     const val id = "Licensing"
     const val vendor = "Dorkbox LLC"
     const val url = "https://git.dorkbox.com/dorkbox/Licensing"
-    val tags = listOf("licensing", "legal", "notice", "license", "dependencies")
     val buildDate = Instant.now().toString()
 }
 
@@ -131,7 +130,7 @@ pluginBundle {
             id = "${Extras.group}.${Extras.id}"
             displayName = Extras.name
             description = Extras.description
-            tags = Extras.tags
+            tags = listOf("licensing", "legal", "notice", "license", "dependencies")
             version = Extras.version
         }
     }
