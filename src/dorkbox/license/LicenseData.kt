@@ -16,7 +16,6 @@
 package dorkbox.license
 
 import License
-import org.gradle.api.Action
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
@@ -357,7 +356,7 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
         private fun buildLicenseString(b: StringBuilder, license: LicenseData, prefixOffset: Int) {
             line(prefixOffset, b, HEADER1, license.name, " - ", license.description)
 
-            line(prefixOffset, b, SPACER3, "[", license.license.preferedName, "]")
+            line(prefixOffset, b, SPACER3, "[", license.license.preferredName, "]")
 
             license.urls.forEach {
                 line(prefixOffset, b, SPACER3, it)

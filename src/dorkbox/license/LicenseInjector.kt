@@ -42,8 +42,8 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
         if (licensing.isNotEmpty()) {
             extension.licenses.forEach {
                 when {
-                    it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferedName}' license")
-                    it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferedName}' license")
+                    it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferredName}' license")
+                    it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferredName}' license")
                 }
             }
 
@@ -59,8 +59,8 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
                         val license = licenseData.license
                         it.pom.licenses { licSpec ->
                             licSpec.license { newLic ->
-                                newLic.name.set(license.preferedName)
-                                newLic.url.set(license.preferedUrl)
+                                newLic.name.set(license.preferredName)
+                                newLic.url.set(license.preferredUrl)
 
                                 // only include license "notes" if we are a custom license **which is the license itself**
                                 if (license == License.CUSTOM) {
@@ -121,10 +121,12 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
     private fun checkLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
         if (!outputDir.exists()) outputDir.mkdirs()
 
-        val licenseText = LicenseData.buildString(licenses)
+        val licenseBytes = LicenseData.buildString(licenses).toByteArray(Charsets.UTF_8)
         val licenseFile = File(outputDir, LICENSE_FILE)
 
-        if (fileIsNotSame(licenseFile, licenseText)) {
+
+        // check the license file first
+        if (fileIsNotSame(licenseFile, licenseBytes)) {
             // work needs doing
             return true
         }
@@ -134,9 +136,9 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
 
             if (license != License.UNKNOWN) {
                 val file = File(outputDir, license.licenseFile)
-                val sourceText = license.licenseText
+                val sourceBytes = license.licenseBytes
 
-                if (fileIsNotSame(file, sourceText)) {
+                if (fileIsNotSame(file, sourceBytes)) {
                     // work needs doing
                     return true
                 }
@@ -154,16 +156,17 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
 
         if (!outputDir.exists()) outputDir.mkdirs()
 
-        val licenseText = LicenseData.buildString(licenses)
-        if (licenseText.isEmpty()) {
+        val licenseBytes = LicenseData.buildString(licenses).toByteArray(Charsets.UTF_8)
+
+        if (licenseBytes.isEmpty()) {
             println("\tNo License information defined in the project.  Unable to build license data")
         } else {
             val licenseFile = File(outputDir, LICENSE_FILE)
             val licenseBlob = File(outputDir, LICENSE_BLOB)
 
-            if (fileIsNotSame(licenseFile, licenseText)) {
+            if (fileIsNotSame(licenseFile, licenseBytes)) {
                 // write out the LICENSE files
-                licenseFile.writeText(licenseText)
+                licenseFile.writeBytes(licenseBytes)
 
                 if (buildLicenseBlob) {
                     // save off the blob, so we can check when reading dependencies if we can
@@ -200,12 +203,11 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
                 // DO NOT write license text/info for custom or unknown licenses
                 if (license != License.UNKNOWN && license != License.CUSTOM) {
                     val file = File(outputDir, license.licenseFile)
-                    val sourceText = license.licenseText
+                    val sourceBytes = license.licenseBytes
 
-                    if (fileIsNotSame(file, sourceText)) {
-                        // write out the various license text files
-                        file.writeText(sourceText)
-
+                    if (fileIsNotSame(file, sourceBytes)) {
+                        // write out the various license text files (NOTE: we force LF for everything!)
+                        file.writeBytes(sourceBytes)
                         hasDoneWork = true
                     }
                 }
@@ -219,15 +221,25 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
      * this is so we can check if we need to re-write the file. This is done to
      * save write cycles on low-end drives where write frequency is an issue
      *
-     * @return TRUE if the file IS NOT THE SAME, FALSE if the file IS THE SAME
+     * @return TRUE if the file IS DIFFERENT, FALSE if the file IS THE SAME
      */
-    private fun fileIsNotSame(outputFile: File, sourceText: String): Boolean {
+    private fun fileIsNotSame(outputFile: File, sourceBytes: ByteArray): Boolean {
         if (!outputFile.canRead()) {
             return true // not the same, so work needs to be done
         }
 
+        val fileSize = outputFile.length()
+
+        if (sourceBytes.isEmpty() && fileSize > 0L) {
+            return true
+        }
+
+        if (sourceBytes.isNotEmpty() && fileSize == 0L) {
+            return true
+        }
+
         return try {
-            !(sourceText.toByteArray() contentEquals outputFile.readBytes())
+            !(sourceBytes contentEquals outputFile.readBytes())
         } catch (e: Exception) {
             return true // not the same, so work needs to be done
         }

@@ -24,11 +24,11 @@ import java.io.File
 
 open class Licensing(private val project: Project) {
     companion object {
-        fun getLicense(licenseFile: String) : String{
+        fun getLicense(licenseFile: String) : ByteArray {
             // license files are located in this package...
             val stream = Licensing::class.java.getResourceAsStream(licenseFile)
             // .use{} will close the stream when it's done...
-            return stream?.bufferedReader()?.use { it.readText() } ?: ""
+            return stream?.use { it.readBytes() } ?: ByteArray(0)
         }
 
         internal const val NAME = "licensing"

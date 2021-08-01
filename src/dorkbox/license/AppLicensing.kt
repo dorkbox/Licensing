@@ -769,7 +769,13 @@ object AppLicensing {
             LicenseData("Java Servlet API", License.CDDL_1_1).apply {
                 description("Java Servlet API")
                 author("Oracle and/or its affiliates")
-                url("https://github.com/mrniko/netty-socketio")
+                url("https://javaee.github.io/servlet-spec/")
+            }),
+        L("net.jodah:expiringmap",
+            LicenseData("Jodah Expiring Map", License.APACHE_2).apply {
+                description("high performance thread-safe map that expires entries")
+                author("Jonathan Halterman")
+                url("https://github.com/jhalterman/expiringmap")
             }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!

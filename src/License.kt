@@ -27,6 +27,10 @@ enum class License constructor(internal val names: Collection<String>, internal 
             "",
             listOf("")),
 
+    COMMERCIAL(listOf("Commercial License"),
+           "",
+           listOf("")),
+
     CUSTOM(listOf("Custom License"),
            "",
            listOf("")),
@@ -418,17 +422,16 @@ enum class License constructor(internal val names: Collection<String>, internal 
 
     // @formatter:on
 
-    val preferedName: String
+    val preferredName: String
         get() = names.first()
 
-    val preferedUrl: String
+    val preferredUrl: String
         get() = urls.first()
 
-    val licenseText: String
+    val licenseBytes: ByteArray
         get() {
             return Licensing.getLicense(this.licenseFile)
         }
-
 
     companion object {
         /**

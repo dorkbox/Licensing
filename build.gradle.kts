@@ -22,11 +22,11 @@ plugins {
     java
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "0.14.0"
+    id("com.gradle.plugin-publish") version "0.15.0"
 
-    id("com.dorkbox.Licensing") version "2.5.5"
+    id("com.dorkbox.Licensing") version "2.9"
     id("com.dorkbox.VersionUpdate") version "2.3"
-    id("com.dorkbox.GradleUtils") version "2.7"
+    id("com.dorkbox.GradleUtils") version "2.8.1"
 
     kotlin("jvm") version "1.4.32"
 }
@@ -36,7 +36,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.8"
+    const val version = "2.9"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -136,4 +136,3 @@ pluginBundle {
         }
     }
 }
-
