@@ -777,6 +777,13 @@ object AppLicensing {
                 author("Jonathan Halterman")
                 url("https://github.com/jhalterman/expiringmap")
             }),
+        L("com.vaadin:vaadin",
+            LicenseData("Vaadin", License.APACHE_2).apply {
+                description("An open platform for building modern web apps for Java back ends")
+                author("Vaadin Ltd")
+                url("https://vaadin.com")
+                url("https://github.com/vaadin")
+            }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
     //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it

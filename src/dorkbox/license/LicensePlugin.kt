@@ -16,6 +16,7 @@
 package dorkbox.license
 
 import License
+import jdk.nashorn.internal.objects.NativeArray.forEach
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -45,32 +46,14 @@ class LicensePlugin : Plugin<Project> {
         // Create the Plugin extension object (for users to configure our execution).
         val extension: Licensing = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
 
-        val generateLicenseFiles = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, extension).apply {
-            group = "other"
-        }
+        val generateLicenseFiles = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, extension)
 
-
-        // collect ALL projected + children projects.
-        val projects = mutableListOf<Project>()
-        val recursive = LinkedList<Project>()
-        recursive.add(project)
-
-
-        var next: Project
-        while (recursive.isNotEmpty()) {
-            next = recursive.poll()
-            projects.add(next)
-            recursive.addAll(next.childProjects.values)
-        }
-
-        projects.forEach { p1 ->
-            p1.afterEvaluate { p ->
-                // the task will only build files that it needs to (and will only run once)
-                p.tasks.forEach { task ->
-                    when (task) {
-                        is AbstractCompile -> task.dependsOn(generateLicenseFiles)
-                        is AbstractArchiveTask -> task.dependsOn(generateLicenseFiles)
-                    }
+        project.afterEvaluate { p ->
+            // the task will only build files that it needs to (and will only run once)
+            p.tasks.forEach { task ->
+                when (task) {
+                    is AbstractCompile -> task.dependsOn(generateLicenseFiles)
+                    is AbstractArchiveTask -> task.dependsOn(generateLicenseFiles)
                 }
             }
         }

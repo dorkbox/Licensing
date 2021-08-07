@@ -25,6 +25,7 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
     @OutputFiles val outputFiles = extension.output
 
     init {
+        group = "other"
         outputs.upToDateWhen {
             !(checkLicenseFiles(extension.outputBuildDir, licenses) && checkLicenseFiles(extension.outputRootDir, licenses))
         }
