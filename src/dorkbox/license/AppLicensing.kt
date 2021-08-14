@@ -473,6 +473,12 @@ object AppLicensing {
              author("Square, Inc")
              url("https://github.com/square/okhttp")
          }),
+        L("com.squareup.retrofit2",
+          LicenseData("Retrofit", License.APACHE_2).apply {
+             description("A type-safe HTTP client for Android and the JVM")
+             author("Square, Inc")
+             url("https://github.com/square/retrofit")
+         }),
         L("net.sf.trove4j",
           LicenseData("Trove4J Collections", License.LGPLv2_1).apply {
              description("Fast, lightweight implementations of the Java Collections API")
@@ -783,6 +789,15 @@ object AppLicensing {
                 author("Vaadin Ltd")
                 url("https://vaadin.com")
                 url("https://github.com/vaadin")
+            }),
+        L("org.conscrypt:conscrypt-openjdk-uber",
+            LicenseData("Conscrypt", License.APACHE_2).apply {
+                description("An open platform for building modern web apps for Java back ends")
+                author("Google Inc")
+                author("The Android Open Source Project")
+                author("The Netty Project")
+                author("Apache Harmony")
+                url("https://github.com/google/conscrypt")
             }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
