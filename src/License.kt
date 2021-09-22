@@ -445,10 +445,10 @@ enum class License constructor(internal val names: Collection<String>, internal 
                 return UNKNOWN
             }
 
-            val normalizedLicenseName = licenseName.toLowerCase(Locale.US)
+            val normalizedLicenseName = licenseName.lowercase(Locale.US)
 
             values().forEach { license ->
-                val found = license.names.firstOrNull { it.toLowerCase(Locale.US) == normalizedLicenseName }
+                val found = license.names.firstOrNull { it.lowercase(Locale.US) == normalizedLicenseName }
                 if (found != null) {
                     return license
                 }

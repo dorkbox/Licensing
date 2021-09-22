@@ -20,6 +20,7 @@ import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.time.LocalDate
+import java.util.*
 
 
 open class LicenseData(var name: String, var license: License) : java.io.Serializable, Comparable<LicenseData> {
@@ -122,7 +123,7 @@ open class LicenseData(var name: String, var license: License) : java.io.Seriali
      * ignore case when sorting these
      */
     override operator fun compareTo(other: LicenseData): Int {
-        return this.name.toLowerCase().compareTo(other.name.toLowerCase())
+        return this.name.lowercase(Locale.US).compareTo(other.name.lowercase(Locale.US))
     }
 
     override fun toString(): String {
