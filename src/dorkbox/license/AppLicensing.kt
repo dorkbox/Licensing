@@ -581,6 +581,18 @@ object AppLicensing {
                 author("Vaadin Ltd.")
                 url("https://github.com/vaadin/")
             }),
+        L("com.vaadin:flow-client",
+            LicenseData("Vaadin", License.APACHE_2).apply {
+                description("An open platform for building modern web apps for Java back ends")
+                author("Vaadin Ltd.")
+                url("https://github.com/vaadin/")
+            }),
+        L("com.vaadin:flow-server",
+            LicenseData("Vaadin", License.APACHE_2).apply {
+                description("An open platform for building modern web apps for Java back ends")
+                author("Vaadin Ltd.")
+                url("https://github.com/vaadin/")
+            }),
         L("com.vaadin.componentfactory",
             LicenseData("Vaadin Components", License.APACHE_2).apply {
                 description("Components for Vaadin")
