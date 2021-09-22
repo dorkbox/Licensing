@@ -195,9 +195,7 @@ open class Licensing(private val project: Project) {
         //
         // If kotlin is not used, we should suppress the license
         val doesNotUseKotlin = try {
-            val sourceSets = project.extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
-            val mainSourceSet: SourceSet = sourceSets.getByName("main")
-            val kotlin = (mainSourceSet as org.gradle.api.internal.HasConvention).convention.getPlugin(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class.java).kotlin
+            val kotlin = project.extensions.getByType(org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension::class.java).sourceSets.getByName("main").kotlin
 
             kotlin.files.none { it.name.endsWith(".kt") }
         } catch (e: Exception) {
