@@ -15,27 +15,10 @@
  */
 package dorkbox.license
 
-import License
-import jdk.nashorn.internal.objects.NativeArray.forEach
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.artifacts.ResolvedArtifact
-import org.gradle.api.artifacts.ResolvedDependency
-import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.compile.AbstractCompile
-import java.io.*
-import java.time.Instant
-import java.time.ZoneId
-import java.util.*
-import java.util.zip.ZipFile
-import java.util.zip.ZipInputStream
-
-
 
 /**
  * License definition and management plugin for the Gradle build system
