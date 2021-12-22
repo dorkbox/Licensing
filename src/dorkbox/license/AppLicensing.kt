@@ -599,6 +599,12 @@ object AppLicensing {
                 author("Vaadin Ltd.")
                 url("https://github.com/vaadin/")
             }),
+        L("com.vaadin:vaadin-charts-flow",
+            LicenseData("Vaadin Components", License.COMMERCIAL).apply {
+                description("A feature-rich interactive charting library for Vaadin.")
+                author("Vaadin Ltd.")
+                url("https://github.com/vaadin/")
+            }),
         L("com.github.appreciated:app-layout-addon",
             LicenseData("App Layout Add-on", License.APACHE_2).apply {
                 description("A modern and highly customizable Menu with a fluent API")
