@@ -201,8 +201,8 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
             flattenedLicenses.forEach {
                 val license = it.license
 
-                // DO NOT write license text/info for custom or unknown licenses
-                if (license != License.UNKNOWN && license != License.CUSTOM) {
+                // DO NOT write license text/info for custom/unknown/commercial/etc licenses (these have no license text files)
+                if (license.licenseFile.isNotEmpty()) {
                     val file = File(outputDir, license.licenseFile)
                     val sourceBytes = license.licenseBytes
 
