@@ -817,6 +817,14 @@ object AppLicensing {
                 author("Apache Harmony")
                 url("https://github.com/google/conscrypt")
             }),
+        L("io.prometheus",
+          LicenseData("Prometheus", License.APACHE_2).apply {
+              description("The Prometheus monitoring system and time series database. ")
+              author("Fabian Stäber fabian@fstab.de")
+              author("Tom Wilkie tom@grafana.com")
+              author("Brian Brazil brian.brazil@boxever.com")
+              url("https://github.com/prometheus/")
+          }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
     //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it
