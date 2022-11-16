@@ -824,7 +824,7 @@ object AppLicensing {
               url("https://github.com/prometheus/")
           }),
         L("com.aayushatharva.brotli4j",
-          LicenseData("Prometheus", License.APACHE_2).apply {
+          LicenseData("Brotli4j", License.APACHE_2).apply {
               description("Brotli4j provides Brotli compression and decompression for Java")
               author("Aayush Atharva")
               url("https://github.com/hyperxpro/Brotli4j")
@@ -835,7 +835,6 @@ object AppLicensing {
               }
               extra("Netty", License.APACHE_2) {
                 author("The Netty Project")
-                author("Contributors. See source NOTICE")
                 url("https://netty.io")
               }
           }),
