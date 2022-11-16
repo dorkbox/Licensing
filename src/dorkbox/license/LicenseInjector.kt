@@ -36,7 +36,7 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
         // This MUST be first, since it loads license data that is used elsewhere
         // show scanning or missing, but not both
         // NOTE: we scan the dependencies in ALL subprojects as well.
-        val (preloadedText, embeddedText, missingText) = extension.scanDependencies(project, true)
+        val (proj, preloadedText, embeddedText, missingText) = extension.scanDependencies(project, true)
 
         // validate the license text configuration section in the gradle file ONLY WHEN PUSHING A JAR
         val licensing = extension.licenses

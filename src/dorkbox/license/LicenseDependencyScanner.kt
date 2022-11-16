@@ -15,9 +15,10 @@ object LicenseDependencyScanner {
     // scans and loads license data into the extension
     // - from jars on runtime/compile classpath
 
+    data class ScanDep(val project: Project, val preloadedText: MutableList<String>, val embeddedText: MutableList<String>, val missingText: MutableList<String>)
+
     // THIS MUST BE IN "afterEvaluate" or run from a specific task.
-    fun scanForLicenseData(project: Project, allProjects: Boolean,
-                           licenses: MutableList<LicenseData>): Triple<MutableList<String>, MutableList<String>, MutableList<String>> {
+    fun scanForLicenseData(project: Project, allProjects: Boolean, licenses: MutableList<LicenseData>): ScanDep {
 
         val preloadedText = mutableListOf<String>();
         val embeddedText = mutableListOf<String>();
@@ -25,7 +26,7 @@ object LicenseDependencyScanner {
 
 
         // NOTE: there will be some duplicates, so we want to remove them
-        val dependencies = mutableSetOf<Dependency>()
+        val dependencies = mutableSetOf<ProjAndDependency>()
 
         if (allProjects) {
             project.allprojects.forEach { proj ->
@@ -39,36 +40,46 @@ object LicenseDependencyScanner {
             dependencies.addAll(scan(project, "runtimeClasspath"))
         }
 
+        // this will contain duplicates if sub-projects ALSO have the same deps
         val projectDependencies = dependencies.toList()
 
-        val missingLicenseInfo = mutableSetOf<Dependency>()
-        val actuallyMissingLicenseInfo = mutableSetOf<Dependency>()
+        val missingLicenseInfo = mutableSetOf<ProjAndDependency>()
+        val actuallyMissingLicenseInfo = mutableSetOf<ProjAndDependency>()
+
+        val alreadyScanDeps = mutableSetOf<Dependency>()
 
         if (licenses.isNotEmpty()) {
             // when we scan, we ONLY want to scan a SINGLE LAYER (if we have license info for module ID, then we don't need license info for it's children)
             val primaryLicense = licenses.first()
 
             // scan to see if we have in our predefined section
-            projectDependencies.forEach { info: Dependency ->
+            projectDependencies.forEach { projAndDep: ProjAndDependency ->
+                val dep = projAndDep.dep
+                if (alreadyScanDeps.contains(dep)) {
+                    return@forEach
+                }
+
                 val data: LicenseData? = try {
-                    AppLicensing.getLicense(info.mavenId())
+                    AppLicensing.getLicense(dep.mavenId())
                 } catch (e: Exception) {
-                    println("\tError getting license information for ${info.mavenId()}")
+                    println("\tError getting license information for ${dep.mavenId()}")
                     null
                 }
 
                 if (data == null) {
-                    missingLicenseInfo.add(info)
+                    missingLicenseInfo.add(projAndDep)
                 } else {
                     if (!primaryLicense.extras.contains(data)) {
-                        preloadedText.add("\t\t${info.mavenId()} [${data.license}]")
+                        alreadyScanDeps.add(dep)
+
+                        preloadedText.add("\t\t${dep.mavenId()} [${data.license}]")
 
                         // NOTE: the END copyright for these are determined by the DATE of the files!
                         //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it
                         if (data.copyright == 0) {
                             // get the OLDEST date from the artifacts and use that as the copyright date
                             var oldestDate = 0L
-                            info.artifacts.forEach { artifact ->
+                            dep.artifacts.forEach { artifact ->
                                 // get the date of the manifest file (which is the first entry)
                                 ZipInputStream(FileInputStream(artifact.file)).use {
                                     oldestDate = oldestDate.coerceAtLeast(it.nextEntry.lastModifiedTime.toMillis())
@@ -96,10 +107,15 @@ object LicenseDependencyScanner {
 
             // now scan to see if the jar has a license blob in it
             if (missingLicenseInfo.isNotEmpty()) {
-                missingLicenseInfo.forEach { info ->
+                missingLicenseInfo.forEach { projAndDep: ProjAndDependency ->
+                    val dep = projAndDep.dep
+                    if (alreadyScanDeps.contains(dep)) {
+                        return@forEach
+                    }
+
                     // see if we have it in the dependency jar
                     var licenseData: License? = null
-                    info.artifacts.forEach search@{ artifact ->
+                    dep.artifacts.forEach search@{ artifact ->
                         val file = artifact.file
                         try {
                             if (file.canRead()) {
@@ -125,7 +141,7 @@ object LicenseDependencyScanner {
                                                     }
                                                 }
                                             } catch (e: Exception) {
-                                                println("\t$info  [ERROR $file], ${e.message ?: e.javaClass}")
+                                                println("\t$dep  [ERROR $file], ${e.message ?: e.javaClass}")
                                             }
 
                                             return@search
@@ -134,27 +150,48 @@ object LicenseDependencyScanner {
                                 }
                             }
                         } catch (e: Exception) {
-                            println("\t$info  [ERROR $file], ${e.message ?: e.javaClass}")
+                            println("\t$dep  [ERROR $file], ${e.message ?: e.javaClass}")
                         }
                     }
 
 
                     if (licenseData != null) {
-                        embeddedText.add("\t\t$info  [$licenseData]")
+                        alreadyScanDeps.add(dep)
+                        embeddedText.add("\t\t$dep  [$licenseData]")
                     } else {
-                        actuallyMissingLicenseInfo.add(info)
+                        actuallyMissingLicenseInfo.add(projAndDep)
                     }
                 }
             }
 
             if (actuallyMissingLicenseInfo.isNotEmpty()) {
-                actuallyMissingLicenseInfo.forEach { missingDep ->
-                    missingText.add("\t   ${missingDep.mavenId()}")
+                // we have to prune sub-project data first...
+                val projectMavenIds = mutableSetOf<String>()
+                project.allprojects.forEach {
+                    projectMavenIds.add("${it.group}:${it.name}:${it.version}")
+                }
+
+                actuallyMissingLicenseInfo.forEach { missingDepAndProj ->
+                    // we DO NOT want to show missing deps for project sub-projects.
+                    val proj = missingDepAndProj.project
+                    val dep = missingDepAndProj.dep
+
+                    if (alreadyScanDeps.contains(dep)) {
+                        return@forEach
+                    }
+                    alreadyScanDeps.add(dep)
+
+                    val mavenId = dep.mavenId()
+
+                    // if the missing dep IS ALSO the same as a subproject .... we don't want to report it
+                    if (!projectMavenIds.contains(mavenId)) {
+                        missingText.add("\t   ${dep.mavenId()}")
+                    }
                 }
             }
         }
 
-        return Triple(preloadedText, embeddedText, missingText)
+        return ScanDep(project, preloadedText, embeddedText, missingText)
     }
 
 
@@ -167,9 +204,9 @@ object LicenseDependencyScanner {
      *
      *    This is an actual problem...
      */
-    private fun scan(project: Project, configurationName: String): List<Dependency> {
+    private fun scan(project: Project, configurationName: String): List<ProjAndDependency> {
 
-        val projectDependencies = mutableListOf<Dependency>()
+        val projectDependencies = mutableListOf<ProjAndDependency>()
         val config = project.configurations.getByName(configurationName)
         if (!config.isCanBeResolved) {
             return projectDependencies
@@ -204,16 +241,19 @@ object LicenseDependencyScanner {
             } catch (e: Exception) {
                 listOf()
             }
-            projectDependencies.add(Dependency(group, name, version, artifacts))
+            projectDependencies.add(ProjAndDependency(project, Dependency(group, name, version, artifacts)))
         }
 
         return projectDependencies
     }
 
-    internal data class Dependency(val group: String,
-                          val name: String,
-                          val version: String,
-                          val artifacts: List<Artifact>) {
+    internal data class ProjAndDependency(val project: Project, val dep: Dependency)
+
+    internal data class Dependency(
+        val group: String,
+        val name: String,
+        val version: String,
+        val artifacts: List<Artifact>) {
 
         fun mavenId(): String {
             return "$group:$name:$version"

@@ -53,7 +53,3 @@ class LicensePlugin : Plugin<Project> {
         }
     }
 }
-
-
-
-
