@@ -829,7 +829,7 @@ object AppLicensing {
               author("Aayush Atharva")
               url("https://github.com/hyperxpro/Brotli4j")
 
-              extra("2016", License.MIT) {
+              extra("Brotli", License.MIT) {
                 url("https://github.com/google/brotli")
                 author("The Brotli Authors")
               }
