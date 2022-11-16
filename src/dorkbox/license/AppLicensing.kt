@@ -57,8 +57,25 @@ object AppLicensing {
               note("Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply")
               note("See: https://github.com/JetBrains/kotlin/blob/master/license/README.md")
           }),
-
-
+        L("org.jetbrains.kotlin",
+          LicenseData("Kotlin", License.APACHE_2).apply {
+             author("JetBrains s.r.o. and Kotlin Programming Language contributors")
+             url("https://github.com/JetBrains/kotlin")
+             note("Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply")
+             note("See: https://github.com/JetBrains/kotlin/blob/master/license/README.md")
+         }),
+        L("org.jetbrains.kotlinx",
+          LicenseData("kotlinx.coroutines", License.APACHE_2).apply {
+             description("Library support for Kotlin coroutines with multiplatform support")
+             url("https://github.com/Kotlin/kotlinx.coroutines")
+             author("JetBrains s.r.o.")
+         }),
+        L("org.jetbrains:annotations",
+          LicenseData("Java Annotations", License.APACHE_2).apply {
+              description("Annotations for JVM-based languages")
+              url("https://github.com/JetBrains/java-annotations")
+              author("JetBrains s.r.o.")
+          }),
         L("de.marcphilipp.gradle:nexus-publish-plugin",
           LicenseData("Nexus Publish Plugin", License.APACHE_2).apply {
               description("Gradle Plugin that explicitly creates a Staging Repository before publishing to Nexus.")
@@ -79,25 +96,6 @@ object AppLicensing {
               author("QOS.ch")
               url("http://logback.qos.ch")
           }),
-        L("org.jetbrains.kotlin",
-          LicenseData("Kotlin", License.APACHE_2).apply {
-             author("JetBrains s.r.o. and Kotlin Programming Language contributors")
-             url("https://github.com/JetBrains/kotlin")
-             note("Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply")
-             note("See: https://github.com/JetBrains/kotlin/blob/master/license/README.md")
-         }),
-        L("org.jetbrains:annotations",
-          LicenseData("Java Annotations", License.APACHE_2).apply {
-             description("Annotations for JVM-based languages")
-             url("https://github.com/JetBrains/java-annotations")
-             author("JetBrains s.r.o.")
-         }),
-        L("org.jetbrains.kotlinx",
-          LicenseData("kotlinx.coroutines", License.APACHE_2).apply {
-             description("Library support for Kotlin coroutines with multiplatform support")
-             url("https://github.com/Kotlin/kotlinx.coroutines")
-             author("JetBrains s.r.o.")
-         }),
         L("io.github.microutils:kotlin-logging",
           LicenseData("kotlin-logging", License.APACHE_2).apply {
              description("Lightweight logging framework for Kotlin")
@@ -153,17 +151,17 @@ object AppLicensing {
              author("Timothy Wall")
          }),
         L("net.java.dev.jna:jna-jpms:5.8",
-            LicenseData("JNA", License.APACHE_2).apply {
-                description("Simplified native library access for Java.")
-                url("https://github.com/twall/jna")
-                author("Timothy Wall")
-            }),
+          LicenseData("JNA", License.APACHE_2).apply {
+              description("Simplified native library access for Java.")
+              url("https://github.com/twall/jna")
+              author("Timothy Wall")
+          }),
         L("net.java.dev.jna:jna-platform-jpms:5.8",
-            LicenseData("JNA-Platform", License.APACHE_2).apply {
-                description("Mappings for a number of commonly used platform functions")
-                url("https://github.com/twall/jna")
-                author("Timothy Wall")
-            }),
+          LicenseData("JNA-Platform", License.APACHE_2).apply {
+              description("Mappings for a number of commonly used platform functions")
+              url("https://github.com/twall/jna")
+              author("Timothy Wall")
+          }),
         L("com.hierynomus:sshj",
           LicenseData("SSHJ", License.APACHE_2).apply {
              description("SSHv2 library for Java")
@@ -249,7 +247,7 @@ object AppLicensing {
                  url("https://github.com/EsotericSoftware/reflectasm")
                  author("Nathan Sweet")
              }
-             extra("Objenesis ", License.APACHE_2) {
+             extra("Objenesis", License.APACHE_2) {
                  url("http://objenesis.org")
                  author("Objenesis Team and all contributors")
              }
@@ -300,13 +298,13 @@ object AppLicensing {
          }),
         L("org.javassist:javassist",
           LicenseData("Javassist", License.APACHE_2).apply {
-          description("Javassist (JAVA programming ASSISTant) makes Java bytecode manipulation simple")
-          author("Shigeru Chiba")
-          author("Bill Burke")
-          author("Jason T. Greene")
-          url("http://www.javassist.org")
-          url("https://github.com/jboss-javassist/javassist")
-          note("Licensed under the MPL/LGPL/Apache triple license")
+              description("Javassist (JAVA programming ASSISTant) makes Java bytecode manipulation simple")
+              author("Shigeru Chiba")
+              author("Bill Burke")
+              author("Jason T. Greene")
+              url("http://www.javassist.org")
+              url("https://github.com/jboss-javassist/javassist")
+              note("Licensed under the MPL/LGPL/Apache triple license")
          }),
         L("net.jodah:typetools",
           LicenseData("TypeTools", License.APACHE_2).apply {
@@ -481,350 +479,367 @@ object AppLicensing {
          }),
         L("net.sf.trove4j",
           LicenseData("Trove4J Collections", License.LGPLv2_1).apply {
-             description("Fast, lightweight implementations of the Java Collections API")
-             author("Eric D. Friedman")
-             url("http://trove4j.sourceforge.net")
+              description("Fast, lightweight implementations of the Java Collections API")
+              author("Eric D. Friedman")
+              url("http://trove4j.sourceforge.net")
 
-            extra("HashFunctions", License.CC0) {
-                copyright(1999)
-                url("https://mina.apache.org/sshd-project/")
-                author("CERN")
-            }
-            extra("PrimeFinder", License.CC0) {
-                copyright(1999)
-                url("https://mina.apache.org/sshd-project/")
-                author("CERN")
-            }
-         }),
+              extra("HashFunctions", License.CC0) {
+                  copyright(1999)
+                  url("https://mina.apache.org/sshd-project/")
+                  author("CERN")
+              }
+              extra("PrimeFinder", License.CC0) {
+                  copyright(1999)
+                  url("https://mina.apache.org/sshd-project/")
+                  author("CERN")
+              }
+          }),
         L("com.koloboke",
-            LicenseData("Koloboke Collections", License.APACHE_2).apply {
-                description("Java Collections till the last breadcrumb of memory and performance ")
-                author("Roman Leventov")
-                author("Peter K Lawrey")
-                author("Brent Douglas")
-                url("https://github.com/leventov/Koloboke")
-            }),
+          LicenseData("Koloboke Collections", License.APACHE_2).apply {
+              description("Java Collections till the last breadcrumb of memory and performance ")
+              author("Roman Leventov")
+              author("Peter K Lawrey")
+              author("Brent Douglas")
+              url("https://github.com/leventov/Koloboke")
+          }),
         L("javatar:javatar",
-            LicenseData("Java Tar", License.APACHE_2).apply {
-                description("Java TAR compression utility library")
-                author("Tim")
-                author("ICE Engineering, Inc.")
-                url("http://www.trustice.com/java/tar")
-            }),
+          LicenseData("Java Tar", License.APACHE_2).apply {
+              description("Java TAR compression utility library")
+              author("Tim")
+              author("ICE Engineering, Inc.")
+              url("http://www.trustice.com/java/tar")
+          }),
         L("org.flywaydb:flyway-core",
-            LicenseData("Flyway Tar", License.APACHE_2).apply {
-                description("Flyway database migrations made easy")
-                author("Boxfuse GmbH")
-                author("Red Gate Software Ltd")
-                url("https://github.com/flyway/flyway")
-            }),
+          LicenseData("Flyway Tar", License.APACHE_2).apply {
+              description("Flyway database migrations made easy")
+              author("Boxfuse GmbH")
+              author("Red Gate Software Ltd")
+              url("https://github.com/flyway/flyway")
+          }),
         L("org.jsoup:jsoup",
-            LicenseData("jSoup", License.MIT).apply {
-                description("jsoup: Java HTML Parser")
-                author("Jonathan Hedley")
-                url("https://github.com/jhy/jsoup")
-            }),
+          LicenseData("jSoup", License.MIT).apply {
+              description("jsoup: Java HTML Parser")
+              author("Jonathan Hedley")
+              url("https://github.com/jhy/jsoup")
+          }),
         L("org.simplejavamail:simple-java-mail",
-            LicenseData("Simple Java Mail", License.APACHE_2).apply {
-                description("Simple API, Complex Emails (JavaMail SMTP wrapper)")
-                author("Benny Bottema")
-                url("https://github.com/bbottema/simple-java-mail")
-            }),
+          LicenseData("Simple Java Mail", License.APACHE_2).apply {
+              description("Simple API, Complex Emails (JavaMail SMTP wrapper)")
+              author("Benny Bottema")
+              url("https://github.com/bbottema/simple-java-mail")
+          }),
         L("commons-net:commons-net",
-            LicenseData("Apache Commons Net", License.APACHE_2).apply {
-                description("A collection of network utilities and protocol implementations")
-                author("The Apache Software Foundation")
-                url("https://github.com/apache/commons-net")
-            }),
+          LicenseData("Apache Commons Net", License.APACHE_2).apply {
+              description("A collection of network utilities and protocol implementations")
+              author("The Apache Software Foundation")
+              url("https://github.com/apache/commons-net")
+          }),
         L("org.apache.commons:commons-io",
-            LicenseData("Apache Commons IO ", License.APACHE_2).apply {
-                author("The Apache Software Foundation")
-                url("https://github.com/apache/commons-io")
-            }),
+          LicenseData("Apache Commons IO ", License.APACHE_2).apply {
+              author("The Apache Software Foundation")
+              url("https://github.com/apache/commons-io")
+          }),
         L("org.apache.commons:commons-configuration2",
-            LicenseData("Apache Commons Configuration ", License.APACHE_2).apply {
-                description("Tools to assist in the reading of configuration/preferences files in various formats")
-                author("The Apache Software Foundation")
-                url("https://github.com/apache/commons-io")
-            }),
+          LicenseData("Apache Commons Configuration ", License.APACHE_2).apply {
+              description("Tools to assist in the reading of configuration/preferences files in various formats")
+              author("The Apache Software Foundation")
+              url("https://github.com/apache/commons-io")
+          }),
         L("io.undertow",
-            LicenseData("Undertow", License.APACHE_2).apply {
-                description("High performance non-blocking webserver")
-                author("JBoss")
-                author("Red Hat, Inc.")
-                author("Individual contributors as listed in files")
-                url("https://github.com/undertow-io/undertow")
-            }),
+          LicenseData("Undertow", License.APACHE_2).apply {
+              description("High performance non-blocking webserver")
+              author("JBoss")
+              author("Red Hat, Inc.")
+              author("Individual contributors as listed in files")
+              url("https://github.com/undertow-io/undertow")
+          }),
         L("com.amazonaws",
-            LicenseData("AWS SDK", License.APACHE_2).apply {
-                description("The official AWS SDK for Java")
-                author("Amazon.com, Inc")
-                url("https://github.com/aws/aws-sdk-java")
-            }),
+          LicenseData("AWS SDK", License.APACHE_2).apply {
+              description("The official AWS SDK for Java")
+              author("Amazon.com, Inc")
+              url("https://github.com/aws/aws-sdk-java")
+          }),
         L("io.ktor",
-            LicenseData("KTOR", License.APACHE_2).apply {
-                description("Framework for quickly creating connected applications in Kotlin")
-                author("JetBrains s.r.o.")
-                url("https://github.com/ktorio/ktor")
-            }),
+          LicenseData("KTOR", License.APACHE_2).apply {
+              description("Framework for quickly creating connected applications in Kotlin")
+              author("JetBrains s.r.o.")
+              url("https://github.com/ktorio/ktor")
+          }),
         L("io.dropwizard.metrics",
-            LicenseData("Dropwizard", License.APACHE_2).apply {
-                description("Captures JVM and application metrics")
-                author("Coda Hale")
-                author("Yammer.com")
-                author("Dropwizard")
-                url("https://github.com/dropwizard/metrics")
-            }),
+          LicenseData("Dropwizard", License.APACHE_2).apply {
+              description("Captures JVM and application metrics")
+              author("Coda Hale")
+              author("Yammer.com")
+              author("Dropwizard")
+              url("https://github.com/dropwizard/metrics")
+          }),
         L("com.vaadin:vaadin",
-            LicenseData("Vaadin", License.APACHE_2).apply {
-                description("An open platform for building modern web apps for Java back ends")
-                author("Vaadin Ltd.")
-                url("https://github.com/vaadin/")
-            }),
+          LicenseData("Vaadin", License.APACHE_2).apply {
+              description("An open platform for building modern web apps for Java back ends")
+              author("Vaadin Ltd.")
+              url("https://github.com/vaadin/")
+          }),
         L("com.vaadin:flow-client",
-            LicenseData("Vaadin", License.APACHE_2).apply {
-                description("An open platform for building modern web apps for Java back ends")
-                author("Vaadin Ltd.")
-                url("https://github.com/vaadin/")
-            }),
+          LicenseData("Vaadin", License.APACHE_2).apply {
+              description("An open platform for building modern web apps for Java back ends")
+              author("Vaadin Ltd.")
+              url("https://github.com/vaadin/")
+          }),
         L("com.vaadin:flow-server",
-            LicenseData("Vaadin", License.APACHE_2).apply {
-                description("An open platform for building modern web apps for Java back ends")
-                author("Vaadin Ltd.")
-                url("https://github.com/vaadin/")
-            }),
+          LicenseData("Vaadin", License.APACHE_2).apply {
+              description("An open platform for building modern web apps for Java back ends")
+              author("Vaadin Ltd.")
+              url("https://github.com/vaadin/")
+          }),
         L("com.vaadin.componentfactory",
-            LicenseData("Vaadin Components", License.APACHE_2).apply {
-                description("Components for Vaadin")
-                author("Vaadin Ltd.")
-                url("https://github.com/vaadin/")
-            }),
+          LicenseData("Vaadin Components", License.APACHE_2).apply {
+              description("Components for Vaadin")
+              author("Vaadin Ltd.")
+              url("https://github.com/vaadin/")
+          }),
         L("com.vaadin:vaadin-charts-flow",
-            LicenseData("Vaadin Components", License.COMMERCIAL).apply {
-                description("A feature-rich interactive charting library for Vaadin.")
-                author("Vaadin Ltd.")
-                url("https://github.com/vaadin/")
-            }),
+          LicenseData("Vaadin Components", License.COMMERCIAL).apply {
+              description("A feature-rich interactive charting library for Vaadin.")
+              author("Vaadin Ltd.")
+              url("https://github.com/vaadin/")
+          }),
         L("com.github.appreciated:app-layout-addon",
-            LicenseData("App Layout Add-on", License.APACHE_2).apply {
-                description("A modern and highly customizable Menu with a fluent API")
-                author("Johannes Goebel")
-                url("https://vaadin.com/directory/component/app-layout-add-on")
-            }),
+          LicenseData("App Layout Add-on", License.APACHE_2).apply {
+              description("A modern and highly customizable Menu with a fluent API")
+              author("Johannes Goebel")
+              url("https://vaadin.com/directory/component/app-layout-add-on")
+          }),
         L("com.github.appreciated:color-picker-field-flow",
-            LicenseData("Color Picker Field for Flow", License.APACHE_2).apply {
-                description("A color picker field for Vaadin Flow")
-                author("Johannes Goebel")
-                url("https://vaadin.com/directory/component/color-picker-field-for-flow")
-            }),
+          LicenseData("Color Picker Field for Flow", License.APACHE_2).apply {
+              description("A color picker field for Vaadin Flow")
+              author("Johannes Goebel")
+              url("https://vaadin.com/directory/component/color-picker-field-for-flow")
+          }),
         L("org.vaadin.erik:slidetab",
-            LicenseData("SlideTab", License.APACHE_2).apply {
-                description("A tab that can be clicked to slide in an expanding panel")
-                author("Erik Lumme")
-                url("https://vaadin.com/directory/component/slidetab/overview")
-            }),
+          LicenseData("SlideTab", License.APACHE_2).apply {
+              description("A tab that can be clicked to slide in an expanding panel")
+              author("Erik Lumme")
+              url("https://vaadin.com/directory/component/slidetab/overview")
+          }),
         L("com.flowingcode.addons:iron-icons",
-            LicenseData("Iron Icons", License.APACHE_2).apply {
-                description("Vaadin constants for https://github.com/PolymerElements/iron-icons")
-                author("Flowing Code S.A.")
-                url("https://vaadin.com/directory/component/iron-icons/overview")
-            }),
+          LicenseData("Iron Icons", License.APACHE_2).apply {
+              description("Vaadin constants for https://github.com/PolymerElements/iron-icons")
+              author("Flowing Code S.A.")
+              url("https://vaadin.com/directory/component/iron-icons/overview")
+          }),
         L("com.flowingcode.addons:font-awesome-iron-iconset",
-            LicenseData("FontAwesome Iron Iconset", License.APACHE_2).apply {
-                description("Iron iconset based on FontAwesome")
-                author("Flowing Code S.A.")
-                url("https://vaadin.com/directory/component/fontawesome-iron-iconset")
-            }),
+          LicenseData("FontAwesome Iron Iconset", License.APACHE_2).apply {
+              description("Iron iconset based on FontAwesome")
+              author("Flowing Code S.A.")
+              url("https://vaadin.com/directory/component/fontawesome-iron-iconset")
+          }),
         L("com.flowingcode.vaadin.addons:twincolgrid",
-            LicenseData("TwinColGrid add-on", License.APACHE_2).apply {
-                description("TwinColSelect component based on Vaadin Grids")
-                author("Flowing Code S.A.")
-                url("https://vaadin.com/directory/component/twincolgrid-add-on/overview")
-            }),
+          LicenseData("TwinColGrid add-on", License.APACHE_2).apply {
+              description("TwinColSelect component based on Vaadin Grids")
+              author("Flowing Code S.A.")
+              url("https://vaadin.com/directory/component/twincolgrid-add-on/overview")
+          }),
         L("org.vaadin:spinkit",
-            LicenseData("Spinkit Add-on", License.APACHE_2).apply {
-                description("Vaadin Spinkit")
-                author("Marco Collovati")
-                url("https://vaadin.com/directory/component/spinkit-add-on/overview")
-            }),
+          LicenseData("Spinkit Add-on", License.APACHE_2).apply {
+              description("Vaadin Spinkit")
+              author("Marco Collovati")
+              url("https://vaadin.com/directory/component/spinkit-add-on/overview")
+          }),
         L("org.vaadin.stefan:lazy-download-button",
-            LicenseData("Lazy Download Button", License.APACHE_2).apply {
-                description("Lazy Download Button")
-                author("Stefan Uebe")
-                url("https://vaadin.com/directory/component/lazy-download-button/overview")
-            }),
+          LicenseData("Lazy Download Button", License.APACHE_2).apply {
+              description("Lazy Download Button")
+              author("Stefan Uebe")
+              url("https://vaadin.com/directory/component/lazy-download-button/overview")
+          }),
         L("org.vaadin.olli:file-download-wrapper",
-            LicenseData("File Download Wrapper", License.APACHE_2).apply {
-                description("Helper add-on for making easy clickable file downloads.")
-                author("Olli Tietäväinen")
-                url("https://vaadin.com/directory/component/file-download-wrapper/overview")
-            }),
+          LicenseData("File Download Wrapper", License.APACHE_2).apply {
+              description("Helper add-on for making easy clickable file downloads.")
+              author("Olli Tietäväinen")
+              url("https://vaadin.com/directory/component/file-download-wrapper/overview")
+          }),
         L("org.vaadin.gatanaso:multiselect-combo-box-flow",
-            LicenseData("Multiselect Combo Box", License.APACHE_2).apply {
-                description("A multiselection component where items are displayed in a drop-down list.")
-                author("Goran Atanasovski")
-                url("https://vaadin.com/directory/component/multiselect-combo-box/overview")
-            }),
+          LicenseData("Multiselect Combo Box", License.APACHE_2).apply {
+              description("A multiselection component where items are displayed in a drop-down list.")
+              author("Goran Atanasovski")
+              url("https://vaadin.com/directory/component/multiselect-combo-box/overview")
+          }),
         L("org.vaadin.haijian:exporter",
-            LicenseData("Exporter", License.APACHE_2).apply {
-                description("A simple tool for exporting data from Grid to Excel or CSV")
-                author("Haijian Wang")
-                url("https://vaadin.com/directory/component/exporter/overview")
-            }),
+          LicenseData("Exporter", License.APACHE_2).apply {
+              description("A simple tool for exporting data from Grid to Excel or CSV")
+              author("Haijian Wang")
+              url("https://vaadin.com/directory/component/exporter/overview")
+          }),
         L("com.mlottmann.VStepper:VStepper",
-            LicenseData("VStepper", License.APACHE_2).apply {
-                description("Vaadin addon for displaying a series of components one at a time.")
-                author("Matthias Lottmann")
-                url("https://vaadin.com/directory/component/messagedialog-for-vaadin-flow/overview")
-            }),
+          LicenseData("VStepper", License.APACHE_2).apply {
+              description("Vaadin addon for displaying a series of components one at a time.")
+              author("Matthias Lottmann")
+              url("https://vaadin.com/directory/component/messagedialog-for-vaadin-flow/overview")
+          }),
         L("de.codecamp.vaadin:vaadin-message-dialog",
-            LicenseData("Message Dialog", License.APACHE_2).apply {
-                description("Message dialog component for Vaadin Flow")
-                author("Patrick Schmidt")
-                url("https://vaadin.com/directory/component/vstepper")
-            }),
+          LicenseData("Message Dialog", License.APACHE_2).apply {
+              description("Message dialog component for Vaadin Flow")
+              author("Patrick Schmidt")
+              url("https://vaadin.com/directory/component/vstepper")
+          }),
         L("dev.mett.vaadin:tooltip",
-            LicenseData("Tooltips4Vaadin", License.APACHE_2).apply {
-                description("A Tippy.js based Tooltip-Plugin for Vaadin Flow")
-                author("Gerrit Sedlaczek")
-                url("https://vaadin.com/directory/component/tooltips4vaadin/overview")
-            }),
+          LicenseData("Tooltips4Vaadin", License.APACHE_2).apply {
+              description("A Tippy.js based Tooltip-Plugin for Vaadin Flow")
+              author("Gerrit Sedlaczek")
+              url("https://vaadin.com/directory/component/tooltips4vaadin/overview")
+          }),
         L("io.github.classgraph:classgraph",
-            LicenseData("ClassGraph", License.APACHE_2).apply {
-                description("An uber-fast parallelized Java classpath scanner and module scanner")
-                author("Luke Hutchison")
-                url("https://github.com/classgraph/classgraph")
-            }),
+          LicenseData("ClassGraph", License.APACHE_2).apply {
+              description("An uber-fast parallelized Java classpath scanner and module scanner")
+              author("Luke Hutchison")
+              url("https://github.com/classgraph/classgraph")
+          }),
         L("com.opencsv:opencsv",
-            LicenseData("OpenCSV", License.APACHE_2).apply {
-                description("CSV Parser for Java")
-                author("Scott Conway")
-                author("Andrew Rucker Jones")
-                author("Tom Squires")
-                url("http://opencsv.sourceforge.net/")
-            }),
+          LicenseData("OpenCSV", License.APACHE_2).apply {
+              description("CSV Parser for Java")
+              author("Scott Conway")
+              author("Andrew Rucker Jones")
+              author("Tom Squires")
+              url("http://opencsv.sourceforge.net/")
+          }),
         L("com.zaxxer:HikariCP",
-            LicenseData("HikariCP", License.APACHE_2).apply {
-                description("A solid, high-performance, JDBC connection pool")
-                author("Brett Wooldridge")
-                url("https://github.com/brettwooldridge/HikariCP/")
-            }),
+          LicenseData("HikariCP", License.APACHE_2).apply {
+              description("A solid, high-performance, JDBC connection pool")
+              author("Brett Wooldridge")
+              url("https://github.com/brettwooldridge/HikariCP/")
+          }),
         L("org.apache.httpcomponents:httpclient",
-            LicenseData("Apache HttpClient", License.APACHE_2).apply {
-                description("Apache HttpClient")
-                author("The Apache Software Foundation")
-                url("https://github.com/apache/httpcomponents-client")
-            }),
+          LicenseData("Apache HttpClient", License.APACHE_2).apply {
+              description("Apache HttpClient")
+              author("The Apache Software Foundation")
+              url("https://github.com/apache/httpcomponents-client")
+          }),
         L("oauth.signpost",
-            LicenseData("Signpost", License.APACHE_2).apply {
-                description("A light-weight client-side OAuth library for Java ")
-                author("Matthias Kaeppler")
-                url("https://github.com/mttkay/signpost")
-            }),
+          LicenseData("Signpost", License.APACHE_2).apply {
+              description("A light-weight client-side OAuth library for Java ")
+              author("Matthias Kaeppler")
+              url("https://github.com/mttkay/signpost")
+          }),
         L("org.kurento",
-            LicenseData("Kurento", License.APACHE_2).apply {
-                description("Kurento WebRTC Media Server")
-                author("Kurento")
-                url("https://www.kurento.org")
-                url("https://github.com/Kurento")
-            }),
+          LicenseData("Kurento", License.APACHE_2).apply {
+              description("Kurento WebRTC Media Server")
+              author("Kurento")
+              url("https://www.kurento.org")
+              url("https://github.com/Kurento")
+          }),
         L("org.postgresql:postgresql",
-            LicenseData("Postgresql", License.BSD_2).apply {
-                description("Postgresql JDBC Driver")
-                author("PostgreSQL Global Development Group")
-                url("https://jdbc.postgresql.org ")
-                url("https://github.com/pgjdbc/pgjdbc")
-            }),
+          LicenseData("Postgresql", License.BSD_2).apply {
+              description("Postgresql JDBC Driver")
+              author("PostgreSQL Global Development Group")
+              url("https://jdbc.postgresql.org ")
+              url("https://github.com/pgjdbc/pgjdbc")
+          }),
         L("org.jclarion:image4j",
-            LicenseData("image4j", License.LGPLv2_1).apply {
-                description("Read and write certain image formats in 100% pure Java")
-                author("Ian McDonagh")
-                url("https://github.com/imcdonagh/image4j")
-            }),
+          LicenseData("image4j", License.LGPLv2_1).apply {
+              description("Read and write certain image formats in 100% pure Java")
+              author("Ian McDonagh")
+              url("https://github.com/imcdonagh/image4j")
+          }),
         L("com.github.scribejava",
-            LicenseData("ScribeJava", License.MIT).apply {
-                description("Simple OAuth/2 library for Java")
-                author("Pablo Fernandez")
-                url("https://github.com/imcdonagh/image4j")
-            }),
+          LicenseData("ScribeJava", License.MIT).apply {
+              description("Simple OAuth/2 library for Java")
+              author("Pablo Fernandez")
+              url("https://github.com/imcdonagh/image4j")
+          }),
         L("com.google.guava:guava",
-            LicenseData("ScribeJava", License.APACHE_2).apply {
-                description("Google core libraries for Java")
-                author("The Guava Authors")
-                url("https://github.com/google/guava")
-            }),
+          LicenseData("ScribeJava", License.APACHE_2).apply {
+              description("Google core libraries for Java")
+              author("The Guava Authors")
+              url("https://github.com/google/guava")
+          }),
         L("com.google.api-client",
-            LicenseData("Google APIs Client Library for Java", License.APACHE_2).apply {
-                description("Google APIs Client Library for Java")
-                author("Google Inc.")
-                url("https://github.com/googleapis/google-api-java-client")
-            }),
+          LicenseData("Google APIs Client Library for Java", License.APACHE_2).apply {
+              description("Google APIs Client Library for Java")
+              author("Google Inc.")
+              url("https://github.com/googleapis/google-api-java-client")
+          }),
         L("com.google.oauth-client",
-            LicenseData("Google OAuth Client Library for Java", License.APACHE_2).apply {
-                description("Google OAuth Client Library for Java")
-                author("Google Inc.")
-                url("https://github.com/googleapis/google-oauth-java-client")
-            }),
+          LicenseData("Google OAuth Client Library for Java", License.APACHE_2).apply {
+              description("Google OAuth Client Library for Java")
+              author("Google Inc.")
+              url("https://github.com/googleapis/google-oauth-java-client")
+          }),
         L("com.google.apis",
-            LicenseData("Google Java API Client Services", License.APACHE_2).apply {
-                description("Google Java API Client Services")
-                author("Google Inc.")
-                url("https://github.com/googleapis/google-api-java-client-services")
-            }),
+          LicenseData("Google Java API Client Services", License.APACHE_2).apply {
+              description("Google Java API Client Services")
+              author("Google Inc.")
+              url("https://github.com/googleapis/google-api-java-client-services")
+          }),
         L("com.google.zxing",
-            LicenseData("ZXing", License.APACHE_2).apply {
-                description("ZXing (\"Zebra Crossing\") barcode scanning library for Java, Android")
-                author("ZXing authors")
-                url("https://github.com/zxing/zxing")
-            }),
+          LicenseData("ZXing", License.APACHE_2).apply {
+              description("ZXing (\"Zebra Crossing\") barcode scanning library for Java, Android")
+              author("ZXing authors")
+              url("https://github.com/zxing/zxing")
+          }),
         L("com.fasterxml.jackson.core",
-            LicenseData("Jackson Core", License.APACHE_2).apply {
-                description("Core part of Jackson that defines Streaming API as well as basic shared abstractions")
-                author("FasterXML")
-                url("https://github.com/FasterXML/jackson-core")
-            }),
+          LicenseData("Jackson Core", License.APACHE_2).apply {
+              description("Core part of Jackson that defines Streaming API as well as basic shared abstractions")
+              author("FasterXML")
+              url("https://github.com/FasterXML/jackson-core")
+          }),
         L("com.corundumstudio.socketio:netty-socketio",
-            LicenseData("Netty SocketIO", License.APACHE_2).apply {
-                description("Java implementation of Socket.IO server")
-                author("Nikita Koksharov")
-                url("https://github.com/mrniko/netty-socketio")
-            }),
+          LicenseData("Netty SocketIO", License.APACHE_2).apply {
+              description("Java implementation of Socket.IO server")
+              author("Nikita Koksharov")
+              url("https://github.com/mrniko/netty-socketio")
+          }),
         L("javax.servlet:javax.servlet-api",
-            LicenseData("Java Servlet API", License.CDDL_1_1).apply {
-                description("Java Servlet API")
-                author("Oracle and/or its affiliates")
-                url("https://javaee.github.io/servlet-spec/")
-            }),
+          LicenseData("Java Servlet API", License.CDDL_1_1).apply {
+              description("Java Servlet API")
+              author("Oracle and/or its affiliates")
+              url("https://javaee.github.io/servlet-spec/")
+          }),
         L("net.jodah:expiringmap",
-            LicenseData("Jodah Expiring Map", License.APACHE_2).apply {
-                description("high performance thread-safe map that expires entries")
-                author("Jonathan Halterman")
-                url("https://github.com/jhalterman/expiringmap")
-            }),
+          LicenseData("Jodah Expiring Map", License.APACHE_2).apply {
+              description("high performance thread-safe map that expires entries")
+              author("Jonathan Halterman")
+              url("https://github.com/jhalterman/expiringmap")
+          }),
         L("com.vaadin:vaadin",
-            LicenseData("Vaadin", License.APACHE_2).apply {
-                description("An open platform for building modern web apps for Java back ends")
-                author("Vaadin Ltd")
-                url("https://vaadin.com")
-                url("https://github.com/vaadin")
-            }),
+          LicenseData("Vaadin", License.APACHE_2).apply {
+              description("An open platform for building modern web apps for Java back ends")
+              author("Vaadin Ltd")
+              url("https://vaadin.com")
+              url("https://github.com/vaadin")
+          }),
         L("org.conscrypt:conscrypt-openjdk-uber",
-            LicenseData("Conscrypt", License.APACHE_2).apply {
-                description("An open platform for building modern web apps for Java back ends")
-                author("Google Inc")
-                author("The Android Open Source Project")
-                author("The Netty Project")
-                author("Apache Harmony")
-                url("https://github.com/google/conscrypt")
-            }),
+          LicenseData("Conscrypt", License.APACHE_2).apply {
+              description("An open platform for building modern web apps for Java back ends")
+              author("Google Inc")
+              author("The Android Open Source Project")
+              author("The Netty Project")
+              author("Apache Harmony")
+              url("https://github.com/google/conscrypt")
+          }),
         L("io.prometheus",
           LicenseData("Prometheus", License.APACHE_2).apply {
-              description("The Prometheus monitoring system and time series database. ")
+              description("The Prometheus monitoring system and time series database")
               author("Fabian Stäber fabian@fstab.de")
               author("Tom Wilkie tom@grafana.com")
               author("Brian Brazil brian.brazil@boxever.com")
               url("https://github.com/prometheus/")
           }),
+        L("com.aayushatharva.brotli4j",
+          LicenseData("Prometheus", License.APACHE_2).apply {
+              description("Brotli4j provides Brotli compression and decompression for Java")
+              author("Aayush Atharva")
+              url("https://github.com/hyperxpro/Brotli4j")
+
+              extra("2016", License.MIT) {
+                url("https://github.com/google/brotli")
+                author("The Brotli Authors")
+              }
+              extra("Netty", License.APACHE_2) {
+                author("The Netty Project")
+                author("Contributors. See source NOTICE")
+                url("https://netty.io")
+              }
+          }),
+
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
     //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it
