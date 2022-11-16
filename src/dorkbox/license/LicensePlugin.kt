@@ -49,6 +49,9 @@ class LicensePlugin : Plugin<Project> {
                 extension.allPossibleOutput().forEach {
                     it.delete()
                 }
+
+                // always regen the license files (technically, a `clean` should remove temp stuff -- however license files are not temp!)
+                generateLicenseFiles.actions[0].execute(generateLicenseFiles)
             }
         }
     }
