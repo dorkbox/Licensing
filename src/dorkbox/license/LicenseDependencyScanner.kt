@@ -4,12 +4,13 @@ import License
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.ObjectInputStream
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
-import java.util.zip.ZipFile
-import java.util.zip.ZipInputStream
+import java.util.zip.*
 
 object LicenseDependencyScanner {
     // scans and loads license data into the extension
@@ -72,7 +73,7 @@ object LicenseDependencyScanner {
                     if (!primaryLicense.extras.contains(data)) {
                         alreadyScanDeps.add(dep)
 
-                        preloadedText.add("\t\t${dep.mavenId()} [${data.license}]")
+                        preloadedText.add("\t\t[${data.license}] ${dep.mavenId()}")
 
                         // NOTE: the END copyright for these are determined by the DATE of the files!
                         //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it
@@ -157,7 +158,7 @@ object LicenseDependencyScanner {
 
                     if (licenseData != null) {
                         alreadyScanDeps.add(dep)
-                        embeddedText.add("\t\t$dep  [$licenseData]")
+                        embeddedText.add("\t\t[$licenseData] $dep")
                     } else {
                         actuallyMissingLicenseInfo.add(projAndDep)
                     }
@@ -190,6 +191,10 @@ object LicenseDependencyScanner {
                 }
             }
         }
+
+        preloadedText.sort()
+        embeddedText.sort()
+        missingText.sort()
 
         return ScanDep(project, preloadedText, embeddedText, missingText)
     }
