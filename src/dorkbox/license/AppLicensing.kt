@@ -545,6 +545,12 @@ object AppLicensing {
               author("The Apache Software Foundation")
               url("https://github.com/apache/commons-io")
           }),
+        L("org.apache.commons:commons-compress",
+          LicenseData("Apache Commons Compress ", License.APACHE_2).apply {
+              description("The Apache Commons Compress library defines an API for working with ar, cpio, Unix dump, tar, zip, gzip, XZ, Pack200, bzip2, 7z, arj, lzma, snappy, DEFLATE, lz4, Brotli, Zstandard, DEFLATE64 and Z files.")
+              author("The Apache Software Foundation")
+              url("https://github.com/apache/commons-compress")
+          }),
         L("io.undertow",
           LicenseData("Undertow", License.APACHE_2).apply {
               description("High performance non-blocking webserver")
