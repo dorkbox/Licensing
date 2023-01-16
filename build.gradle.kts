@@ -22,13 +22,13 @@ plugins {
     java
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "0.14.0"
+    id("com.gradle.plugin-publish") version "1.1.0"
 
-    id("com.dorkbox.Licensing") version "2.9.2"
-    id("com.dorkbox.VersionUpdate") version "2.4"
-    id("com.dorkbox.GradleUtils") version "2.13"
+    id("com.dorkbox.Licensing") version "2.17"
+    id("com.dorkbox.VersionUpdate") version "2.5"
+    id("com.dorkbox.GradleUtils") version "3.6"
 
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.7.0"
 }
 
 
@@ -117,6 +117,9 @@ gradlePlugin {
         create("Licensing") {
             id = "${Extras.group}.${Extras.id}"
             implementationClass = "dorkbox.license.LicensePlugin"
+            displayName = Extras.name
+            description = Extras.description
+            version = Extras.version
         }
     }
 }
@@ -124,14 +127,5 @@ gradlePlugin {
 pluginBundle {
     website = Extras.url
     vcsUrl = Extras.url
-
-    (plugins) {
-        "Licensing" {
-            id = "${Extras.group}.${Extras.id}"
-            displayName = Extras.name
-            description = Extras.description
-            tags = listOf("licensing", "legal", "notice", "license", "dependencies")
-            version = Extras.version
-        }
-    }
+    tags = listOf("licensing", "legal", "notice", "license", "dependencies")
 }
