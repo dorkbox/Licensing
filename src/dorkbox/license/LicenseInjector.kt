@@ -17,8 +17,10 @@
 package dorkbox.license
 
 import License
+import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.Task
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Input
@@ -100,13 +102,18 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
             }
 
             // the task will only build files that it needs to (and will only run once)
-            project.tasks.forEach {
-                if (it is AbstractArchiveTask) {
+            project.tasks.withType(AbstractArchiveTask::class.java, object: Action<Task> {
+                override fun execute(task: Task) {
+                    task as AbstractArchiveTask
+
+                    // make sure that the license info is always built before the task
+                    task.dependsOn(extension)
+
                     // don't include the license file from the root directory (which happens by default).
                     // make sure that our license files are included in task resources (when building a jar, for example)
-                    it.from(extension.jarOutput)
+                    task.from(extension.jarOutput)
                 }
-            }
+            })
         }
 
         // true if there was any work done. checks while it goes as well
