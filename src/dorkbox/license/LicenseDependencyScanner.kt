@@ -220,7 +220,9 @@ object LicenseDependencyScanner {
         try {
             config.resolve()
         } catch (e: Throwable) {
-            println("Unable to resolve the $configurationName configuration for the project ${project.name}")
+            println("Unable to resolve the '$configurationName' configuration for the project ${project.name}")
+            e.printStackTrace()
+            return projectDependencies
         }
 
         val list = LinkedList<ResolvedDependency>()
