@@ -24,9 +24,9 @@ plugins {
 
     id("com.gradle.plugin-publish") version "1.1.0"
 
-    id("com.dorkbox.Licensing") version "2.17"
+    id("com.dorkbox.GradleUtils") version "3.6.2"
+    id("com.dorkbox.Licensing") version "2.18"
     id("com.dorkbox.VersionUpdate") version "2.5"
-    id("com.dorkbox.GradleUtils") version "3.6"
 
     kotlin("jvm") version "1.7.0"
 }
@@ -52,6 +52,7 @@ object Extras {
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.defaults()
 GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
+GradleUtils.debug()
 
 
 licensing {
@@ -62,32 +63,12 @@ licensing {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            setSrcDirs(listOf("src"))
-
-            // want to include kotlin files for the source. 'setSrcDirs' resets includes...
-            include("**/*.kt")
-        }
-
-        resources {
-            setSrcDirs(listOf("resources"))
-
-            // 'setSrcDirs' resets includes...
-            include("**/*.*")
-        }
-    }
-}
-
 repositories {
-    mavenLocal()
-    mavenCentral()
     gradlePluginPortal()
 }
 
 dependencies {
-    // compile only, so we dont force kotlin version info into dependencies
+    // compile only, so we don't force kotlin version info into dependencies
     // the kotlin version is taken from the plugin, so it is not necessary to set it here
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin")
 
