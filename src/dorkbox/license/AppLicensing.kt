@@ -860,6 +860,18 @@ object AppLicensing {
                 url("https://netty.io")
               }
           }),
+        L("com.github.oshi:oshi-core-java11",
+          LicenseData("Brotli4j", License.APACHE_2).apply {
+              description("Operating System and Hardware Information library for Java.")
+              author("Aayush Atharva")
+              url("https://github.com/oshi/oshi")
+          }),
+        L("com.github.oshi:oshi-core",
+          LicenseData("OSHI", License.MIT).apply {
+              description("Operating System and Hardware Information library for Java.")
+              author("Aayush Atharva")
+              url("https://github.com/oshi/oshi")
+          }),
 
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
