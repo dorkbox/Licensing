@@ -17,7 +17,7 @@
 package dorkbox.license
 
 import License
-import com.dorkbox.version.Version
+import dorkbox.version.Version
 import org.gradle.api.IllegalDependencyNotation
 
 /**
@@ -970,7 +970,7 @@ object AppLicensing {
                                                 "Example notations: 'com.dorkbox:Version:1.0', 'org.mockito:mockito-core:1.9.5:javadoc'")
             }
             1 -> {
-                Pair(split[0], Version.from(0))
+                Pair(split[0], Version(0))
             }
             2 -> {
                 val group = split[0]
@@ -978,9 +978,9 @@ object AppLicensing {
 
                 // check to see if the name is really a version or a name
                 try {
-                    Pair(group, Version.from(name))
+                    Pair(group, Version(name))
                 } catch (e: Exception) {
-                    Pair("$group:$name", Version.from(0))
+                    Pair("$group:$name", Version(0))
                 }
             }
             else -> {
@@ -990,9 +990,9 @@ object AppLicensing {
 
                 // check to see if the name is really a version or a name
                 try {
-                    Pair("$group:$name", Version.from(ver))
+                    Pair("$group:$name", Version(ver))
                 } catch (e: Exception) {
-                    Pair("$group:$name", Version.from(0))
+                    Pair("$group:$name", Version(0))
                 }
             }
         }

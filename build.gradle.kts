@@ -24,9 +24,9 @@ plugins {
 
     id("com.gradle.plugin-publish") version "1.1.0"
 
-    id("com.dorkbox.GradleUtils") version "3.6.2"
-    id("com.dorkbox.Licensing") version "2.18"
-    id("com.dorkbox.VersionUpdate") version "2.5"
+    id("com.dorkbox.GradleUtils") version "3.9"
+//    id("com.dorkbox.Licensing") version "2.18"
+    id("com.dorkbox.VersionUpdate") version "2.6"
 
     kotlin("jvm") version "1.7.0"
 }
@@ -36,7 +36,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.19.1"
+    const val version = "2.19.2"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -52,16 +52,15 @@ object Extras {
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.defaults()
 GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
-GradleUtils.debug()
 
 
-licensing {
-    license(License.APACHE_2) {
-        description(Extras.description)
-        author(Extras.vendor)
-        url(Extras.url)
-    }
-}
+//licensing {
+//    license(License.APACHE_2) {
+//        description(Extras.description)
+//        author(Extras.vendor)
+//        url(Extras.url)
+//    }
+//}
 
 repositories {
     gradlePluginPortal()
@@ -72,7 +71,7 @@ dependencies {
     // the kotlin version is taken from the plugin, so it is not necessary to set it here
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin")
 
-    implementation("com.dorkbox:Version:2.4")
+    implementation("com.dorkbox:Version:3.0")
 }
 
 tasks.jar.get().apply {
@@ -94,6 +93,9 @@ tasks.jar.get().apply {
 ////////    Plugin Publishing + Release
 /////////////////////////////////
 gradlePlugin {
+    website.set(Extras.url)
+    vcsUrl.set(Extras.url)
+
     plugins {
         create("Licensing") {
             id = "${Extras.group}.${Extras.id}"
@@ -101,12 +103,7 @@ gradlePlugin {
             displayName = Extras.name
             description = Extras.description
             version = Extras.version
+            tags.set(listOf("licensing", "legal", "notice", "license", "dependencies"))
         }
     }
-}
-
-pluginBundle {
-    website = Extras.url
-    vcsUrl = Extras.url
-    tags = listOf("licensing", "legal", "notice", "license", "dependencies")
 }
