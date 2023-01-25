@@ -110,7 +110,7 @@ object AppLicensing {
           LicenseData("Logback", License.APACHE_2).apply {
               description("Logback is a logging framework for Java applications")
               author("QOS.ch")
-              url("http://logback.qos.ch")
+              url("https://logback.qos.ch")
           }),
         L("io.github.microutils:kotlin-logging",
           LicenseData("kotlin-logging", License.APACHE_2).apply {
@@ -121,25 +121,25 @@ object AppLicensing {
         L("org.slf4j:slf4j-api",
           LicenseData("SLF4J", License.MIT).apply {
              description("Simple facade or abstraction for various logging frameworks")
-             url("http://www.slf4j.org")
+             url("https://www.slf4j.org")
              author("QOS.ch")
          }),
         L("org.slf4j:jcl-over-slf4j",
           LicenseData("JCL to SLF4J", License.MIT).apply {
              description("JCL 1.2 implemented over SLF4J")
-             url("http://www.slf4j.org")
+             url("https://www.slf4j.org")
              author("QOS.ch")
          }),
         L("org.slf4j:jul-to-slf4j",
           LicenseData("JUL to SLF4J", License.MIT).apply {
              description("Java Util Logging implemented over SLF4J")
-             url("http://www.slf4j.org")
+             url("https://www.slf4j.org")
              author("QOS.ch")
          }),
         L("org.slf4j:log4j-over-slf4j",
           LicenseData("Log4j to SLF4J", License.MIT).apply {
              description("Log4j implemented over SLF4J")
-             url("http://www.slf4j.org")
+             url("https://www.slf4j.org")
              author("QOS.ch")
          }),
         L("net.java.dev.jna:jna:1.0",
@@ -194,12 +194,12 @@ object AppLicensing {
                  author("The Apache Software Foundation")
               }
              extra("JZlib", License.APACHE_2) {
-                 url("http://www.jcraft.com/jzlib")
+                 url("https://github.com/ymnk/jzlib")
                  author("Atsuhiko Yamanaka")
                  author("JCraft, Inc.")
               }
              extra("Bouncy Castle Crypto", License.APACHE_2) {
-                 url("http://www.bouncycastle.org")
+                 url("https://www.bouncycastle.org")
                  author("The Legion of the Bouncy Castle Inc")
               }
              extra("ed25519-java", License.CC0) {
@@ -211,7 +211,7 @@ object AppLicensing {
           LicenseData("Bouncy Castle Crypto", License.APACHE_2).apply {
              description("Lightweight cryptography API and JCE Extension")
              author("The Legion of the Bouncy Castle Inc")
-             url("http://www.bouncycastle.org")
+             url("https://www.bouncycastle.org")
          }),
         L("com.fasterxml.uuid:java-uuid-generator",
           LicenseData("Java Uuid Generator", License.APACHE_2).apply {
@@ -264,7 +264,7 @@ object AppLicensing {
                  author("Nathan Sweet")
              }
              extra("Objenesis", License.APACHE_2) {
-                 url("http://objenesis.org")
+                 url("https://github.com/easymock/objenesis")
                  author("Objenesis Team and all contributors")
              }
              extra("MinLog-SLF4J", License.BSD_3) {
@@ -292,7 +292,7 @@ object AppLicensing {
              author("Yann Collet")
              author("Adrien Grand")
              url("https://github.com/jpountz/lz4-java")
-             url("http://code.google.com/p/lz4/")
+             url("https://github.com/lz4/lz4")
          }),
         L("com.conversantmedia:disruptor",
           LicenseData("Conversant Disruptor", License.APACHE_2).apply {
@@ -318,7 +318,7 @@ object AppLicensing {
               author("Shigeru Chiba")
               author("Bill Burke")
               author("Jason T. Greene")
-              url("http://www.javassist.org")
+              url("https://www.javassist.org")
               url("https://github.com/jboss-javassist/javassist")
               note("Licensed under the MPL/LGPL/Apache triple license")
          }),
@@ -434,7 +434,7 @@ object AppLicensing {
              description("XStream is a simple library to serialize objects to XML and back again.")
              author("Joe Walnes")
              author("XStream Committers")
-             url("http://x-stream.github.io/")
+             url("https://github.com/x-stream/xstream")
          }),
         L("xmlpull:xmlpull",
           LicenseData("XML Pull Parsing API", License.CC0).apply {
@@ -497,7 +497,7 @@ object AppLicensing {
           LicenseData("Trove4J Collections", License.LGPLv2_1).apply {
               description("Fast, lightweight implementations of the Java Collections API")
               author("Eric D. Friedman")
-              url("http://trove4j.sourceforge.net")
+              url("https://trove4j.sourceforge.net")
 
               extra("HashFunctions", License.CC0) {
                   copyright(1999)
@@ -523,7 +523,7 @@ object AppLicensing {
               description("Java TAR compression utility library")
               author("Tim")
               author("ICE Engineering, Inc.")
-              url("http://www.trustice.com/java/tar")
+              url("https://www.trustice.com/java/tar")
           }),
         L("org.flywaydb:flyway-core",
           LicenseData("Flyway Tar", License.APACHE_2).apply {
@@ -721,7 +721,7 @@ object AppLicensing {
               author("Scott Conway")
               author("Andrew Rucker Jones")
               author("Tom Squires")
-              url("http://opencsv.sourceforge.net/")
+              url("https://opencsv.sourceforge.net/")
           }),
         L("com.zaxxer:HikariCP",
           LicenseData("HikariCP", License.APACHE_2).apply {
