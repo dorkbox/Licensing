@@ -25,7 +25,7 @@ plugins {
     id("com.gradle.plugin-publish") version "1.1.0"
 
     id("com.dorkbox.GradleUtils") version "3.9"
-//    id("com.dorkbox.Licensing") version "2.18"
+    id("com.dorkbox.Licensing") version "2.20"
     id("com.dorkbox.VersionUpdate") version "2.6"
 
     kotlin("jvm") version "1.7.0"
@@ -36,7 +36,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.19.2"
+    const val version = "2.20"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -53,14 +53,13 @@ GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.defaults()
 GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
 
-
-//licensing {
-//    license(License.APACHE_2) {
-//        description(Extras.description)
-//        author(Extras.vendor)
-//        url(Extras.url)
-//    }
-//}
+licensing {
+    license(License.APACHE_2) {
+        description(Extras.description)
+        author(Extras.vendor)
+        url(Extras.url)
+    }
+}
 
 repositories {
     gradlePluginPortal()
