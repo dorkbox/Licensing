@@ -135,7 +135,7 @@ object LicenseDependencyScanner {
                     dep.artifacts.forEach search@{ artifact ->
                         val file = artifact.file
                         try {
-                            if (file.canRead()) {
+                            if (file.canRead() && file.isFile) {
                                 ZipFile(file).use {
                                     // read the license blob information
                                     val ze = it.getEntry(LicenseInjector.LICENSE_BLOB)
@@ -236,7 +236,7 @@ object LicenseDependencyScanner {
         try {
             config.resolve()
         } catch (e: Throwable) {
-            println("Unable to resolve the '$configurationName' configuration for the project ${project.name}")
+            println("\tUnable to resolve the '$configurationName' configuration for the project ${project.name}")
             e.printStackTrace()
             return projectDependencies
         }
