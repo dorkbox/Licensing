@@ -36,7 +36,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.21"
+    const val version = "2.22"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -58,6 +58,18 @@ licensing {
         description(Extras.description)
         author(Extras.vendor)
         url(Extras.url)
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            setSrcDirs(listOf("src"))
+
+            // want to include kotlin and java files for the source. 'setSrcDirs' resets includes...
+            // NOTE: if we DO NOT do this, then there will not be any sources in the "plugin sources" jar, as it expects only java
+            include("**/*.kt", "**/*.java")
+        }
     }
 }
 
