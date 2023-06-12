@@ -829,7 +829,7 @@ object AppLicensing {
               url("https://github.com/vaadin")
           }),
         L("com.vaadin.external.gwt:gwt-elemental",
-          LicenseData("Vaadin", License.APACHE_2).apply {
+          LicenseData("GWT Elemental", License.APACHE_2).apply {
               copyright = 2010
               description("Vaadin Customized GWT Elemental Library")
               author("Google Inc.")
