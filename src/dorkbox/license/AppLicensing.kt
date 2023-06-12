@@ -828,6 +828,14 @@ object AppLicensing {
               url("https://vaadin.com")
               url("https://github.com/vaadin")
           }),
+        L("com.vaadin.external.gwt:gwt-elemental",
+          LicenseData("Vaadin", License.APACHE_2).apply {
+              copyright = 2010
+              description("Vaadin Customized GWT Elemental Library")
+              author("Google Inc.")
+              author("Vaadin Ltd")
+              url("https://repo1.maven.org/maven2/com/vaadin/external/gwt/gwt-elemental")
+          }),
         L("org.conscrypt:conscrypt-openjdk-uber",
           LicenseData("Conscrypt", License.APACHE_2).apply {
               description("An open platform for building modern web apps for Java back ends")
@@ -871,6 +879,12 @@ object AppLicensing {
               description("Operating System and Hardware Information library for Java.")
               author("Aayush Atharva")
               url("https://github.com/oshi/oshi")
+          }),
+        L("io.github.microutils:kotlin-logging-jvm",
+          LicenseData("kotlin-logging", License.APACHE_2).apply {
+              description("Lightweight Multiplatform logging framework for Kotlin")
+              author("Ohad Shai")
+              url("https://github.com/oshai/kotlin-logging")
           }),
 
     )
