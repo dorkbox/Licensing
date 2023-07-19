@@ -287,13 +287,20 @@ object AppLicensing {
              url("https://projects.eclipse.org/projects/eclipse.platform")
          }),
         L("net.jpountz.lz4:lz4",
-          LicenseData("LZ4 and XXhash", License.APACHE_2).apply {
+          LicenseData("LZ4 and xxHash", License.APACHE_2).apply {
              description("LZ4 compression for Java, based on Yann Collet's work")
              author("Yann Collet")
              author("Adrien Grand")
              url("https://github.com/jpountz/lz4-java")
              url("https://github.com/lz4/lz4")
          }),
+        L("org.lz4:lz4-java",
+          LicenseData("LZ4 and xxHash", License.APACHE_2).apply {
+              description("LZ4 compression for Java, based on Yann Collet's work")
+              author("Yann Collet")
+              author("Adrien Grand")
+              url("https://github.com/lz4/lz4")
+          }),
         L("com.conversantmedia:disruptor",
           LicenseData("Conversant Disruptor", License.APACHE_2).apply {
              description("Disruptor is the highest performing intra-thread transfer mechanism available in Java.")
