@@ -279,10 +279,16 @@ object AppLicensing {
              author("Martin Grotzke")
              author("Rafael Winterhalter")
          }),
-        // most of the time this is just SWT, but each arch/os has it's own id, so it's dumb to include them all
+        // most of the time this is just SWT, but each arch/os has its own id, so it's dumb to include them all
         L("org.eclipse.platform",
           LicenseData("Eclipse Platform", License.EPL).apply {
-             description("Frameworks and common services to support the use of Eclipse and it's tools (SWT)")
+             description("Frameworks and common services by the Eclipse Foundation")
+             author("The Eclipse Foundation, Inc.")
+             url("https://projects.eclipse.org/projects/eclipse.platform")
+         }),
+        L("org.eclipse.platform.org.eclipse.swt",
+          LicenseData("Eclipse Standard Widget Toolkit", License.EPL).apply {
+             description("The Eclipse Standard Widget Toolkit (SWT)")
              author("The Eclipse Foundation, Inc.")
              url("https://projects.eclipse.org/projects/eclipse.platform")
          }),
@@ -892,6 +898,14 @@ object AppLicensing {
               description("Lightweight Multiplatform logging framework for Kotlin")
               author("Ohad Shai")
               url("https://github.com/oshai/kotlin-logging")
+          }),
+
+        L("jakarta.servlet:jakarta.servlet-api",
+          LicenseData("Jakarta Servlet ", License.GPLv2_CLASSPATH).apply {
+              description("Jakarta Servlet™ is a standard technology for interacting with the web on the Jakarta EE platform. ")
+              author("Yamini K B")
+              author("ee4j-pmc@eclipse.org")
+              url("https://projects.eclipse.org/projects/ee4j.servlet ")
           }),
 
     )
