@@ -907,6 +907,14 @@ object AppLicensing {
               author("ee4j-pmc@eclipse.org")
               url("https://projects.eclipse.org/projects/ee4j.servlet ")
           }),
+        L("io.github.gradle-nexus:publish-plugin",
+          LicenseData("Gradle Nexus Publish Plugin", License.APACHE_2).apply {
+              description("Gradle Plugin for publishing to Nexus that automates creating, closing, and releasing staging repositories")
+              author("Marc Philipp")
+              author("Marcin Zajączkowski")
+              url("https://github.com/gradle-nexus/publish-plugin")
+          }
+        ),
 
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
