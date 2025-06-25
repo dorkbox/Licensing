@@ -902,20 +902,27 @@ object AppLicensing {
 
         L("jakarta.servlet:jakarta.servlet-api",
           LicenseData("Jakarta Servlet ", License.GPLv2_CLASSPATH).apply {
-              description("Jakarta Servlet™ is a standard technology for interacting with the web on the Jakarta EE platform. ")
+              description("Jakarta Servlet™ is a standard technology for interacting with the web on the Jakarta EE platform.")
               author("Yamini K B")
               author("ee4j-pmc@eclipse.org")
               url("https://projects.eclipse.org/projects/ee4j.servlet ")
           }),
+
         L("io.github.gradle-nexus:publish-plugin",
           LicenseData("Gradle Nexus Publish Plugin", License.APACHE_2).apply {
               description("Gradle Plugin for publishing to Nexus that automates creating, closing, and releasing staging repositories")
               author("Marc Philipp")
               author("Marcin Zajączkowski")
               url("https://github.com/gradle-nexus/publish-plugin")
-          }
-        ),
+          }),
 
+        L("org.danilopianini:publish-on-central",
+          LicenseData("Gradle Nexus Publish Plugin", License.APACHE_2).apply {
+              description("A Gradle plugin for streamlined publishing to Maven Central.")
+              author("Danilo Pianini")
+              url("https://www.danilopianini.org")
+              url("https://github.com/DanySK/publish-on-central")
+          }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
     //   Some dates are WRONG (because the jar build is mucked with), so we manually fix it
