@@ -69,7 +69,7 @@ class LicensePlugin : Plugin<Project> {
                     it.delete()
                 }
 
-                val task = project.tasks.last { task -> task.name == hasClean.last() }
+                val task = project.allprojects.last().tasks.last()
                 task.doLast {
                     println("\tRefreshing license data...")
                     // always regen the license files (technically, a `clean` should remove temp stuff -- however license files are not temp!)
