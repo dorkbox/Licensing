@@ -17,7 +17,7 @@ package dorkbox.license
 
 import License
 import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
@@ -83,14 +83,16 @@ open class Licensing(private val project: Project) {
 
     val licenses = mutableListOf<LicenseData>()
 
-    val outputBuildDir: File = File(project.buildDir, "licensing")
+    val outputBuildDir: File by lazy {
+        File(project.layout.buildDirectory.asFile.get(), "licensing")
+    }
     val outputRootDir: File = project.rootDir
 
     /**
      * Gets a list of files, representing the on-disk location of each generated license file
      */
     val jarOutput: List<File> by lazy {
-        // have to get the list of flattened license files, so we can get ALL of the files needed
+        // have to get the list of flattened license files, so we can get ALL the files needed
         val flatLicenseFiles = mutableSetOf<String>()
         licenses.forEach {
             flattenDep(it, flatLicenseFiles)
@@ -154,8 +156,7 @@ open class Licensing(private val project: Project) {
      * Gets a list of files, representing the on-disk location of ALL POSSIBLE generated license file
      */
     fun allPossibleOutput(): List<File> {
-        val licenseFileNames = License.values().map { it.licenseFile }.filter { it.isNotEmpty() }
-
+        val licenseFileNames = License.entries.map { it.licenseFile }.filter { it.isNotEmpty() }
         val files = mutableListOf<File>()
 
         /// outputBuildDir
@@ -184,14 +185,14 @@ open class Licensing(private val project: Project) {
 
 
     // scan as part of the plugin
-    fun scanDependencies(project: Project, allProjects: Boolean): LicenseDependencyScanner.ScanDep {
+    @delegate:Internal
+    val scanDependencies: LicenseDependencyScanner.ScanDep by lazy {
         // now we want to add license information that we know about from our dependencies to our list
         // just to make it clear, license information CAN CHANGE BETWEEN VERSIONS! For example, JNA changed from GPL to Apache in version 4+
         // we associate the artifact group + id + (start) version as a license.
         // if a license for a dependency is UNKNOWN, then we emit a warning to the user to add it as a pull request
         // if a license version is not specified, then we use the default
-        val depInfo = LicenseDependencyScanner.scanForLicenseData(project, allProjects, this.licenses)
-
+        val depInfo = LicenseDependencyScanner.scanForLicenseData(project, this.licenses)
 
         // we only should include the kotlin license information IF we actually use kotlin.
         //
@@ -213,7 +214,7 @@ open class Licensing(private val project: Project) {
             }
         }
 
-        return depInfo
+        depInfo
     }
 
     /**

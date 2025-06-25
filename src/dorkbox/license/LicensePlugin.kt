@@ -18,8 +18,11 @@ package dorkbox.license
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.compile.AbstractCompile
+import java.util.*
 
 /**
  * License definition and management plugin for the Gradle build system
@@ -27,32 +30,51 @@ import org.gradle.api.tasks.compile.AbstractCompile
 class LicensePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        val publications = project.extensions.getByType(PublishingExtension::class.java).publications.filter { MavenPublication::class.java.isAssignableFrom(it.javaClass) }
+
         // Create the Plugin extension object (for users to configure our execution).
         val extension: Licensing = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
 
-        val generateLicenseFiles = project.tasks.create("generateLicenseFiles", LicenseInjector::class.java, extension)
+        val generateLicenseFiles = project.tasks.register("generateLicenseFiles", LicenseInjector::class.java, extension, publications)
 
-        project.afterEvaluate { p ->
-            // the task will only build files that it needs to (and will only run once)
-            p.tasks.forEach { task ->
-                when (task) {
-                    is AbstractCompile -> task.dependsOn(generateLicenseFiles)
-                    is AbstractArchiveTask -> task.dependsOn(generateLicenseFiles)
-                }
-            }
+        // the task will only build files that it needs to (and will only run once)
+        project.tasks.withType(AbstractCompile::class.java) { task ->
+            // make sure that the license info is always built before the task
+            task.dependsOn(generateLicenseFiles)
         }
 
-        // Make sure to cleanup the any possible license file on clean
+        // the task will only build files that it needs to (and will only run once)
+        project.tasks.withType(AbstractArchiveTask::class.java) { task ->
+            // make sure that the license info is always built before the task
+            task.dependsOn(generateLicenseFiles)
+
+            // don't include the license file from the root directory (which happens by default).
+            // make sure that our license files are included in task resources (when building a jar, for example)
+            task.from(extension.jarOutput)
+        }
+
+        // Make sure to clean-up any possible license file on clean
         project.gradle.taskGraph.whenReady { it ->
-            val isClean = it.allTasks.firstOrNull { it.name == "clean" } != null
-            if (isClean) {
-                println("\tCleaning license data")
+            val hasClean = project.gradle.startParameter.taskNames.filter { taskName ->
+                taskName.lowercase(Locale.getDefault()).contains("clean")
+            }
+
+            // This MUST be first, since it loads license data that is used elsewhere
+            // show scanning or missing, but not both
+            // NOTE: we scan the dependencies in ALL subprojects as well.
+            extension.scanDependencies
+
+            if (hasClean.isNotEmpty()) {
                 extension.allPossibleOutput().forEach {
                     it.delete()
                 }
 
-                // always regen the license files (technically, a `clean` should remove temp stuff -- however license files are not temp!)
-                generateLicenseFiles.actions[0].execute(generateLicenseFiles)
+                val task = project.tasks.last { task -> task.name == hasClean.last() }
+                task.doLast {
+                    println("\tRefreshing license data...")
+                    // always regen the license files (technically, a `clean` should remove temp stuff -- however license files are not temp!)
+                    generateLicenseFiles.get().doTaskInternal()
+                }
             }
         }
     }

@@ -17,11 +17,8 @@
 package dorkbox.license
 
 import License
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.Task
-import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -34,9 +31,7 @@ import java.io.ObjectOutputStream
 import java.util.*
 import javax.inject.Inject
 
-
-
-internal open class LicenseInjector @Inject constructor(@Internal val extension: Licensing) : DefaultTask() {
+internal open class LicenseInjector @Inject constructor(@Internal val extension: Licensing, @Internal val publications: List<MavenPublication>) : DefaultTask() {
     companion object {
         const val LICENSE_FILE = "LICENSE"
         const val LICENSE_BLOB = "LICENSE.blob"
@@ -49,75 +44,91 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
     init {
         group = "other"
         outputs.upToDateWhen {
-            !(checkLicenseFiles(extension.outputBuildDir, licenses) && checkLicenseFiles(extension.outputRootDir, licenses))
+            filesUpToDate
         }
     }
 
+    private val filesUpToDate: Boolean by lazy {
+            val checkBuild = checkLicenseFiles(extension.outputBuildDir, licenses)
+            val checkRoot = checkLicenseFiles(extension.outputRootDir, licenses)
+
+//            println("Valid at : ${extension.outputBuildDir} : $checkBuild")
+//            println("Valid at : ${extension.outputRootDir} : $checkRoot")
+
+            if (!checkBuild) {
+//                println("UpToDate: false")
+                return@lazy false
+            }
+
+            if (!checkRoot) {
+//                println("UpToDate: false")
+                return@lazy false
+            }
+
+            return@lazy true
+        }
+
+
+
     @TaskAction
     fun doTask() {
+        if (!filesUpToDate) {
+            println("\tGenerating License data")
+        }
+        doTaskInternal()
+    }
+
+    fun doTaskInternal() {
         // This MUST be first, since it loads license data that is used elsewhere
         // show scanning or missing, but not both
         // NOTE: we scan the dependencies in ALL subprojects as well.
-        val (proj, preloadedText, embeddedText, missingText) = extension.scanDependencies(project, true)
+        val (preloadedText, embeddedText, missingText) = extension.scanDependencies
 
-        // validate the license text configuration section in the gradle file ONLY WHEN PUSHING A JAR
+
+        // validate the license text configuration section in the gradle file
         val licensing = extension.licenses
         if (licensing.isNotEmpty()) {
-            extension.licenses.forEach {
+            licensing.forEach {
                 when {
-                    it.name.isEmpty() -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferredName}' license")
+                    it.name.isEmpty()    -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferredName}' license")
                     it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferredName}' license")
                 }
             }
 
             // add the license information to maven POM, if applicable
             try {
-                val publishingExt = project.extensions.getByType(PublishingExtension::class.java)
-                publishingExt.publications.forEach {
-                    if (MavenPublication::class.java.isAssignableFrom(it.javaClass)) {
-                        it as MavenPublication
+                publications.forEach {
+                    // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
+                    val licenseData = licensing.first()
+                    val license = licenseData.license
 
-                        // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
-                        val licenseData = extension.licenses.first()
-                        val license = licenseData.license
-                        it.pom.licenses { licSpec ->
-                            licSpec.license { newLic ->
-                                newLic.name.set(license.preferredName)
-                                newLic.url.set(license.preferredUrl)
+                    it.pom.licenses { licSpec ->
+                        licSpec.license { newLic ->
+                            newLic.name.set(license.preferredName)
+                            newLic.url.set(license.preferredUrl)
 
-                                // only include license "notes" if we are a custom license **which is the license itself**
-                                if (license == License.CUSTOM) {
-                                    val notes = licenseData.notes.joinToString("")
-                                    newLic.comments.set(notes)
-                                }
+                            // only include license "notes" if we are a custom license **which is the license itself**
+                            if (license == License.CUSTOM) {
+                                val notes = licenseData.notes.joinToString("")
+                                newLic.comments.set(notes)
                             }
                         }
-                    }
-                    else {
-                        println("Licensing only supports maven pom license injection for now")
                     }
                 }
             } catch (ignored: Exception) {
                 // there aren't always maven publishing used
             }
-
-            // the task will only build files that it needs to (and will only run once)
-            project.tasks.withType(AbstractArchiveTask::class.java, object: Action<Task> {
-                override fun execute(task: Task) {
-                    task as AbstractArchiveTask
-
-                    // make sure that the license info is always built before the task
-                    task.dependsOn(extension)
-
-                    // don't include the license file from the root directory (which happens by default).
-                    // make sure that our license files are included in task resources (when building a jar, for example)
-                    task.from(extension.jarOutput)
-                }
-            })
         }
 
-        // true if there was any work done. checks while it goes as well
-        didWork = buildLicenseFiles(extension.outputBuildDir, licenses, true) && buildLicenseFiles(extension.outputRootDir, licenses, false)
+
+        if (!filesUpToDate) {
+            // true if there was any work done. checks while it goes as well
+            val buildDir = buildLicenseFiles(extension.outputBuildDir, licenses, true)
+            val rootDir = buildLicenseFiles(extension.outputRootDir, licenses, false)
+
+            didWork = buildDir || rootDir
+        }
+
 
         val hasArchiveTask = project.gradle.taskGraph.allTasks.filterIsInstance<AbstractArchiveTask>().isNotEmpty()
         if (hasArchiveTask || didWork) {
@@ -144,7 +155,7 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
     }
 
     /**
-     * @return true when there is work that needs to be done
+     * @return false when there is work that needs to be done
      */
     private fun checkLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>): Boolean {
         if (!outputDir.exists()) outputDir.mkdirs()
@@ -152,11 +163,13 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
         val licenseBytes = LicenseData.buildString(licenses).toByteArray(Charsets.UTF_8)
         val licenseFile = File(outputDir, LICENSE_FILE)
 
+//        println("\tLicenses: ${licenses.joinToString()}")
 
         // check the license file first
-        if (fileIsNotSame(licenseFile, licenseBytes)) {
+        if (!fileIsSame(licenseFile, licenseBytes)) {
+//            println("\t\tFile $licenseFile is not the same as the license file")
             // work needs doing
-            return true
+            return false
         }
 
         licenses.forEach {
@@ -166,18 +179,20 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
                 val file = File(outputDir, license.licenseFile)
                 val sourceBytes = license.licenseBytes
 
-                if (fileIsNotSame(file, sourceBytes)) {
+                if (!fileIsSame(file, sourceBytes)) {
                     // work needs doing
-                    return true
+
+//                    println("\t\tFile $licenseFile is not the same as the license file")
+                    return false
                 }
             }
         }
 
-        return false
+        return true
     }
 
     /**
-     * @return true when there is work that has be done
+     * @return true when there is work that has been done
      */
     private fun buildLicenseFiles(outputDir: File, licenses: MutableList<LicenseData>, buildLicenseBlob: Boolean): Boolean {
         var hasDoneWork = false
@@ -192,7 +207,7 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
             val licenseFile = File(outputDir, LICENSE_FILE)
             val licenseBlob = File(outputDir, LICENSE_BLOB)
 
-            if (fileIsNotSame(licenseFile, licenseBytes)) {
+            if (!fileIsSame(licenseFile, licenseBytes)) {
                 // write out the LICENSE files
                 licenseFile.writeBytes(licenseBytes)
 
@@ -216,7 +231,7 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
             val scanningLicenses: LinkedList<LicenseData> = LinkedList<LicenseData>()
             scanningLicenses.addAll(licenses)
 
-            while(scanningLicenses.isNotEmpty()) {
+            while (scanningLicenses.isNotEmpty()) {
                 val license = scanningLicenses.remove()
                 val wasAdded = flattenedLicenses.add(license)
                 if (wasAdded) {
@@ -233,9 +248,14 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
                     val file = File(outputDir, license.licenseFile)
                     val sourceBytes = license.licenseBytes
 
-                    if (fileIsNotSame(file, sourceBytes)) {
+                    // have to replace the PRIMARY license bytes section with the proper license
+
+
+                    if (!fileIsSame(file, sourceBytes)) {
                         // write out the various license text files (NOTE: we force LF for everything!)
                         file.writeBytes(sourceBytes)
+
+
                         hasDoneWork = true
                     }
                 }
@@ -249,27 +269,29 @@ internal open class LicenseInjector @Inject constructor(@Internal val extension:
      * this is so we can check if we need to re-write the file. This is done to
      * save write cycles on low-end drives where write frequency is an issue
      *
-     * @return TRUE if the file IS DIFFERENT, FALSE if the file IS THE SAME
+     * @return FALSE if the file IS DIFFERENT, TRUE if the file IS THE SAME
      */
-    private fun fileIsNotSame(outputFile: File, sourceBytes: ByteArray): Boolean {
+    private fun fileIsSame(outputFile: File, sourceBytes: ByteArray): Boolean {
+//        println("\t\tLicenseFile: $outputFile")
+
         if (!outputFile.canRead()) {
-            return true // not the same, so work needs to be done
+//            println("\t\tLicenseFile does not exist: $outputFile")
+            return false // not the same, so work needs to be done
         }
 
         val fileSize = outputFile.length()
 
-        if (sourceBytes.isEmpty() && fileSize > 0L) {
-            return true
-        }
-
-        if (sourceBytes.isNotEmpty() && fileSize == 0L) {
+        if (sourceBytes.size.toLong() == fileSize) {
+//            println("\t\tLicenseSize are equal")
             return true
         }
 
         return try {
-            !(sourceBytes contentEquals outputFile.readBytes())
+            val b = sourceBytes contentEquals outputFile.readBytes()
+//            println("\t\tLicenseBytes are equal: $b")
+            !b
         } catch (e: Exception) {
-            return true // not the same, so work needs to be done
+            return false // not the same, so work needs to be done
         }
     }
 }
