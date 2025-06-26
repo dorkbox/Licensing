@@ -22,13 +22,13 @@ plugins {
     java
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "1.1.0"
+    id("com.gradle.plugin-publish") version "1.3.1"
 
-    id("com.dorkbox.GradleUtils") version "3.9"
-    id("com.dorkbox.Licensing") version "2.21"
-    id("com.dorkbox.VersionUpdate") version "2.6"
+    id("com.dorkbox.GradleUtils") version "3.18"
+    id("com.dorkbox.Licensing") version "2.29"
+    id("com.dorkbox.VersionUpdate") version "2.8"
 
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm") version "2.2.0"
 }
 
 
@@ -36,7 +36,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "2.28"
+    const val version = "2.29"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
@@ -82,7 +82,7 @@ dependencies {
     // the kotlin version is taken from the plugin, so it is not necessary to set it here
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin")
 
-    implementation("com.dorkbox:Version:3.0")
+    implementation("com.dorkbox:Version:3.1")
 }
 
 tasks.jar.get().apply {

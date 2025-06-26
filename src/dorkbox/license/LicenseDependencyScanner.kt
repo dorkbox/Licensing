@@ -17,7 +17,8 @@
 package dorkbox.license
 
 import License
-import org.gradle.api.Project
+import dorkbox.license.Licensing.Companion.LICENSE_BLOB
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
 import java.io.File
@@ -35,21 +36,16 @@ object LicenseDependencyScanner {
     data class ScanDep(val preloadedText: MutableList<String>, val embeddedText: MutableList<String>, val missingText: MutableList<String>)
 
     // THIS MUST BE IN "afterEvaluate" or run from a specific task.
-    fun scanForLicenseData(project: Project, licenses: MutableList<LicenseData>): ScanDep {
+    internal fun scanForLicenseData(
+        dependencies: MutableSet<Dependency>,
+        projectMavenIds: MutableSet<String>,
+        licenses: MutableList<LicenseData>
+    ): ScanDep {
         val preloadedText = mutableListOf<String>()
         val embeddedText = mutableListOf<String>()
         val missingText = mutableListOf<String>()
 
-        // NOTE: there will be some duplicates, so we want to remove them
-        val dependencies = mutableSetOf<Dependency>()
 
-        project.allprojects.forEach { proj ->
-            // root + children
-            dependencies.addAll(scan(proj, "compileClasspath"))
-            dependencies.addAll(scan(proj, "runtimeClasspath"))
-        }
-
-        // this will contain duplicates if sub-projects ALSO have the same deps
         val projectDependencies = dependencies.toList()
 
         val missingLicenseInfo = mutableSetOf<Dependency>()
@@ -104,7 +100,6 @@ object LicenseDependencyScanner {
                         }
 
                         // otherwise the copyright was specified
-
                         primaryLicense.extras.add(data)
                     }
                 }
@@ -125,7 +120,7 @@ object LicenseDependencyScanner {
                             if (file.canRead() && file.isFile) {
                                 ZipFile(file).use {
                                     // read the license blob information
-                                    val ze = it.getEntry(LicenseInjector.LICENSE_BLOB)
+                                    val ze = it.getEntry(LICENSE_BLOB)
                                     if (ze != null) {
                                         it.getInputStream(ze).use { licenseStream ->
                                             try {
@@ -170,11 +165,6 @@ object LicenseDependencyScanner {
 
             if (actuallyMissingLicenseInfo.isNotEmpty()) {
                 // we have to prune sub-project data first...
-                val projectMavenIds = mutableSetOf<String>()
-                project.allprojects.forEach {
-                    projectMavenIds.add("${it.group}:${it.name}:${it.version}")
-                }
-
                 actuallyMissingLicenseInfo.forEach { dep ->
                     // we DO NOT want to show missing deps for project sub-projects.
 
@@ -210,22 +200,17 @@ object LicenseDependencyScanner {
      *
      *    This is an actual problem...
      */
-    private fun scan(project: Project, configurationName: String): List<Dependency> {
+    internal fun scan(config: Configuration): List<Dependency> {
         val projectDependencies = mutableListOf<Dependency>()
-        val config = project.configurations.getByName(configurationName)
-        if (!config.isCanBeResolved) {
-            return projectDependencies
-        }
 
+        val list = LinkedList<ResolvedDependency>()
         try {
             config.resolve()
         } catch (e: Throwable) {
-            println("\tUnable to resolve the '$configurationName' configuration for the project ${project.name}")
+            println("\tUnable to resolve the project configuration!")
             e.printStackTrace()
             return projectDependencies
         }
-
-        val list = LinkedList<ResolvedDependency>()
 
         config.resolvedConfiguration.lenientConfiguration.firstLevelModuleDependencies.forEach { dep ->
             list.add(dep)
@@ -236,11 +221,15 @@ object LicenseDependencyScanner {
             next = list.poll()
 
             val module = next.module.id
+
             val group = module.group
             val name = module.name
             val version = module.version
 
-            val artifacts = try {
+            if (group == null || name == null || version == null) { continue }
+
+            val artifacts =
+            try {
                 next.moduleArtifacts.map { artifact: ResolvedArtifact ->
                     val artifactModule = artifact.moduleVersion.id
                     Artifact(artifactModule.group, artifactModule.name, artifactModule.version, artifact.file.absoluteFile)
