@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 dorkbox, llc
+ * Copyright 2025 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.gradle.api.tasks.compile.AbstractCompile
 class LicensePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        project.pluginManager.apply("maven-publish")
+
         val hasArchiveTask = project.gradle.taskGraph.allTasks.filterIsInstance<AbstractArchiveTask>().isNotEmpty()
 
         // NOTE: there will be some duplicates, so we want to remove them
@@ -53,12 +55,26 @@ class LicensePlugin : Plugin<Project> {
             }
         }
 
-        val publications = project.extensions.getByType(PublishingExtension::class.java).publications.filter { MavenPublication::class.java.isAssignableFrom(it.javaClass) }
-
         // Create the Plugin extension object (for users to configure our execution).
         val extension: Licensing = project.extensions.create(Licensing.NAME, Licensing::class.java, project)
 
-        val generateLicenseFiles = project.tasks.register("generateLicenseFiles", LicenseInjector::class.java, configs, projectMavenIds, extension, publications, hasArchiveTask)
+        val generateLicenseFiles = project.tasks.register("generateLicenseFiles", LicenseInjector::class.java, configs, projectMavenIds, extension, hasArchiveTask)
+
+        // Defer logic that depends on project state
+        project.afterEvaluate {
+            // must be in the plugin.apply() method and not the task specifically, because task.project is deprecated and will be removed.
+            val publications: List<MavenPublication> = project.extensions.getByType(PublishingExtension::class.java)
+                .publications
+                    .filter { MavenPublication::class.java.isAssignableFrom(it.javaClass) }
+                    .map { it as MavenPublication }
+
+
+            generateLicenseFiles.configure { task ->
+                // configure the task
+                task.publicationsProperty.set(publications)
+            }
+        }
+
 
         // the task will only build files that it needs to (and will only run once)
         project.tasks.withType(AbstractCompile::class.java) { task ->

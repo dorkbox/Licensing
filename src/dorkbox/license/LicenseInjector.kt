@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 dorkbox, llc
+ * Copyright 2025 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import dorkbox.license.Licensing.Companion.LICENSE_FILE
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -35,13 +36,14 @@ import java.io.ObjectOutputStream
 import java.util.*
 import javax.inject.Inject
 
-internal open class LicenseInjector @Inject constructor(
+internal abstract class LicenseInjector @Inject constructor(
     @Internal val configs: MutableSet<Configuration>,
     @Internal val projectMavenIds: MutableSet<String>,
     @Internal val extension: Licensing,
-    @Internal val publications: List<MavenPublication>,
     @Internal val hasArchiveTask: Boolean) : DefaultTask() {
 
+
+    @get:Input abstract val publicationsProperty: ListProperty<MavenPublication>
 
     @Input val licenses = extension.licenses
     @OutputFiles val outputFiles = extension.output
@@ -118,6 +120,7 @@ internal open class LicenseInjector @Inject constructor(
 
             // add the license information to maven POM, if applicable
             try {
+                val publications: List<MavenPublication> = publicationsProperty.get()
                 publications.forEach {
                     // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
                     val licenseData = licensing.first()
