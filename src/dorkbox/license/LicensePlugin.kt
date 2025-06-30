@@ -71,7 +71,7 @@ class LicensePlugin : Plugin<Project> {
 
             generateLicenseFiles.configure { task ->
                 // configure the task
-                task.publicationsProperty.set(publications)
+                task.publications = publications
             }
         }
 
@@ -93,17 +93,16 @@ class LicensePlugin : Plugin<Project> {
         }
 
 
-        project.tasks.findByName("clean")?.apply {
-            doFirst {
+        project.tasks.named("clean").configure { task ->
+            task.doFirst {
+                println("\tDeleting license data ...")
                 extension.allPossibleOutput().forEach {
                     it.delete()
                 }
-                println("\tRefreshing license data ...")
             }
-            doLast {
-                // always regen the license files (technically, a `clean` should remove temp stuff -- however license files are not temp!)
-                generateLicenseFiles.get().doTaskInternal()
-            }
+
+            // always regen the license files (technically, a `clean` should remove temp stuff -- however license files are not temp!)
+            task.finalizedBy(generateLicenseFiles)
         }
     }
 }

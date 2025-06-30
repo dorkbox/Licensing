@@ -24,7 +24,6 @@ import dorkbox.license.Licensing.Companion.LICENSE_FILE
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -43,7 +42,7 @@ internal abstract class LicenseInjector @Inject constructor(
     @Internal val hasArchiveTask: Boolean) : DefaultTask() {
 
 
-    @get:Input abstract val publicationsProperty: ListProperty<MavenPublication>
+    @Internal var publications: List<MavenPublication> = emptyList()
 
     @Input val licenses = extension.licenses
     @OutputFiles val outputFiles = extension.output
@@ -74,7 +73,7 @@ internal abstract class LicenseInjector @Inject constructor(
     @TaskAction
     fun doTask() {
         if (!filesUpToDate) {
-            println("\tGenerating License data")
+            println("\tGenerating License data ...")
         }
         doTaskInternal()
     }
@@ -120,12 +119,11 @@ internal abstract class LicenseInjector @Inject constructor(
 
             // add the license information to maven POM, if applicable
             try {
-                val publications: List<MavenPublication> = publicationsProperty.get()
-                publications.forEach {
-                    // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
-                    val licenseData = licensing.first()
-                    val license = licenseData.license
+                // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
+                val licenseData = licensing.first()
+                val license = licenseData.license
 
+                publications.forEach {
                     it.pom.licenses { licSpec ->
                         licSpec.license { newLic ->
                             newLic.name.set(license.preferredName)
