@@ -108,9 +108,8 @@ internal abstract class LicenseInjector @Inject constructor(
         }
 
         // validate the license text configuration section in the gradle file
-        val licensing = extension.licenses
-        if (licensing.isNotEmpty()) {
-            licensing.forEach {
+        if (licenses.isNotEmpty()) {
+            licenses.forEach {
                 when {
                     it.name.isEmpty()    -> throw GradleException("The name of the project this license applies to must be set for the '${it.license.preferredName}' license")
                     it.authors.isEmpty() -> throw GradleException("An author must be specified for the '${it.license.preferredName}' license")
@@ -120,7 +119,7 @@ internal abstract class LicenseInjector @Inject constructor(
             // add the license information to maven POM, if applicable
             try {
                 // get the license information. ONLY FROM THE FIRST ONE! (which is the license for our project)
-                val licenseData = licensing.first()
+                val licenseData = licenses.first()
                 val license = licenseData.license
 
                 publications.forEach {
