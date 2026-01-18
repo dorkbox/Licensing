@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java.time.Instant
 
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
@@ -22,13 +23,13 @@ plugins {
     java
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "1.3.1"
+    id("com.gradle.plugin-publish") version "2.0.0"
 
-    id("com.dorkbox.GradleUtils") version "3.18"
+    id("com.dorkbox.GradleUtils") version "4.0"
     id("com.dorkbox.Licensing") version "3.0"
-    id("com.dorkbox.VersionUpdate") version "2.8"
+    id("com.dorkbox.VersionUpdate") version "3.0"
 
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.3.0"
 }
 
 
@@ -58,18 +59,6 @@ licensing {
         description(Extras.description)
         author(Extras.vendor)
         url(Extras.url)
-    }
-}
-
-sourceSets {
-    main {
-        java {
-            setSrcDirs(listOf("src"))
-
-            // want to include kotlin and java files for the source. 'setSrcDirs' resets includes...
-            // NOTE: if we DO NOT do this, then there will not be any sources in the "plugin sources" jar, as it expects only java
-            include("**/*.kt", "**/*.java")
-        }
     }
 }
 
@@ -108,7 +97,7 @@ gradlePlugin {
     vcsUrl.set(Extras.url)
 
     plugins {
-        create("Licensing") {
+        register("Licensing") {
             id = "${Extras.group}.${Extras.id}"
             implementationClass = "dorkbox.license.LicensePlugin"
             displayName = Extras.name
