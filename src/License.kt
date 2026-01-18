@@ -238,6 +238,9 @@ enum class License constructor(internal val names: Collection<String>, internal 
                     "LICENSE.GPLv3_CP",
                     listOf("https://www.gnu.org/software/classpath/license.html")),
 
+    ICU(listOf("ICU License", "ICU"),
+        "LICENSE.ICU",
+        listOf("http://source.icu-project.org/repos/icu/icu/branches/maint/maint-4-8/license.html")),
 
     JSON(listOf("The JSON License"),
          "LICENSE.JSON",
@@ -297,11 +300,6 @@ enum class License constructor(internal val names: Collection<String>, internal 
     MIT(MIT_X11.names, MIT_X11.licenseFile, MIT_X11.urls),
 
 
-    ICU(listOf("ICU License", "ICU"),
-        "LICENSE.ICU",
-        listOf("http://source.icu-project.org/repos/icu/icu/branches/maint/maint-4-8/license.html")),
-
-
     @Deprecated("Use MOZILLA_2")
     MOZILLA_1_1(listOf("Mozilla Public License 1.1",
                        "MPL-1.1",
@@ -325,6 +323,16 @@ enum class License constructor(internal val names: Collection<String>, internal 
           "LICENSE.MSPL",
           listOf("http://opensource.org/licenses/ms-pl.html",
                  "http://opensource.org/licenses/MS-PL")),
+
+
+    NCSA(listOf("The University of Illinois/NCSA Open Source License (NCSA)",
+                "NCSA",
+                "UoI-NCSA",
+                "The University of Illinois/NCSA Open Source License",
+                "University of Illinois/NCSA Open Source License (NCSA)",
+                "University of Illinois/NCSA Open Source License"),
+         "LICENSE.NCSA",
+         listOf("http://opensource.org/licenses/UoI-NCSA.php")),
 
 
     OSGI(listOf("OSGi Specification License, Version 2.0"),
@@ -385,14 +393,13 @@ enum class License constructor(internal val names: Collection<String>, internal 
               listOf("http://opensource.org/licenses/sleepycat")),
 
 
-    NCSA(listOf("The University of Illinois/NCSA Open Source License (NCSA)",
-                "NCSA",
-                "UoI-NCSA",
-                "The University of Illinois/NCSA Open Source License",
-                "University of Illinois/NCSA Open Source License (NCSA)",
-                "University of Illinois/NCSA Open Source License"),
-         "LICENSE.NCSA",
-         listOf("http://opensource.org/licenses/UoI-NCSA.php")),
+    UPL(listOf("Universal Permissive License, Version 1.0",
+               "Universal Permissive License",
+               "UPL, v1.0",
+               "UPL"),
+         "LICENSE.UPL",
+         listOf("https://oss.oracle.com/licenses/upl",
+             "https://opensource.org/licenses/UPL")),
 
 
     W3C(listOf("The W3C SOFTWARE NOTICE AND LICENSE (W3C)",

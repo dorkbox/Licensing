@@ -37,7 +37,7 @@ object Extras {
     // set for the project
     const val description = "License definitions and legal management plugin for the Gradle build system"
     const val group = "com.dorkbox"
-    const val version = "3.0"
+    const val version = "3.1"
 
     // set as project.ext
     const val name = "Gradle Licensing Plugin"
