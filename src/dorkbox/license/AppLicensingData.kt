@@ -899,7 +899,6 @@ object AppLicensing {
               author("Ohad Shai")
               url("https://github.com/oshai/kotlin-logging")
           }),
-
         L("jakarta.servlet:jakarta.servlet-api",
           LicenseData("Jakarta Servlet ", License.GPLv2_CLASSPATH).apply {
               description("Jakarta Servlet™ is a standard technology for interacting with the web on the Jakarta EE platform.")
@@ -907,7 +906,6 @@ object AppLicensing {
               author("ee4j-pmc@eclipse.org")
               url("https://projects.eclipse.org/projects/ee4j.servlet ")
           }),
-
         L("io.github.gradle-nexus:publish-plugin",
           LicenseData("Gradle Nexus Publish Plugin", License.APACHE_2).apply {
               description("Gradle Plugin for publishing to Nexus that automates creating, closing, and releasing staging repositories")
@@ -915,13 +913,103 @@ object AppLicensing {
               author("Marcin Zajączkowski")
               url("https://github.com/gradle-nexus/publish-plugin")
           }),
-
         L("org.danilopianini:publish-on-central",
           LicenseData("Gradle Nexus Publish Plugin", License.APACHE_2).apply {
               description("A Gradle plugin for streamlined publishing to Maven Central.")
               author("Danilo Pianini")
               url("https://www.danilopianini.org")
               url("https://github.com/DanySK/publish-on-central")
+          }),
+
+        // GRAAL VM
+        L("org.graalvm.compiler:compiler",
+          LicenseData("GraalVM JVM Compiler", License.GPLv2_CLASSPATH).apply {
+              description("The JAR build of the Graal compiler.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.espresso:espresso-svm",
+          LicenseData("Espresso SVM", License.UPL).apply {
+              description("Espresso shared code for runtime class loading (shaded for SVM).")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.nativeimage:native-image-base",
+          LicenseData("GraalVM Native Base Image", License.GPLv2_CLASSPATH).apply {
+              description("Native Image base that can be shared by native image building and pointsto..")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.nativeimage:objectfile",
+          LicenseData("GraalVM Object File", License.GPLv2_CLASSPATH).apply {
+              description("SubstrateVM object file writing library.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+        L("org.graalvm.nativeimage:pointsto",
+          LicenseData("GraalVM Pointsto", License.GPLv2_CLASSPATH).apply {
+              description("SubstrateVM static analysis to find ahead-of-time the code.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.nativeimage:svm",
+          LicenseData("GraalVM Native Image SVM", License.GPLv2_CLASSPATH).apply {
+              description("SubstrateVM image builder components.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.nativeimage:svm-capnproto-runtime",
+          LicenseData("GraalVM Cap'n Proto", License.GPLv2_CLASSPATH).apply {
+              description("Capn Proto Runtime shaded module.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.nativeimage:svm-configure",
+          LicenseData("GraalVM Native Image SVM Configuration", License.GPLv2_CLASSPATH).apply {
+              description("SubstrateVM native-image configuration tool.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.sdk:collections",
+          LicenseData("GraalVM Collections", License.UPL).apply {
+              description("A collections framework for GraalVM components.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.sdk:nativeimage",
+          LicenseData("GraalVM Native Image", License.UPL).apply {
+              description("A framework that allows to customize native image generation.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.sdk:nativeimage-libgraal",
+          LicenseData("GraalVM API extensions", License.UPL).apply {
+              description("Native Image API extensions for libgraal.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.sdk:word",
+          LicenseData("GraalVM word-sized values for Java", License.UPL).apply {
+              description("A low-level framework for machine-word-sized values in Java.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
+          }),
+
+        L("org.graalvm.truffle:truffle-compiler",
+          LicenseData("GraalVM truffle compiler API", License.UPL).apply {
+              description("Truffle compiler API.")
+              author("Oracle Corporation")
+              url("https://www.graalvm.org")
           }),
     )
     // NOTE: the END copyright for these are determined by the DATE of the files!
