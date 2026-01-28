@@ -25,8 +25,8 @@ plugins {
 
     id("com.gradle.plugin-publish") version "2.0.0"
 
-    id("com.dorkbox.GradleUtils") version "4.0"
-    id("com.dorkbox.Licensing") version "3.0"
+    id("com.dorkbox.GradleUtils") version "4.4"
+    id("com.dorkbox.Licensing") version "3.1"
     id("com.dorkbox.VersionUpdate") version "3.0"
 
     kotlin("jvm") version "2.3.0"
@@ -52,7 +52,7 @@ object Extras {
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.defaults()
-GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
+GradleUtils.compileConfiguration(JavaVersion.VERSION_25)
 
 licensing {
     license(License.APACHE_2) {
